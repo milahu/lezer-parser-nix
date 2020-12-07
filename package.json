@@ -1,0 +1,33 @@
+{
+  "name": "lezer-nix",
+  "version": "0.1.10",
+  "description": "lezer-based Clojure(Script) grammar",
+  "main": "dist/index.cjs",
+  "author": "Martin Kavalar <martin@nextjournal.com>",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.es.js",
+    "require": "./dist/index.cjs"
+  },
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "*",
+    "@lezer/generator": "*",
+    "@lezer/common": "*",
+    "mocha": "*",
+    "rollup": "*"
+  },
+  "dependencies": {
+    "@lezer/lr": "*"
+  },
+  "scripts": {
+    "build": "lezer-generator src/nix.grammar -o src/parser && rollup -c",
+    "build-debug": "lezer-generator src/nix.grammar --names -o src/parser && rollup -c",
+    "prepare": "npm run build",
+    "test": "mocha --experimental-modules test/test-*.js",
+    "on-change": "npm run build && npm run test",
+    "watch": "git ls-files | entr npm run on-change"
+  }
+}

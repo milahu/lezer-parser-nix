@@ -1,0 +1,15 @@
+@top Nix { expression* }
+
+expression { Add | Int }
+
+@precedence {
+  Add @left
+}
+
+Add { expression !Add "+" expression }
+
+@tokens {
+  Int {
+    std.digit+
+  }
+}

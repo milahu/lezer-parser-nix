@@ -1,0 +1,9 @@
+# int
+1
+==>
+Nix(Int)
+
+# add
+1 + 2
+==>
+Nix(Add(Int,Int))
