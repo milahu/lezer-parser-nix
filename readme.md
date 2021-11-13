@@ -8,3 +8,23 @@ The code is licensed under an MIT license.
 # Dev
 
 To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm run watch`
+
+# related
+
+this project is based on
+
+* https://lezer.codemirror.net/docs/guide/#writing-a-grammar
+* https://github.com/lezer-parser/clojure/blob/master/src/clojure.grammar
+  * hard fork from commit [172cf31](https://github.com/lezer-parser/clojure/commit/172cf311376271a95986978e7041cb7dbd3fdd57)
+* https://github.com/lezer-parser/javascript/blob/main/src/javascript.grammar
+
+other Nix parsers
+
+* https://github.com/cstrahan/tree-sitter-nix/blob/master/grammar.js
+* https://github.com/NixOS/nix/blob/master/src/libexpr/parser.y
+
+Nix language spec
+
+* https://nixos.org/manual/nix/unstable/expressions/expression-language.html
+* https://nixos.wiki/wiki/Nix_Expression_Language
+* https://nixery.dev/nix-1p.html
