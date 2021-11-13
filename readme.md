@@ -17,10 +17,12 @@ this project is based on
 * https://github.com/lezer-parser/clojure/blob/master/src/clojure.grammar
   * hard fork from commit [172cf31](https://github.com/lezer-parser/clojure/commit/172cf311376271a95986978e7041cb7dbd3fdd57)
 * https://github.com/lezer-parser/javascript/blob/main/src/javascript.grammar
+* https://github.com/lezer-parser/xml/blob/main/src/tokens.js
 
 other Nix parsers
 
 * https://github.com/cstrahan/tree-sitter-nix/blob/master/grammar.js
+  * https://github.com/cstrahan/tree-sitter-nix/blob/master/src/scanner.c
 * https://github.com/NixOS/nix/blob/master/src/libexpr/parser.y
 
 Nix language spec
