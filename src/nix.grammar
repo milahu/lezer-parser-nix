@@ -39,8 +39,7 @@ AttrSet { "{" (Attr)* "}" }
 
 Attr { (String | Identifier) "=" expression ";" }
 
-// TODO allow non-strings (symbols) like a.b.c
-AttrPath { String ("." String)+ }
+AttrPath { (String | Identifier) ("." (String | Identifier))+ }
 
 ConcatList { List (!concatList "++" List)+ }
 

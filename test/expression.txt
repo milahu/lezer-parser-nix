@@ -123,6 +123,11 @@ Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawConte
 ==>
 Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
 
+# attrpath identifier 3
+a.b.c
+==>
+Nix(AttrPath(Identifier,Identifier,Identifier))
+
 # attrset with identifier
 { a = 1; }
 ==>
