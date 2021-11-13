@@ -19,7 +19,7 @@ expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatLi
   imply @left
 }
 
-@skip { whitespace | LineComment | BlockComment }
+@skip { whitespace | CommentLine | CommentBlock }
 
 @skip {} {
   // StringLine can be multiline, but then the indent is preserved
@@ -78,9 +78,9 @@ Identifier { word }
 
   whitespace { std.whitespace+ }
 
-  LineComment { "#" ![\n]* }
+  CommentLine { "#" ![\n]* }
 
-  BlockComment { "/*" blockCommentRest }
+  CommentBlock { "/*" blockCommentRest }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
   blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 }

@@ -17,26 +17,26 @@ Nix(Add(Int,Int))
 # hello
 1
 ==>
-Nix(LineComment,Int)
+Nix(CommentLine,Int)
 
 # line comment precedence
 #/*
 1
 #*/
 ==>
-Nix(LineComment,Int,LineComment)
+Nix(CommentLine,Int,CommentLine)
 
 # block comment
 /* hello */1
 ==>
-Nix(BlockComment,Int)
+Nix(CommentBlock,Int)
 
 # block comment precedence
 /*
 # hello
 */
 ==>
-Nix(BlockComment)
+Nix(CommentBlock)
 
 # sub
 1-2
