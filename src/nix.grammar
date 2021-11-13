@@ -3,9 +3,20 @@
 expression { Mul | Div | Add | Sub | Int | String | List | ConcatList }
 
 @precedence {
+  select @left,
+  apply @left,
+  negate @left,
+  hasAttr @left,
   concatList @left,
   times @left,
-  plus @left
+  plus @left,
+  not @left,
+  update @left,
+  compare @left,
+  equal @left,
+  and @left,
+  or @left,
+  imply @left
 }
 
 @skip { whitespace | LineComment }
