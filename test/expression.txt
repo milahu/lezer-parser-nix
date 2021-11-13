@@ -58,15 +58,15 @@ Nix(Div(Int,Int))
 ==>
 Nix(Add(Mul(Int,Int),Int))
 
-# string raw
+# string line
 "a"
 ==>
-Nix(String(StringRaw(StringRawContent)))
+Nix(StringLine(StringLineContent))
 
-# string indent
+# string block
 ''a''
 ==>
-Nix(String(StringIndent(StringIndentContent)))
+Nix(StringBlock)
 
 # list empty
 []
@@ -81,7 +81,7 @@ Nix(List(Int))
 # list int string
 [1 "a"]
 ==>
-Nix(List(Int,String(StringRaw(StringRawContent))))
+Nix(List(Int,StringLine(StringLineContent)))
 
 # list concat 2
 [] ++ []
@@ -96,12 +96,12 @@ Nix(ConcatList(List,List,List))
 # string concat 2
 "a" + "b"
 ==>
-Nix(Add(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
+Nix(Add(StringLine(StringLineContent),StringLine(StringLineContent)))
 
 # string concat 3
 "a" + "b" + "c"
 ==>
-Nix(Add(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
+Nix(Add(StringLine(StringLineContent),StringLine(StringLineContent),StringLine(StringLineContent)))
 
 # attrset 0
 {}
@@ -111,17 +111,17 @@ Nix(AttrSet)
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
-Nix(AttrSet(Attr(String(StringRaw(StringRawContent)),Int),Attr(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)))))
+Nix(AttrSet(Attr(StringLine(StringLineContent),Int),Attr(StringLine(StringLineContent),StringLine(StringLineContent))))
 
 # attrpath string 2
 "a"."b"
 ==>
-Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
+Nix(AttrPath(StringLine(StringLineContent),StringLine(StringLineContent)))
 
 # attrpath string 3
 "a"."b"."c"
 ==>
-Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
+Nix(AttrPath(StringLine(StringLineContent),StringLine(StringLineContent),StringLine(StringLineContent)))
 
 # attrpath identifier 3
 a.b.c
@@ -132,3 +132,10 @@ Nix(AttrPath(Identifier,Identifier,Identifier))
 { a = 1; }
 ==>
 Nix(AttrSet(Attr(Identifier,Int)))
+
+# string block with interpolation
+''
+  a${x}b
+''
+==>
+Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))

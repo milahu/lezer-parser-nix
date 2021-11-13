@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | String | List | ConcatList | AttrSet | AttrPath }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath }
 
 @precedence {
   select @left,
@@ -22,10 +22,17 @@ expression { Mul | Div | Add | Sub | Int | String | List | ConcatList | AttrSet 
 @skip { whitespace | LineComment | BlockComment }
 
 @skip {} {
-  String { StringRaw | StringIndent }
-  StringRaw { '"' StringRawContent? '"' }
-  StringIndent { "''" StringIndentContent? "''" }
+  // StringLine can be multiline, but then the indent is preserved
+  // StringBlock is similar to python docstrings -> indent is removed
+  string { StringLine | StringBlock }
+  StringLine { '"' StringLineContent? '"' }
+  StringBlock {
+    stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
+  }
 }
+
+// ''string ${expr} string''
+StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
 
 Mul { expression !times "*" expression }
 Div { expression !times "/" expression }
@@ -37,24 +44,30 @@ List { "[" expression* "]" }
 
 AttrSet { "{" (Attr)* "}" }
 
-Attr { (String | Identifier) "=" expression ";" }
+Attr { (string | Identifier) "=" expression ";" }
 
-AttrPath { (String | Identifier) ("." (String | Identifier))+ }
+// TODO this is a "Select" token
+AttrPath { (string | Identifier) ("." (string | Identifier))+ }
 
 ConcatList { List (!concatList "++" List)+ }
 
 Identifier { word }
+
+@external tokens stringBlock from "./tokens" {
+  StringBlockContent,
+  stringBlockInterpolationStart,
+  stringBlockEnd
+}
 
 @tokens {
   Int {
     std.digit+
   }
 
-  StringRawContent { (!["] | "\\" _)+ }
+  StringLineContent { (!["] | "\\" _)+ }
 
-  //StringIndentContent { (![']['] | "\\" _)+ } // error: Unterminated string literal
-  // FIXME this is wrong:
-  StringIndentContent { (!['] | "\\" _)+ }
+  stringBlockStart { "''" }
+  stringBlockInterpolationEnd { "}" }
 
   word { identifierChar (identifierChar | std.digit)* }
   identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
