@@ -34,6 +34,11 @@ Nix(Mul(Int,Int))
 ==>
 Nix(Div(Int,Int))
 
+# precedence mul add
+1*2+3
+==>
+Nix(Add(Mul(Int,Int),Int))
+
 # string
 "a"
 ==>
