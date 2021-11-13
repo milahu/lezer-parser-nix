@@ -15,6 +15,18 @@ var strict = true;
 if (parser.configure && (strict || config))
   parser = parser.configure({strict, ...config});
 
-var actual = parser.parse(text);
+let actual;
+try {
+  actual = parser.parse(text);
+}
+catch (e) {
+  // https://github.com/lezer-parser/lr/blob/main/src/parse.ts#L300
+  if (e.message.startsWith("No parse at ")) {
+    const pos = parseInt(e.message.slice("No parse at ".length));
+    e.message += `\n      ${text}\n      ${" ".repeat(pos)}^`;
+  }
+  throw e;
+}
+
 //console.dir(actual, { depth: 5 });
 console.log(actual.toString());
