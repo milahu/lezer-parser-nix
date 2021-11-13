@@ -19,10 +19,24 @@ Nix(Add(Int,Int))
 ==>
 Nix(LineComment,Int)
 
+# line comment precedence
+#/*
+1
+#*/
+==>
+Nix(LineComment,Int,LineComment)
+
 # block comment
 /* hello */1
 ==>
 Nix(BlockComment,Int)
+
+# block comment precedence
+/*
+# hello
+*/
+==>
+Nix(BlockComment)
 
 # sub
 1-2
