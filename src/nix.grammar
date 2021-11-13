@@ -19,7 +19,7 @@ expression { Mul | Div | Add | Sub | Int | String | List | ConcatList | AttrSet 
   imply @left
 }
 
-@skip { whitespace | LineComment }
+@skip { whitespace | LineComment | BlockComment }
 
 
 @skip {} {
@@ -53,4 +53,8 @@ ConcatList { List (!concatList "++" List)+ }
   whitespace { std.whitespace+ }
 
   LineComment { "#" ![\n]* }
+
+  BlockComment { "/*" blockCommentRest }
+  blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
+  blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 }

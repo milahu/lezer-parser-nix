@@ -19,6 +19,11 @@ Nix(Add(Int,Int))
 ==>
 Nix(LineComment,Int)
 
+# block comment
+/* hello */1
+==>
+Nix(BlockComment,Int)
+
 # sub
 1-2
 ==>
