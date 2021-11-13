@@ -11,7 +11,7 @@ const space = [
   8201, 8202, 8232, 8233, 8239, 8287, 12288
 ]
 
-const devMode = false; // development mode
+const devMode = true; // development mode
 
 const
   braceR = 125, braceL = 123, semicolon = 59, slash = 47, star = 42,
@@ -29,34 +29,25 @@ export const stringBlock = new ExternalTokenizer(input => {
         input.acceptToken(StringBlockContent)
         if (devMode) console.log(`  acceptToken(StringBlockContent)`);
       }
-      if (devMode) console.log(`  break`);
+      if (devMode) console.log(`  break 32`);
       break
     } else if (next == singlequote) {
-      const next2 = input.peek(1);
-      if (devMode) console.log(`i = ${i} + next2 = ${next2} = ${JSON.stringify(String.fromCharCode(next2))}`);
-      if (next2 == singlequote) {
-        if (devMode) console.log(`  acceptToken(StringBlockContent)`);
-        input.acceptToken(StringBlockContent)
-        if (devMode) console.log(`  advance`);
-        input.advance()
-        if (devMode) console.log(`  acceptToken(stringBlockEnd)`);
-        input.acceptToken(stringBlockEnd, 1) // end
-        if (devMode) console.log(`  break`);
-        break
-      }
       if (afterQuote) {
         if (devMode) console.log(`  found singlequote 2`);
+        input.advance()
         if (i == 1) {
           // empty string
-          if (devMode) console.log(`  acceptToken(stringBlockEnd, 1)`);
-          input.acceptToken(stringBlockEnd, 1) // end
+          if (devMode) console.log(`  acceptToken(stringBlockEnd) with empty string`);
+          input.acceptToken(stringBlockEnd)
         }
         else {
-          if (devMode) console.log(`  acceptToken(StringBlockContent)`);
-          input.acceptToken(StringBlockContent)
+          if (devMode) console.log(`  acceptToken(StringBlockContent, -2)`);
+          input.acceptToken(StringBlockContent, -2)
+          if (devMode) console.log(`  acceptToken(stringBlockEnd)`);
+          input.acceptToken(stringBlockEnd)
         }
         afterQuote = false
-        if (devMode) console.log(`  break`);
+        if (devMode) console.log(`  break 50`);
         break
       }
       else {
@@ -72,13 +63,14 @@ export const stringBlock = new ExternalTokenizer(input => {
         if (devMode) console.log(`  acceptToken(StringBlockContent, -1)`);
         input.acceptToken(StringBlockContent, -1)
       }
-      if (devMode) console.log(`  break`);
+      if (devMode) console.log(`  break 66`);
       break
-    } else if (next == newline && i) {
+    } else if (next == newline && i > 0) {
       // Break up stringBlock strings on lines, to avoid huge tokens
-      input.advance()
-      if (devMode) console.log(`  acceptToken(StringBlockContent)`);
+      input.advance() // add newline to current token
+      if (devMode) console.log(`  acceptToken(StringBlockContent) from newline`);
       input.acceptToken(StringBlockContent)
+      if (devMode) console.log(`  break 73`);
       break
     } else if (next == backslash) {
       input.advance()
