@@ -36,12 +36,14 @@ List { "[" expression* "]" }
 
 AttrSet { "{" (Attr)* "}" }
 
-Attr { expression "=" expression ";" }
+Attr { (String | Identifier) "=" expression ";" }
 
 // TODO allow non-strings (symbols) like a.b.c
 AttrPath { String ("." String)+ }
 
 ConcatList { List (!concatList "++" List)+ }
+
+Identifier { word }
 
 @tokens {
   Int {
@@ -49,6 +51,13 @@ ConcatList { List (!concatList "++" List)+ }
   }
 
   StringContent { (!["] | "\\" _)+ }
+
+  word { identifierChar (identifierChar | std.digit)* }
+  identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+
+  // fix error: Overlapping tokens word and whitespace
+  // TODO why overlapping? word is non-whitespace
+  @precedence { word, whitespace }
 
   whitespace { std.whitespace+ }
 

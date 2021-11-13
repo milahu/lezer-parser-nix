@@ -117,3 +117,8 @@ Nix(AttrPath(String(StringContent),String(StringContent)))
 "a"."b"."c"
 ==>
 Nix(AttrPath(String(StringContent),String(StringContent),String(StringContent)))
+
+# attrset with identifier
+{ a = 1; }
+==>
+Nix(AttrSet(Attr(Identifier,Int)))
