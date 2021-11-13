@@ -12,3 +12,9 @@ Nix(Add(Int,Int))
 1 + 2
 ==>
 Nix(Add(Int,Int))
+
+# line comment
+# hello
+1
+==>
+Nix(LineComment,Int)
