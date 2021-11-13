@@ -1,14 +1,19 @@
 @top Nix { expression* }
 
-expression { Add | Int }
+expression { Mul | Div | Add | Sub | Int }
 
 @precedence {
-  Add @left
+  times @left,
+  plus @left
 }
 
 @skip { whitespace | LineComment }
 
-Add { expression !Add "+" expression }
+Mul { expression !times "*" expression }
+Div { expression !times "/" expression }
+
+Add { expression !plus "+" expression }
+Sub { expression !plus "-" expression }
 
 @tokens {
   Int {

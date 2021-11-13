@@ -18,3 +18,18 @@ Nix(Add(Int,Int))
 1
 ==>
 Nix(LineComment,Int)
+
+# sub
+1-2
+==>
+Nix(Sub(Int,Int))
+
+# mul
+1*2
+==>
+Nix(Mul(Int,Int))
+
+# div
+1/2
+==>
+Nix(Div(Int,Int))
