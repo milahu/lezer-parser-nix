@@ -6,10 +6,16 @@ expression { Add | Int }
   Add @left
 }
 
+@skip { whitespace | LineComment }
+
 Add { expression !Add "+" expression }
 
 @tokens {
   Int {
     std.digit+
   }
+
+  whitespace { std.whitespace+ }
+
+  LineComment { "#" ![\n]* }
 }

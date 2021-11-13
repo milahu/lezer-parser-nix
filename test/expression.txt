@@ -4,6 +4,11 @@
 Nix(Int)
 
 # add
+1+2
+==>
+Nix(Add(Int,Int))
+
+# add with whitespace
 1 + 2
 ==>
 Nix(Add(Int,Int))
