@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int }
+expression { Mul | Div | Add | Sub | Int | String }
 
 @precedence {
   times @left,
@@ -8,6 +8,11 @@ expression { Mul | Div | Add | Sub | Int }
 }
 
 @skip { whitespace | LineComment }
+
+
+@skip {} {
+  String { '"' StringContent? '"' }
+}
 
 Mul { expression !times "*" expression }
 Div { expression !times "/" expression }
@@ -19,6 +24,8 @@ Sub { expression !plus "-" expression }
   Int {
     std.digit+
   }
+
+  StringContent { (!["] | "\\" _)+ }
 
   whitespace { std.whitespace+ }
 

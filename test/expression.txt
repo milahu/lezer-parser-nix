@@ -33,3 +33,8 @@ Nix(Mul(Int,Int))
 1/2
 ==>
 Nix(Div(Int,Int))
+
+# string
+"a"
+==>
+Nix(String(StringContent))
