@@ -53,3 +53,23 @@ Nix(List(Int))
 [1 "a"]
 ==>
 Nix(List(Int,String(StringContent)))
+
+# list concat 2
+[] ++ []
+==>
+Nix(ConcatList(List,List))
+
+# list concat 3
+[] ++ [] ++ []
+==>
+Nix(ConcatList(List,List,List))
+
+# string concat 2
+"a" + "b"
+==>
+Nix(Add(String(StringContent),String(StringContent)))
+
+# string concat 3
+"a" + "b" + "c"
+==>
+Nix(Add(String(StringContent),String(StringContent),String(StringContent)))

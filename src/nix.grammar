@@ -1,8 +1,9 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | String | List }
+expression { Mul | Div | Add | Sub | Int | String | List | ConcatList }
 
 @precedence {
+  concatList @left,
   times @left,
   plus @left
 }
@@ -17,10 +18,12 @@ expression { Mul | Div | Add | Sub | Int | String | List }
 Mul { expression !times "*" expression }
 Div { expression !times "/" expression }
 
-Add { expression !plus "+" expression }
+Add { expression (!plus "+" expression)+ }
 Sub { expression !plus "-" expression }
 
 List { "[" expression* "]" }
+
+ConcatList { List (!concatList "++" List)+ }
 
 @tokens {
   Int {
