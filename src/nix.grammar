@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | String }
+expression { Mul | Div | Add | Sub | Int | String | List }
 
 @precedence {
   times @left,
@@ -19,6 +19,8 @@ Div { expression !times "/" expression }
 
 Add { expression !plus "+" expression }
 Sub { expression !plus "-" expression }
+
+List { "[" expression* "]" }
 
 @tokens {
   Int {

@@ -38,3 +38,18 @@ Nix(Div(Int,Int))
 "a"
 ==>
 Nix(String(StringContent))
+
+# list empty
+[]
+==>
+Nix(List)
+
+# list int
+[1]
+==>
+Nix(List(Int))
+
+# list int string
+[1 "a"]
+==>
+Nix(List(Int,String(StringContent)))
