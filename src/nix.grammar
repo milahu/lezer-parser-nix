@@ -21,9 +21,10 @@ expression { Mul | Div | Add | Sub | Int | String | List | ConcatList | AttrSet 
 
 @skip { whitespace | LineComment | BlockComment }
 
-
 @skip {} {
-  String { '"' StringContent? '"' }
+  String { StringRaw | StringIndent }
+  StringRaw { '"' StringRawContent? '"' }
+  StringIndent { "''" StringIndentContent? "''" }
 }
 
 Mul { expression !times "*" expression }
@@ -50,7 +51,11 @@ Identifier { word }
     std.digit+
   }
 
-  StringContent { (!["] | "\\" _)+ }
+  StringRawContent { (!["] | "\\" _)+ }
+
+  //StringIndentContent { (![']['] | "\\" _)+ } // error: Unterminated string literal
+  // FIXME this is wrong:
+  StringIndentContent { (!['] | "\\" _)+ }
 
   word { identifierChar (identifierChar | std.digit)* }
   identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }

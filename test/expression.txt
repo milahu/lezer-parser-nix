@@ -58,10 +58,15 @@ Nix(Div(Int,Int))
 ==>
 Nix(Add(Mul(Int,Int),Int))
 
-# string
+# string raw
 "a"
 ==>
-Nix(String(StringContent))
+Nix(String(StringRaw(StringRawContent)))
+
+# string indent
+''a''
+==>
+Nix(String(StringIndent(StringIndentContent)))
 
 # list empty
 []
@@ -76,7 +81,7 @@ Nix(List(Int))
 # list int string
 [1 "a"]
 ==>
-Nix(List(Int,String(StringContent)))
+Nix(List(Int,String(StringRaw(StringRawContent))))
 
 # list concat 2
 [] ++ []
@@ -91,12 +96,12 @@ Nix(ConcatList(List,List,List))
 # string concat 2
 "a" + "b"
 ==>
-Nix(Add(String(StringContent),String(StringContent)))
+Nix(Add(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
 
 # string concat 3
 "a" + "b" + "c"
 ==>
-Nix(Add(String(StringContent),String(StringContent),String(StringContent)))
+Nix(Add(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
 
 # attrset 0
 {}
@@ -106,17 +111,17 @@ Nix(AttrSet)
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
-Nix(AttrSet(Attr(String(StringContent),Int),Attr(String(StringContent),String(StringContent))))
+Nix(AttrSet(Attr(String(StringRaw(StringRawContent)),Int),Attr(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)))))
 
 # attrpath string 2
 "a"."b"
 ==>
-Nix(AttrPath(String(StringContent),String(StringContent)))
+Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
 
 # attrpath string 3
 "a"."b"."c"
 ==>
-Nix(AttrPath(String(StringContent),String(StringContent),String(StringContent)))
+Nix(AttrPath(String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent)),String(StringRaw(StringRawContent))))
 
 # attrset with identifier
 { a = 1; }
