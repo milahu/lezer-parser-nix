@@ -73,3 +73,23 @@ Nix(Add(String(StringContent),String(StringContent)))
 "a" + "b" + "c"
 ==>
 Nix(Add(String(StringContent),String(StringContent),String(StringContent)))
+
+# attrset 0
+{}
+==>
+Nix(AttrSet)
+
+# attrset 2
+{ "a" = 1; "b" = "2"; }
+==>
+Nix(AttrSet(Attr(String(StringContent),Int),Attr(String(StringContent),String(StringContent))))
+
+# attrpath string 2
+"a"."b"
+==>
+Nix(AttrPath(String(StringContent),String(StringContent)))
+
+# attrpath string 3
+"a"."b"."c"
+==>
+Nix(AttrPath(String(StringContent),String(StringContent),String(StringContent)))

@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | String | List | ConcatList }
+expression { Mul | Div | Add | Sub | Int | String | List | ConcatList | AttrSet | AttrPath }
 
 @precedence {
   select @left,
@@ -33,6 +33,13 @@ Add { expression (!plus "+" expression)+ }
 Sub { expression !plus "-" expression }
 
 List { "[" expression* "]" }
+
+AttrSet { "{" (Attr)* "}" }
+
+Attr { expression "=" expression ";" }
+
+// TODO allow non-strings (symbols) like a.b.c
+AttrPath { String ("." String)+ }
 
 ConcatList { List (!concatList "++" List)+ }
 
