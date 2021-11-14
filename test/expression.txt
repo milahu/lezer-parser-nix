@@ -202,6 +202,26 @@ Nix(StringBlock(StringBlockContent))
 ==>
 Nix(StringBlock(StringBlockContent))
 
+# string block multiple
+''
+  a''${x}b
+'' + ''
+  a''${x}b
+'' + ''
+  a''${x}b
+''
+==>
+Nix(Add(StringBlock(StringBlockContent),StringBlock(StringBlockContent),StringBlock(StringBlockContent)))
+
+# string block multiple
+''
+  a${x}b
+'' + ''
+  a${x}b
+''
+==>
+Nix(Add(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent),StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent)))
+
 # if
 if true then true else false
 ==>
