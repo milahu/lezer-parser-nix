@@ -63,10 +63,10 @@ Nix(Add(Mul(Int,Int),Int))
 ==>
 Nix(StringLine(StringLineContent))
 
-# string block
+# string block single line
 ''a''
 ==>
-Nix(StringBlock)
+Nix(StringBlock(StringBlockContent))
 
 # list empty
 []
@@ -140,7 +140,7 @@ Nix(AttrSet(Attr(Identifier,Int)))
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
 
-# string block with interpolation single line (FIXME)
+# string block with interpolation single line
 ''a${x}b''
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
