@@ -81,17 +81,17 @@ Nix(Add(Mul(Int,Int),Int))
 # string line
 "a"
 ==>
-Nix(StringLine(StringLineContent))
+Nix(String(StringContent))
 
 # string line with interpolation
 "a${x}b"
 ==>
-Nix(StringLine(StringLineContent,StringLineInterpolation(Identifier),StringLineContent))
+Nix(String(StringContent,StringInterpolation(Identifier),StringContent))
 
 # string line with escaped interpolation
 "a\${x}b"
 ==>
-Nix(StringLine(StringLineContent))
+Nix(String(StringContent))
 
 # string block single line
 ''a''
@@ -111,7 +111,7 @@ Nix(List(Int))
 # list int string
 [1 "a"]
 ==>
-Nix(List(Int,StringLine(StringLineContent)))
+Nix(List(Int,String(StringContent)))
 
 # list concat 2
 [] ++ []
@@ -126,12 +126,12 @@ Nix(ConcatList(List,ConcatList(List,List)))
 # string concat 2
 "a" + "b"
 ==>
-Nix(Add(StringLine(StringLineContent),StringLine(StringLineContent)))
+Nix(Add(String(StringContent),String(StringContent)))
 
 # string concat 3
 "a" + "b" + "c"
 ==>
-Nix(Add(StringLine(StringLineContent),StringLine(StringLineContent),StringLine(StringLineContent)))
+Nix(Add(String(StringContent),String(StringContent),String(StringContent)))
 
 # attrset 0
 {}
@@ -141,7 +141,7 @@ Nix(AttrSet)
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
-Nix(AttrSet(Attr(StringLine(StringLineContent),Int),Attr(StringLine(StringLineContent),StringLine(StringLineContent))))
+Nix(AttrSet(Attr(String(StringContent),Int),Attr(String(StringContent),String(StringContent))))
 
 # attrset inherit
 { inherit a b; }
@@ -156,12 +156,12 @@ Nix(AttrSet(AttrInheritFrom(Identifier,Identifier,Identifier)))
 # select string 2
 "a"."b"
 ==>
-Nix(Select(StringLine(StringLineContent),AttrPath(StringLine(StringLineContent))))
+Nix(Select(String(StringContent),AttrPath(String(StringContent))))
 
 # select string 3
 "a"."b"."c"
 ==>
-Nix(Select(StringLine(StringLineContent),AttrPath(StringLine(StringLineContent),StringLine(StringLineContent))))
+Nix(Select(String(StringContent),AttrPath(String(StringContent),String(StringContent))))
 
 # select identifier 3
 a.b.c

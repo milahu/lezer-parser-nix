@@ -4,7 +4,7 @@
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   StringBlockContent, stringBlockInterpolationStart, stringBlockEnd,
-  StringLineContent, stringLineInterpolationStart, stringLineEnd,
+  StringContent, stringInterpolationStart, stringEnd,
 } from "./parser.terms.js"
 
 const space = [
@@ -99,24 +99,24 @@ export const stringBlock = new ExternalTokenizer(input => {
 
 // based on javascript template parser
 // https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
-export const stringLine = new ExternalTokenizer(input => {
+export const string = new ExternalTokenizer(input => {
   for (let afterDollar = false, i = 0;; i++) {
     let {next} = input
     if (next < 0) {
-      if (i) input.acceptToken(StringLineContent)
+      if (i) input.acceptToken(StringContent)
       break
     } else if (next == doublequote) {
-      if (i) input.acceptToken(StringLineContent)
-      else input.acceptToken(stringLineEnd, 1)
+      if (i) input.acceptToken(StringContent)
+      else input.acceptToken(stringEnd, 1)
       break
     } else if (next == braceL && afterDollar) {
-      if (i == 1) input.acceptToken(stringLineInterpolationStart, 1)
-      else input.acceptToken(StringLineContent, -1)
+      if (i == 1) input.acceptToken(stringInterpolationStart, 1)
+      else input.acceptToken(StringContent, -1)
       break
     } else if (next == newline && i) {
       // Break up template strings on lines, to avoid huge tokens
       input.advance()
-      input.acceptToken(StringLineContent)
+      input.acceptToken(StringContent)
       break
     } else if (next == backslash) {
       input.advance()

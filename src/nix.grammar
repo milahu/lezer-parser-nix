@@ -29,14 +29,14 @@ unaryExpr { Negative | Not }
 @skip { whitespace | CommentLine | CommentBlock }
 
 @skip {} {
-  // StringLine can be multiline, but then the indent is preserved
+  // String can be multiline, but then the indent is preserved
   // StringBlock is similar to python docstrings -> indent is removed
-  string { StringLine | StringBlock }
+  string { String | StringBlock }
   StringBlock {
     stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
   }
-  StringLine {
-    stringLineStart (StringLineContent | StringLineInterpolation)* stringLineEnd
+  String {
+    stringStart (StringContent | StringInterpolation)* stringEnd
   }
 }
 
@@ -44,7 +44,7 @@ unaryExpr { Negative | Not }
 StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
 
 // "string ${expr} \${escaped} string"
-StringLineInterpolation { stringLineInterpolationStart expression stringLineInterpolationEnd }
+StringInterpolation { stringInterpolationStart expression stringInterpolationEnd }
 
 Braces { "(" expression ")" }
 
@@ -148,10 +148,10 @@ Attrs { attr* }
   stringBlockEnd
 }
 
-@external tokens stringLine from "./tokens" {
-  StringLineContent,
-  stringLineInterpolationStart,
-  stringLineEnd
+@external tokens string from "./tokens" {
+  StringContent,
+  stringInterpolationStart,
+  stringEnd
 }
 
 @tokens {
@@ -169,8 +169,8 @@ Attrs { attr* }
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
 
-  stringLineStart { '"' }
-  stringLineInterpolationEnd { "}" }
+  stringStart { '"' }
+  stringInterpolationEnd { "}" }
 
   identifier { identifierChar (identifierChar | std.digit)* }
   identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
