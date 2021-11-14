@@ -129,7 +129,7 @@ boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
 
 null { @specialize[@name=NullLiteral]<identifier, "null"> }
 
-If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> expression }
+If { hiddenKeywordIf expression hiddenKeywordThen expression hiddenKeywordElse expression }
 
 @external tokens stringBlock from "./tokens" {
   StringBlockContent,
@@ -199,4 +199,9 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
 
   // fix: Overlapping tokens identifier and URI
   @precedence { URI, identifier }
+
+  hiddenKeywordIf { "if" }
+  hiddenKeywordThen { "then" }
+  hiddenKeywordElse { "else" }
+  @precedence { hiddenKeywordIf, hiddenKeywordThen, hiddenKeywordElse, URI, identifier }
 }

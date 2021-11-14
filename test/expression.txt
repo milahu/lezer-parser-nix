@@ -195,7 +195,7 @@ Nix(StringBlock(StringBlockContent))
 # if
 if true then true else false
 ==>
-Nix(If(if,BooleanLiteral,then,BooleanLiteral,else,BooleanLiteral))
+Nix(If(BooleanLiteral,BooleanLiteral,BooleanLiteral))
 
 # parens
 (1)
