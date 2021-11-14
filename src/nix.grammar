@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path }
+expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path | Assert | With | Let }
 
 binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal | And | Or | Imply }
 
@@ -76,9 +76,13 @@ FormalsRest { "..." }
 Formal { Identifier FormalDefault? }
 FormalDefault { "?" expression }
 
-AttrSet { "{" (Attr)* "}" }
+AttrSet { "{" (attr)* "}" }
 
+attr { Attr | AttrInherit | AttrInheritFrom }
 Attr { (string | Identifier | Select) "=" expression ";" }
+AttrInherit { hiddenKeywordInherit (Identifier | Select)+ ";" }
+AttrInheritFrom { inheritFrom (Identifier | Select)+ ";" }
+inheritFrom { hiddenKeywordInherit "(" expression ")" }
 
 Select { (string | Identifier) "." AttrPath SelectDefault? }
 SelectDefault { keyword<"or"> expression }
@@ -130,6 +134,13 @@ boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
 null { @specialize[@name=NullLiteral]<identifier, "null"> }
 
 If { hiddenKeywordIf expression hiddenKeywordThen expression hiddenKeywordElse expression }
+
+Assert { hiddenKeywordAssert expression ";" expression }
+
+With { hiddenKeywordWith expression ";" expression }
+
+Let { hiddenKeywordLet Attrs hiddenKeywordIn expression }
+Attrs { attr* }
 
 @external tokens stringBlock from "./tokens" {
   StringBlockContent,
@@ -200,8 +211,19 @@ If { hiddenKeywordIf expression hiddenKeywordThen expression hiddenKeywordElse e
   // fix: Overlapping tokens identifier and URI
   @precedence { URI, identifier }
 
+  // workaround: remove keywords from parse tree with lowercase token names
   hiddenKeywordIf { "if" }
   hiddenKeywordThen { "then" }
   hiddenKeywordElse { "else" }
-  @precedence { hiddenKeywordIf, hiddenKeywordThen, hiddenKeywordElse, URI, identifier }
+  hiddenKeywordAssert { "assert" }
+  hiddenKeywordWith { "with" }
+  hiddenKeywordLet { "let" }
+  hiddenKeywordIn { "in" }
+  hiddenKeywordInherit { "inherit" }
+  @precedence {
+    hiddenKeywordIf, hiddenKeywordThen, hiddenKeywordElse,
+    hiddenKeywordAssert, hiddenKeywordWith, hiddenKeywordLet, hiddenKeywordIn,
+    hiddenKeywordInherit,
+    URI, identifier
+  }
 }

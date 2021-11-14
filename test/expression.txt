@@ -143,6 +143,16 @@ Nix(AttrSet)
 ==>
 Nix(AttrSet(Attr(StringLine(StringLineContent),Int),Attr(StringLine(StringLineContent),StringLine(StringLineContent))))
 
+# attrset inherit
+{ inherit a b; }
+==>
+Nix(AttrSet(AttrInherit(Identifier,Identifier)))
+
+# attrset inherit from
+{ inherit (f) a b; }
+==>
+Nix(AttrSet(AttrInheritFrom(Identifier,Identifier,Identifier)))
+
 # select string 2
 "a"."b"
 ==>
@@ -421,3 +431,28 @@ Nix(Imply(Identifier,Identifier))
 a://b:3?d=e&f=g
 ==>
 Nix(URI)
+
+# assert
+assert a; x
+==>
+Nix(Assert(Identifier,Identifier))
+
+# with
+with a; x
+==>
+Nix(With(Identifier,Identifier))
+
+# let
+let a = b; in x
+==>
+Nix(Let(Attrs(Attr(Identifier,Identifier)),Identifier))
+
+# let inherit
+let inherit a b; in x
+==>
+Nix(Let(Attrs(AttrInherit(Identifier,Identifier)),Identifier))
+
+# let inherit from
+let inherit (f) a b; in x
+==>
+Nix(Let(Attrs(AttrInheritFrom(Identifier,Identifier,Identifier)),Identifier))
