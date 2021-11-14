@@ -113,20 +113,20 @@ Nix(AttrSet)
 ==>
 Nix(AttrSet(Attr(StringLine(StringLineContent),Int),Attr(StringLine(StringLineContent),StringLine(StringLineContent))))
 
-# attrpath string 2
+# select string 2
 "a"."b"
 ==>
-Nix(AttrPath(StringLine(StringLineContent),StringLine(StringLineContent)))
+Nix(Select(StringLine(StringLineContent),AttrPath(StringLine(StringLineContent))))
 
-# attrpath string 3
+# select string 3
 "a"."b"."c"
 ==>
-Nix(AttrPath(StringLine(StringLineContent),StringLine(StringLineContent),StringLine(StringLineContent)))
+Nix(Select(StringLine(StringLineContent),AttrPath(StringLine(StringLineContent),StringLine(StringLineContent))))
 
-# attrpath identifier 3
+# select identifier 3
 a.b.c
 ==>
-Nix(AttrPath(Identifier,Identifier,Identifier))
+Nix(Select(Identifier,AttrPath(Identifier,Identifier)))
 
 # attrset with identifier
 { a = 1; }

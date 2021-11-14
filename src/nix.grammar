@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean | Braces | Function }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function }
 
 @precedence {
   select @left,
@@ -55,10 +55,12 @@ Formals { "{" Identifier? ("," Identifier)* "}" }
 
 AttrSet { "{" (Attr)* "}" }
 
-Attr { (string | Identifier) "=" expression ";" }
+Attr { (string | Identifier | Select) "=" expression ";" }
 
-// TODO this is a "Select" token
-AttrPath { (string | Identifier) ("." (string | Identifier))+ }
+// TODO no whitespace is allowed around the "."
+Select { (string | Identifier) "." AttrPath }
+
+AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
 ConcatList { List (!concatList "++" List)+ }
 
