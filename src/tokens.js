@@ -96,32 +96,3 @@ export const stringBlock = new ExternalTokenizer(input => {
     input.advance()
   }
 })
-
-// based on javascript template parser
-// https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
-export const string = new ExternalTokenizer(input => {
-  for (let afterDollar = false, i = 0;; i++) {
-    let {next} = input
-    if (next < 0) {
-      if (i) input.acceptToken(StringContent)
-      break
-    } else if (next == doublequote) {
-      if (i) input.acceptToken(StringContent)
-      else input.acceptToken(stringEnd, 1)
-      break
-    } else if (next == braceL && afterDollar) {
-      if (i == 1) input.acceptToken(stringInterpolationStart, 1)
-      else input.acceptToken(StringContent, -1)
-      break
-    } else if (next == newline && i) {
-      // Break up template strings on lines, to avoid huge tokens
-      input.advance()
-      input.acceptToken(StringContent)
-      break
-    } else if (next == backslash) {
-      input.advance()
-    }
-    afterDollar = next == dollar
-    input.advance()
-  }
-})

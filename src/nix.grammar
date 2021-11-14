@@ -1,146 +1,19 @@
-@top Nix { expression* }
+@top Nix { StringBlock }
 
-expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path | Assert | With | Let }
-
-binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal | And | Or | Imply }
-
-unaryExpr { Negative | Not }
-
-@precedence {
-  select @left,
-  _list @left,
-  // workaround for Sub/Negative conflict
-  _applySub @left,
-  apply @left,
-  negative @left,
-  hasAttr @left,
-  concatList @right,
-  times @left,
-  plus @left,
-  not @left,
-  update @right,
-  compare @left,
-  equal @left,
-  and @left,
-  or @left,
-  imply @right
-}
-
-@skip { whitespace | Comment | CommentBlock }
+@skip { whitespace }
 
 @skip {} {
-  // String can be multiline, but then the indent is preserved
-  // StringBlock is similar to python docstrings -> indent is removed
-  string { String | StringBlock }
   StringBlock {
     stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
   }
-  String {
-    stringStart (StringContent | StringInterpolation)* stringEnd
-  }
 }
 
-// ''string ${expr} ''${escaped} string''
-StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
-
-// "string ${expr} \${escaped} string"
-StringInterpolation { stringInterpolationStart expression stringInterpolationEnd }
-
-Braces { "(" expression ")" }
-
-Mul { expression !times "*" expression }
-Div { expression !times "/" expression }
-
-Add { expression (!plus "+" expression)+ }
-
-// FIXME
-// Sub is not used
-// Negative has higher precedence than Sub, so 1-2 -> (1) (-2) -> Apply
-// nix parser/interpreter: Nix(Apply(__sub,Int,Int))
-//Sub { expression !plus "-" expression }
-
-List { "[" expression? (!_list expression)* "]" }
-
-// aka Lambda
-Function { functionArgument expression }
-
-functionArgument { (Identifier | Formals) colonWithSpace }
-
-Formals {
-  FormalsAllBefore? "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" |
-  "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" FormalsAllAfter?
-}
-FormalsAllBefore { Identifier "@" }
-FormalsAllAfter { "@" Identifier }
-FormalsRest { "..." }
-Formal { Identifier FormalDefault? }
-FormalDefault { "?" expression }
-
-AttrSet { "{" (attr)* "}" }
-
-attr { Attr | AttrInherit | AttrInheritFrom }
-Attr { (string | Identifier | Select) "=" expression ";" }
-AttrInherit { hiddenKeywordInherit (Identifier | Select)+ ";" }
-AttrInheritFrom { inheritFrom (Identifier | Select)+ ";" }
-inheritFrom { hiddenKeywordInherit "(" expression ")" }
-
-Select { (string | Identifier) "." AttrPath SelectDefault? }
-SelectDefault { keyword<"or"> expression }
-
-// workaround for Sub/Negative conflict
-Sub { expression !_applySub "-" expression }
-
-Apply { expression !apply expression }
-
-Negative { !negative "-" expression }
-
-// TODO allow interpolation
-// a.${x}.${y}
-AttrPath { (string | Identifier) ("." (string | Identifier))* }
-
-path { PathAbsolute | PathRelative | PathLibrary | URI }
-
-HasAttr { expression !hasAttr "?" AttrPath }
-
-ConcatList { expression !concatList "++" expression }
-
-Not { "!" !not expression }
-
-Update { expression !update "//" expression }
-
-compare { CompareGT | CompareLT | CompareGTE | CompareLTE }
-CompareGT { expression !compare ">" expression }
-CompareLT { expression !compare "<" expression }
-CompareGTE { expression !compare ">=" expression }
-CompareLTE { expression !compare "<=" expression }
-
-equal { Equal | NotEqual }
-Equal { expression !equal "==" expression }
-NotEqual { expression !equal "!=" expression }
-
-And { expression !and "&&" expression }
-
-Or { expression !or "||" expression }
-
-Imply { expression !imply "->" expression }
-
-// TODO better
-Identifier { identifier }
+// ''string ${x} ''${x_escaped} string''
+StringBlockInterpolation { stringBlockInterpolationStart Identifier stringBlockInterpolationEnd }
 
 keyword<term> { @specialize[@name={term}]<identifier, term> }
 
-boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
-
-null { @specialize[@name=NullLiteral]<identifier, "null"> }
-
-If { hiddenKeywordIf expression hiddenKeywordThen expression hiddenKeywordElse expression }
-
-Assert { hiddenKeywordAssert expression ";" expression }
-
-With { hiddenKeywordWith expression ";" expression }
-
-Let { hiddenKeywordLet Attrs hiddenKeywordIn expression }
-Attrs { attr* }
+Identifier { identifier }
 
 @external tokens stringBlock from "./tokens" {
   StringBlockContent,
@@ -148,82 +21,9 @@ Attrs { attr* }
   stringBlockEnd
 }
 
-@external tokens string from "./tokens" {
-  StringContent,
-  stringInterpolationStart,
-  stringEnd
-}
-
 @tokens {
-  Int {
-    std.digit+
-  }
-
-  Float {
-    ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)?
-  }
-  // fix: Overlapping tokens Int and Float
-  // fix: Overlapping tokens Float and "."
-  @precedence { Float, Int, "." }
-
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
-
-  stringStart { '"' }
-  stringInterpolationEnd { "}" }
-
-  identifier { identifierChar (identifierChar | std.digit)* }
-  identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
-
-  // fix error: Overlapping tokens identifier and whitespace
-  // TODO why overlapping? identifier is non-whitespace
-  @precedence { identifier, whitespace }
-
   whitespace { std.whitespace+ }
-
-  colonWithSpace { ":" std.whitespace+ }
-
-  Comment { "#" ![\n]* }
-
-  CommentBlock { "/*" blockCommentRest }
-  blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
-  blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
-
-  PathAbsolute { "/" PathContent }
-  // fix: Overlapping tokens "/" and PathAbsolute
-  @precedence { PathAbsolute, "/" }
-
-  PathRelative { "./" PathContent }
-  // fix: Overlapping tokens PathRelative and "."
-  @precedence { PathRelative, "." }
-
-  PathLibrary { "<" PathContent ">" }
-
-  // TODO produce extra token PathContent
-  PathContent { identifier ("/" identifier)* }
-
-  URI { uriSchema ":" uriPath }
-
-  uriSchema { std.asciiLetter (std.asciiLetter | std.digit | "+" | "-")* }
-
-  uriPath { (std.asciiLetter | std.digit | "%" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," | "-" | "_" | "." | "!" | "~" | "*" | "'")+ }
-
-  // fix: Overlapping tokens identifier and URI
-  @precedence { URI, identifier }
-
-  // workaround: remove keywords from parse tree with lowercase token names
-  hiddenKeywordIf { "if" }
-  hiddenKeywordThen { "then" }
-  hiddenKeywordElse { "else" }
-  hiddenKeywordAssert { "assert" }
-  hiddenKeywordWith { "with" }
-  hiddenKeywordLet { "let" }
-  hiddenKeywordIn { "in" }
-  hiddenKeywordInherit { "inherit" }
-  @precedence {
-    hiddenKeywordIf, hiddenKeywordThen, hiddenKeywordElse,
-    hiddenKeywordAssert, hiddenKeywordWith, hiddenKeywordLet, hiddenKeywordIn,
-    hiddenKeywordInherit,
-    URI, identifier
-  }
+  identifier { std.asciiLetter+ }
 }
