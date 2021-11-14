@@ -1,9 +1,9 @@
 {
-  "name": "lezer-nix",
+  "name": "lezer-parser-nix",
   "version": "0.1.10",
-  "description": "lezer-based Clojure(Script) grammar",
+  "description": "Lezer grammar for the Nix language",
   "main": "dist/index.cjs",
-  "author": "Martin Kavalar <martin@nextjournal.com>",
+  "author": "milahu",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -29,5 +29,9 @@
     "test": "mocha --experimental-modules test/test-*.js",
     "on-change": "npm run build && npm run test",
     "watch": "git ls-files | entr npm run on-change"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milahu/lezer-parser-nix.git"
   }
 }

@@ -1,4 +1,4 @@
-# lezer-nix
+# lezer-parser-nix
 
 This is a Nix grammar for the
 [lezer](https://lezer.codemirror.net/) parser system.
