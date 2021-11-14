@@ -205,12 +205,32 @@ Nix(Braces(Int))
 # function
 a: x
 ==>
-Nix(Function(Argument,Identifier))
+Nix(Function(Identifier,Identifier))
+
+# function 2
+a: b: x
+==>
+Nix(Function(Identifier,Function(Identifier,Identifier)))
+
+# function 3
+a: b: c: x
+==>
+Nix(Function(Identifier,Function(Identifier,Function(Identifier,Identifier))))
 
 # function formals
 { a }: x
 ==>
 Nix(Function(Formals(Formal(Identifier)),Identifier))
+
+# function 2 formals
+{ a }: { b }: x
+==>
+Nix(Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Identifier)))
+
+# function 3 formals
+{ a }: { b }: { c }: x
+==>
+Nix(Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Identifier))))
 
 # function formals 2
 { a, b }: x

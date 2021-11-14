@@ -64,12 +64,14 @@ Add { expression (!plus "+" expression)+ }
 
 List { "[" expression? (!_list expression)* "]" }
 
-//Function { Arguments ":" whitespace expression }
-// FIXME Use of token whitespace conflicts with skip rule
-// whitespace is required after :
-Function { (Argument | Formals) ":" expression }
+// aka Lambda
+Function { functionArgument expression }
 
-Argument { identifier }
+// FIXME whitespace is required after :
+// Arguments { ((Argument | Formals) ":" whitespace)+ }
+// Use of token whitespace conflicts with skip rule
+//Arguments { ((Argument | Formals) ":")+ }
+functionArgument { (Identifier | Formals) ":" }
 
 Formals {
   FormalsAllBefore? "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" |
@@ -85,8 +87,6 @@ AttrSet { "{" (Attr)* "}" }
 
 Attr { (string | Identifier | Select) "=" expression ";" }
 
-// TODO no whitespace is allowed around the "."
-// TODO parse default value
 Select { (string | Identifier) "." AttrPath SelectDefault? }
 SelectDefault { keyword<"or"> expression }
 
