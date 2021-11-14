@@ -14,9 +14,11 @@ To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm
 this project is based on
 
 * https://lezer.codemirror.net/docs/guide/#writing-a-grammar
+* https://lezer.codemirror.net/docs/ref/
 * https://github.com/lezer-parser/clojure/blob/master/src/clojure.grammar
   * hard fork from commit [172cf31](https://github.com/lezer-parser/clojure/commit/172cf311376271a95986978e7041cb7dbd3fdd57)
 * https://github.com/lezer-parser/javascript/blob/main/src/javascript.grammar
+  * https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
 * https://github.com/lezer-parser/xml/blob/main/src/tokens.js
 
 other Nix parsers
