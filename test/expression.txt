@@ -58,7 +58,7 @@ Nix(CommentBlock,Int)
 ==>
 Nix(CommentBlock)
 
-# sub FIXME
+# sub
 1-2
 ==>
 Nix(Sub(Int,Int))
@@ -83,12 +83,12 @@ Nix(Add(Mul(Int,Int),Int))
 ==>
 Nix(StringLine(StringLineContent))
 
-# string line with interpolation FIXME
+# string line with interpolation
 "a${x}b"
 ==>
 Nix(StringLine(StringLineContent,StringLineInterpolation(Identifier),StringLineContent))
 
-# string line with escaped interpolation FIXME
+# string line with escaped interpolation
 "a\${x}b"
 ==>
 Nix(StringLine(StringLineContent))
@@ -180,12 +180,12 @@ Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBl
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
 
-# string block with escaped interpolation single line FIXME
+# string block with escaped interpolation single line
 ''a''${x}b''
 ==>
 Nix(StringBlock(StringBlockContent))
 
-# string block with escaped interpolation FIXME
+# string block with escaped interpolation
 ''
   a''${x}b
 ''
