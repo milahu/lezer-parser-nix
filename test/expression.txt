@@ -208,12 +208,17 @@ Nix(Function(Formals(Formal(Identifier,FormalDefault(Int)),Formal(Identifier,For
 # function formals all
 { a } @ z: x
 ==>
-Nix(Function(Formals(Formal(Identifier),FormalsAll(Identifier)),Identifier))
+Nix(Function(Formals(Formal(Identifier),FormalsAllAfter(Identifier)),Identifier))
 
 # function formals all 2
 { a, b } @ z: x
 ==>
-Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsAll(Identifier)),Identifier))
+Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsAllAfter(Identifier)),Identifier))
+
+# function formals all before
+z @ { a }: x
+==>
+Nix(Function(Formals(FormalsAllBefore(Identifier),Formal(Identifier)),Identifier))
 
 # function formals rest
 { a, ... }: x

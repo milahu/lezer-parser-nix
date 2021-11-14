@@ -51,8 +51,12 @@ Function { (Argument | Formals) ":" expression }
 
 Argument { identifier }
 
-Formals { "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" FormalsAll? }
-FormalsAll { "@" Identifier }
+Formals {
+  FormalsAllBefore? "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" |
+  "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" FormalsAllAfter?
+}
+FormalsAllBefore { Identifier "@" }
+FormalsAllAfter { "@" Identifier }
 FormalsRest { "..." }
 Formal { Identifier FormalDefault? }
 FormalDefault { "?" expression }
