@@ -52,11 +52,11 @@ AttrPath { (string | Identifier) ("." (string | Identifier))+ }
 ConcatList { List (!concatList "++" List)+ }
 
 // TODO better
-Identifier { word }
+Identifier { identifier }
 
-keyword<term> { @specialize[@name={term}]<word, term> }
+keyword<term> { @specialize[@name={term}]<identifier, term> }
 
-boolean { @specialize[@name=BooleanLiteral]<word, "true" | "false"> }
+boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
 
 If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> expression }
 
@@ -76,12 +76,12 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
 
-  word { identifierChar (identifierChar | std.digit)* }
+  identifier { identifierChar (identifierChar | std.digit)* }
   identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
 
-  // fix error: Overlapping tokens word and whitespace
-  // TODO why overlapping? word is non-whitespace
-  @precedence { word, whitespace }
+  // fix error: Overlapping tokens identifier and whitespace
+  // TODO why overlapping? identifier is non-whitespace
+  @precedence { identifier, whitespace }
 
   whitespace { std.whitespace+ }
 
