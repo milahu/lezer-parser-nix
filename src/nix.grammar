@@ -35,14 +35,19 @@ unaryExpr { Negative | Not }
   // StringLine can be multiline, but then the indent is preserved
   // StringBlock is similar to python docstrings -> indent is removed
   string { StringLine | StringBlock }
-  StringLine { '"' StringLineContent? '"' }
   StringBlock {
     stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
   }
+  StringLine {
+    stringLineStart (StringLineContent | StringLineInterpolation)* stringLineEnd
+  }
 }
 
-// ''string ${expr} string''
+// ''string ${expr} ''${escaped} string''
 StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
+
+// "string ${expr} \${escaped} string"
+StringLineInterpolation { stringLineInterpolationStart expression stringLineInterpolationEnd }
 
 Braces { "(" expression ")" }
 
@@ -123,6 +128,12 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   stringBlockEnd
 }
 
+@external tokens stringLine from "./tokens" {
+  StringLineContent,
+  stringLineInterpolationStart,
+  stringLineEnd
+}
+
 @tokens {
   Int {
     std.digit+
@@ -135,10 +146,11 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   // fix: Overlapping tokens Float and "."
   @precedence { Float, Int, "." }
 
-  StringLineContent { (!["] | "\\" _)+ }
-
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
+
+  stringLineStart { '"' }
+  stringLineInterpolationEnd { "}" }
 
   identifier { identifierChar (identifierChar | std.digit)* }
   identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }

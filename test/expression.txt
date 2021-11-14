@@ -180,14 +180,14 @@ Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBl
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
 
-# string block with escaped interpolation single line
-''a\${x}b''
+# string block with escaped interpolation single line FIXME
+''a''${x}b''
 ==>
 Nix(StringBlock(StringBlockContent))
 
-# string block with escaped interpolation
+# string block with escaped interpolation FIXME
 ''
-  a\${x}b
+  a''${x}b
 ''
 ==>
 Nix(StringBlock(StringBlockContent))

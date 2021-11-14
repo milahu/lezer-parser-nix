@@ -4,6 +4,7 @@
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
   StringBlockContent, stringBlockInterpolationStart, stringBlockEnd,
+  StringLineContent, stringLineInterpolationStart, stringLineEnd,
 } from "./parser.terms.js"
 
 const space = [
@@ -11,14 +12,14 @@ const space = [
   8201, 8202, 8232, 8233, 8239, 8287, 12288
 ]
 
-const devMode = false; // development mode
+const devMode = true; // development mode
 
 const
   braceR = 125, braceL = 123, semicolon = 59, slash = 47, star = 42,
   plus = 43, minus = 45, dollar = 36, backtick = 96, backslash = 92,
   doublequote = 34, singlequote = 39, newline = 10
 
-// based on javascript template
+// based on javascript template parser
 // https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
 export const stringBlock = new ExternalTokenizer(input => {
   for (let afterDollar = false, afterQuote = false, i = 0;; i++) {
@@ -80,12 +81,42 @@ export const stringBlock = new ExternalTokenizer(input => {
       input.acceptToken(StringBlockContent)
       if (devMode) console.log(`  81 break`);
       break
+    // FIXME escaped interpolation is ''${x} not \${x}
     } else if (next == backslash) {
       if (devMode) console.log(`  84 backslash advance`);
       input.advance()
     }
     afterDollar = next == dollar
     if (devMode) console.log(`  88 advance -> continue loop`);
+    input.advance()
+  }
+})
+
+// based on javascript template parser
+// https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
+export const stringLine = new ExternalTokenizer(input => {
+  for (let afterDollar = false, i = 0;; i++) {
+    let {next} = input
+    if (next < 0) {
+      if (i) input.acceptToken(StringLineContent)
+      break
+    } else if (next == doublequote) {
+      if (i) input.acceptToken(StringLineContent)
+      else input.acceptToken(stringLineEnd, 1)
+      break
+    } else if (next == braceL && afterDollar) {
+      if (i == 1) input.acceptToken(stringLineInterpolationStart, 1)
+      else input.acceptToken(StringLineContent, -1)
+      break
+    } else if (next == newline && i) {
+      // Break up template strings on lines, to avoid huge tokens
+      input.advance()
+      input.acceptToken(StringLineContent)
+      break
+    } else if (next == backslash) {
+      input.advance()
+    }
+    afterDollar = next == dollar
     input.advance()
   }
 })
