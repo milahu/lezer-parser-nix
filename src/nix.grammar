@@ -3,7 +3,7 @@
 expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path }
 
 // TODO Equal | And | Or | Imply
-binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare }
+binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal }
 
 unaryExpr { Negative | Not }
 
@@ -114,6 +114,10 @@ CompareGT { expression !compare ">" expression }
 CompareLT { expression !compare "<" expression }
 CompareGTE { expression !compare ">=" expression }
 CompareLTE { expression !compare "<=" expression }
+
+equal { Equal | NotEqual }
+Equal { expression !equal "==" expression }
+NotEqual { expression !equal "!=" expression }
 
 // TODO better
 Identifier { identifier }

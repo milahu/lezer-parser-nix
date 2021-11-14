@@ -391,3 +391,13 @@ Nix(CompareLTE(Identifier,Identifier))
 a >= b
 ==>
 Nix(CompareGTE(Identifier,Identifier))
+
+# equal
+a == b
+==>
+Nix(Equal(Identifier,Identifier))
+
+# not equal
+a != b
+==>
+Nix(NotEqual(Identifier,Identifier))
