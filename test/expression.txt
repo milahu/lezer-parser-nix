@@ -26,3 +26,10 @@ Nix(StringBlock(StringBlockContent))
 ''
 ==>
 Nix(StringBlock(StringBlockContent))
+
+# string block with wrong escaped interpolation
+''
+  \${x}
+''
+==>
+Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
