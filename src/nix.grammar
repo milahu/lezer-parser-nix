@@ -1,9 +1,10 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | null | Braces | Function | Update | path }
+expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | Apply | If | boolean | null | Braces | Function | Update | path }
 
 @precedence {
   select @left,
+  list @left,
   apply @left,
   negate @left,
   hasAttr @left,
@@ -42,7 +43,7 @@ Div { expression !times "/" expression }
 Add { expression (!plus "+" expression)+ }
 Sub { expression !plus "-" expression }
 
-List { "[" expression* "]" }
+List { "[" expression? (!list expression)* "]" }
 
 //Function { Arguments ":" whitespace expression }
 // FIXME Use of token whitespace conflicts with skip rule
@@ -67,6 +68,8 @@ Attr { (string | Identifier | Select) "=" expression ";" }
 
 // TODO no whitespace is allowed around the "."
 Select { (string | Identifier) "." AttrPath }
+
+Apply { expression !apply expression }
 
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 

@@ -289,3 +289,18 @@ Nix(BooleanLiteral)
 null
 ==>
 Nix(NullLiteral)
+
+# apply
+a b
+==>
+Nix(Apply(Identifier,Identifier))
+
+# apply 2
+a b 1
+==>
+Nix(Apply(Apply(Identifier,Identifier),Int))
+
+# apply 2 braces
+a (b 1)
+==>
+Nix(Apply(Identifier,Braces(Apply(Identifier,Int))))
