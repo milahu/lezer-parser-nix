@@ -5,14 +5,15 @@ expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List |
 // TODO Imply
 // TODO and or compare
 // TODO Sub?
-binaryExpr { Mul | Div | Add | HasAttr | ConcatList | Update }
+binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update }
 
 unaryExpr { Negative | Not }
 
 @precedence {
   select @left,
   _list @left,
-  // TODO remove apply?
+  // workaround for Sub/Negative conflict
+  _applySub @left,
   apply @left,
   negative @left,
   hasAttr @left,
@@ -83,6 +84,9 @@ Attr { (string | Identifier | Select) "=" expression ";" }
 // TODO parse default value
 Select { (string | Identifier) "." AttrPath SelectDefault? }
 SelectDefault { keyword<"or"> expression }
+
+// workaround for Sub/Negative conflict
+Sub { expression !_applySub "-" expression }
 
 Apply { expression !apply expression }
 
