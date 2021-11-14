@@ -94,7 +94,7 @@ Negative { !negative "-" expression }
 // a.${x}.${y}
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
-path { PathAbsolute | PathRelative | PathLibrary }
+path { PathAbsolute | PathRelative | PathLibrary | URI }
 
 HasAttr { expression !hasAttr "?" AttrPath }
 
@@ -190,4 +190,13 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
 
   // TODO produce extra token PathContent
   PathContent { identifier ("/" identifier)* }
+
+  URI { uriSchema ":" uriPath }
+
+  uriSchema { std.asciiLetter (std.asciiLetter | std.digit | "+" | "-")* }
+
+  uriPath { (std.asciiLetter | std.digit | "%" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," | "-" | "_" | "." | "!" | "~" | "*" | "'")+ }
+
+  // fix: Overlapping tokens identifier and URI
+  @precedence { URI, identifier }
 }

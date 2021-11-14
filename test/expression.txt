@@ -416,3 +416,8 @@ Nix(Or(Identifier,Identifier))
 a -> b
 ==>
 Nix(Imply(Identifier,Identifier))
+
+# uri
+a://b:3?d=e&f=g
+==>
+Nix(URI)
