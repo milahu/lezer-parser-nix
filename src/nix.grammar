@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update | path }
 
 @precedence {
   select @left,
@@ -66,6 +66,8 @@ Select { (string | Identifier) "." AttrPath }
 
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
+path { PathAbsolute | PathRelative | PathLibrary }
+
 ConcatList { List (!concatList "++" List)+ }
 
 Update { expression (!update "//" expression)+ }
@@ -109,4 +111,17 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   CommentBlock { "/*" blockCommentRest }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
   blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
+
+  PathAbsolute { "/" PathContent }
+  // fix: Overlapping tokens "/" and PathAbsolute
+  @precedence { PathAbsolute, "/" }
+
+  PathRelative { "./" PathContent }
+  // fix: Overlapping tokens PathRelative and "."
+  @precedence { PathRelative, "." }
+
+  PathLibrary { "<" PathContent ">" }
+
+  // TODO produce extra token PathContent
+  PathContent { identifier ("/" identifier)* }
 }

@@ -219,3 +219,33 @@ Nix(Update(Identifier,Identifier))
 a // b // c
 ==>
 Nix(Update(Identifier,Identifier,Identifier))
+
+# path absolute
+/etc
+==>
+Nix(PathAbsolute)
+
+# path absolute 2
+/etc/nixos
+==>
+Nix(PathAbsolute)
+
+# path relative
+./a
+==>
+Nix(PathRelative)
+
+# path relative 2
+./a/b
+==>
+Nix(PathRelative)
+
+# path library
+<nixpkgs>
+==>
+Nix(PathLibrary)
+
+# path library 2
+<nixpkgs/nixos>
+==>
+Nix(PathLibrary)
