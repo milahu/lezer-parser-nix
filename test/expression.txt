@@ -371,3 +371,23 @@ Nix(Negative(Identifier))
 !x
 ==>
 Nix(Not(Identifier))
+
+# compare <
+a < b
+==>
+Nix(CompareLT(Identifier,Identifier))
+
+# compare >
+a > b
+==>
+Nix(CompareGT(Identifier,Identifier))
+
+# compare <=
+a <= b
+==>
+Nix(CompareLTE(Identifier,Identifier))
+
+# compare >=
+a >= b
+==>
+Nix(CompareGTE(Identifier,Identifier))

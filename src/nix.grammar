@@ -2,10 +2,8 @@
 
 expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path }
 
-// TODO Imply
-// TODO and or compare
-// TODO Sub?
-binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update }
+// TODO Equal | And | Or | Imply
+binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare }
 
 unaryExpr { Negative | Not }
 
@@ -110,6 +108,12 @@ ConcatList { expression !concatList "++" expression }
 Not { "!" !not expression }
 
 Update { expression !update "//" expression }
+
+compare { CompareGT | CompareLT | CompareGTE | CompareLTE }
+CompareGT { expression !compare ">" expression }
+CompareLT { expression !compare "<" expression }
+CompareGTE { expression !compare ">=" expression }
+CompareLTE { expression !compare "<=" expression }
 
 // TODO better
 Identifier { identifier }
