@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update | path }
+expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | null | Braces | Function | Update | path }
 
 @precedence {
   select @left,
@@ -78,6 +78,8 @@ Identifier { identifier }
 keyword<term> { @specialize[@name={term}]<identifier, term> }
 
 boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
+
+null { @specialize[@name=NullLiteral]<identifier, "null"> }
 
 If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> expression }
 

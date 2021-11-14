@@ -269,3 +269,18 @@ Nix(PathLibrary)
 <nixpkgs/nixos>
 ==>
 Nix(PathLibrary)
+
+# boolean true
+true
+==>
+Nix(BooleanLiteral)
+
+# boolean false
+false
+==>
+Nix(BooleanLiteral)
+
+# null
+null
+==>
+Nix(NullLiteral)
