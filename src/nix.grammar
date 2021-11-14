@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean }
 
 @precedence {
   select @left,
@@ -51,7 +51,14 @@ AttrPath { (string | Identifier) ("." (string | Identifier))+ }
 
 ConcatList { List (!concatList "++" List)+ }
 
+// TODO better
 Identifier { word }
+
+keyword<term> { @specialize[@name={term}]<word, term> }
+
+boolean { @specialize[@name=BooleanLiteral]<word, "true" | "false"> }
+
+If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> expression }
 
 @external tokens stringBlock from "./tokens" {
   StringBlockContent,

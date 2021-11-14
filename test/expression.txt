@@ -144,3 +144,8 @@ Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBl
 ''a${x}b''
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
+
+# if
+if true then true else false
+==>
+Nix(If(if,BooleanLiteral,then,BooleanLiteral,else,BooleanLiteral))
