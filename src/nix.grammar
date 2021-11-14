@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean | Braces }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean | Braces | Function }
 
 @precedence {
   select @left,
@@ -43,6 +43,15 @@ Add { expression (!plus "+" expression)+ }
 Sub { expression !plus "-" expression }
 
 List { "[" expression* "]" }
+
+//Function { Arguments ":" whitespace expression }
+// FIXME Use of token whitespace conflicts with skip rule
+// whitespace is required after :
+Function { (Argument | Formals) ":" expression }
+
+Argument { identifier }
+
+Formals { "{" Identifier? ("," Identifier)* "}" }
 
 AttrSet { "{" (Attr)* "}" }
 

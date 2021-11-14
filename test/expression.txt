@@ -154,3 +154,13 @@ Nix(If(if,BooleanLiteral,then,BooleanLiteral,else,BooleanLiteral))
 (1)
 ==>
 Nix(Braces(Int))
+
+# function
+a: b
+==>
+Nix(Function(Argument,Identifier))
+
+# function formals
+{ a }: b
+==>
+Nix(Function(Formals(Identifier),Identifier))
