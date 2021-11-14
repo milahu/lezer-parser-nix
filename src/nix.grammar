@@ -67,7 +67,9 @@ AttrSet { "{" (Attr)* "}" }
 Attr { (string | Identifier | Select) "=" expression ";" }
 
 // TODO no whitespace is allowed around the "."
-Select { (string | Identifier) "." AttrPath }
+// TODO parse default value
+Select { (string | Identifier) "." AttrPath SelectDefault? }
+SelectDefault { keyword<"or"> expression }
 
 Apply { expression !apply expression }
 

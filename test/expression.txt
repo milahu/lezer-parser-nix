@@ -148,6 +148,11 @@ a.b.c
 ==>
 Nix(Select(Identifier,AttrPath(Identifier,Identifier)))
 
+# select or default
+a.b or false
+==>
+Nix(Select(Identifier,AttrPath(Identifier),SelectDefault(or,BooleanLiteral)))
+
 # attrset with identifier
 { a = 1; }
 ==>
