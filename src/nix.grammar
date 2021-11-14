@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | Apply | If | boolean | null | Braces | Function | Update | path }
+expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | HasAttr | ConcatList | AttrSet | Select | Apply | If | boolean | null | Braces | Function | Update | path }
 
 @precedence {
   select @left,
@@ -76,6 +76,8 @@ Apply { expression !apply expression }
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
 path { PathAbsolute | PathRelative | PathLibrary }
+
+HasAttr { expression !hasAttr "?" AttrPath }
 
 ConcatList { List (!concatList "++" List)+ }
 

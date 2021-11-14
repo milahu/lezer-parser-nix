@@ -309,3 +309,13 @@ Nix(Apply(Apply(Identifier,Identifier),Int))
 a (b 1)
 ==>
 Nix(Apply(Identifier,Braces(Apply(Identifier,Int))))
+
+# HasAttr
+a ? b
+==>
+Nix(HasAttr(Identifier,AttrPath(Identifier)))
+
+# HasAttr 2
+a ? b.c
+==>
+Nix(HasAttr(Identifier,AttrPath(Identifier,Identifier)))
