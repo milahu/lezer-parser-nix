@@ -64,11 +64,7 @@ List { "[" expression? (!_list expression)* "]" }
 // aka Lambda
 Function { functionArgument expression }
 
-// FIXME whitespace is required after :
-// Arguments { ((Argument | Formals) ":" whitespace)+ }
-// Use of token whitespace conflicts with skip rule
-//Arguments { ((Argument | Formals) ":")+ }
-functionArgument { (Identifier | Formals) ":" }
+functionArgument { (Identifier | Formals) colonWithSpace }
 
 Formals {
   FormalsAllBefore? "{" ((Formal? ("," Formal)* ("," FormalsRest)?) | FormalsRest) "}" |
@@ -173,6 +169,8 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   @precedence { identifier, whitespace }
 
   whitespace { std.whitespace+ }
+
+  colonWithSpace { ":" std.whitespace+ }
 
   CommentLine { "#" ![\n]* }
 
