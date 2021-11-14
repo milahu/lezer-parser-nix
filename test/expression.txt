@@ -173,6 +173,11 @@ a.b or false
 ==>
 Nix(Select(Identifier,AttrPath(Identifier),SelectDefault(or,BooleanLiteral)))
 
+# select interpolation
+a.${x}.${y}.b
+==>
+Nix(Select(Identifier,AttrPath(Identifier,Identifier)))
+
 # attrset with identifier
 { a = 1; }
 ==>

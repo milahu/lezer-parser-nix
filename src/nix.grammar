@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path | Assert | With | Let }
+expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | Interpolation | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path | Assert | With | Let }
 
 binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal | And | Or | Imply }
 
@@ -84,7 +84,7 @@ AttrInherit { hiddenKeywordInherit (Identifier | Select)+ ";" }
 AttrInheritFrom { inheritFrom (Identifier | Select)+ ";" }
 inheritFrom { hiddenKeywordInherit "(" expression ")" }
 
-Select { (string | Identifier) "." AttrPath SelectDefault? }
+Select { (string | Identifier | Interpolation) "." AttrPath SelectDefault? }
 SelectDefault { keyword<"or"> expression }
 
 // workaround for Sub/Negative conflict
@@ -96,7 +96,7 @@ Negative { !negative "-" expression }
 
 // TODO allow interpolation
 // a.${x}.${y}
-AttrPath { (string | Identifier) ("." (string | Identifier))* }
+AttrPath { (string | Identifier | Interpolation) ("." (string | Identifier | Interpolation))* }
 
 path { PathAbsolute | PathRelative | PathLibrary | URI }
 
@@ -126,6 +126,8 @@ Imply { expression !imply "->" expression }
 
 // TODO better
 Identifier { identifier }
+
+Interpolation { "${" expression "}" }
 
 keyword<term> { @specialize[@name={term}]<identifier, term> }
 
