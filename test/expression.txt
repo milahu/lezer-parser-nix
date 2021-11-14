@@ -37,14 +37,14 @@ Nix(Add(Int,Int))
 # hello
 1
 ==>
-Nix(CommentLine,Int)
+Nix(Comment,Int)
 
 # line comment precedence
 #/*
 1
 #*/
 ==>
-Nix(CommentLine,Int,CommentLine)
+Nix(Comment,Int,Comment)
 
 # block comment
 /* hello */1

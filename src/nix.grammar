@@ -26,7 +26,7 @@ unaryExpr { Negative | Not }
   imply @right
 }
 
-@skip { whitespace | CommentLine | CommentBlock }
+@skip { whitespace | Comment | CommentBlock }
 
 @skip {} {
   // String can be multiline, but then the indent is preserved
@@ -183,7 +183,7 @@ Attrs { attr* }
 
   colonWithSpace { ":" std.whitespace+ }
 
-  CommentLine { "#" ![\n]* }
+  Comment { "#" ![\n]* }
 
   CommentBlock { "/*" blockCommentRest }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
