@@ -209,3 +209,13 @@ Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsRest),Identifi
 { ... }: x
 ==>
 Nix(Function(Formals(FormalsRest),Identifier))
+
+# update 2
+a // b
+==>
+Nix(Update(Identifier,Identifier))
+
+# update 3
+a // b // c
+==>
+Nix(Update(Identifier,Identifier,Identifier))

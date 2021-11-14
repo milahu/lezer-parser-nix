@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update }
 
 @precedence {
   select @left,
@@ -67,6 +67,8 @@ Select { (string | Identifier) "." AttrPath }
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
 ConcatList { List (!concatList "++" List)+ }
+
+Update { expression (!update "//" expression)+ }
 
 // TODO better
 Identifier { identifier }
