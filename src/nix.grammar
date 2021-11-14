@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean }
+expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | AttrPath | If | boolean | Braces }
 
 @precedence {
   select @left,
@@ -33,6 +33,8 @@ expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatLi
 
 // ''string ${expr} string''
 StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
+
+Braces { "(" expression ")" }
 
 Mul { expression !times "*" expression }
 Div { expression !times "/" expression }

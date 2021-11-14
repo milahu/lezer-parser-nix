@@ -149,3 +149,8 @@ Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBl
 if true then true else false
 ==>
 Nix(If(if,BooleanLiteral,then,BooleanLiteral,else,BooleanLiteral))
+
+# parens
+(1)
+==>
+Nix(Braces(Int))
