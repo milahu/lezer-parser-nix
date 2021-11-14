@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | HasAttr | ConcatList | AttrSet | Select | Apply | If | boolean | null | Braces | Function | Update | path }
+expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | HasAttr | ConcatList | AttrSet | Select | Apply | Negate | If | boolean | null | Braces | Function | Update | path }
 
 @precedence {
   select @left,
@@ -72,6 +72,8 @@ Select { (string | Identifier) "." AttrPath SelectDefault? }
 SelectDefault { keyword<"or"> expression }
 
 Apply { expression !apply expression }
+
+Negate { "!" !negate expression }
 
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 

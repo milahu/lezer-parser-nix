@@ -319,3 +319,8 @@ Nix(HasAttr(Identifier,AttrPath(Identifier)))
 a ? b.c
 ==>
 Nix(HasAttr(Identifier,AttrPath(Identifier,Identifier)))
+
+# negate
+!x
+==>
+Nix(Negate(Identifier))
