@@ -83,6 +83,16 @@ Nix(Add(Mul(Int,Int),Int))
 ==>
 Nix(StringLine(StringLineContent))
 
+# string line with interpolation FIXME
+"a${x}b"
+==>
+Nix(StringLine(StringLineContent,StringLineInterpolation(Identifier),StringLineContent))
+
+# string line with escaped interpolation FIXME
+"a\${x}b"
+==>
+Nix(StringLine(StringLineContent))
+
 # string block single line
 ''a''
 ==>
@@ -169,6 +179,18 @@ Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBl
 ''a${x}b''
 ==>
 Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
+
+# string block with escaped interpolation single line
+''a\${x}b''
+==>
+Nix(StringBlock(StringBlockContent))
+
+# string block with escaped interpolation
+''
+  a\${x}b
+''
+==>
+Nix(StringBlock(StringBlockContent))
 
 # if
 if true then true else false
