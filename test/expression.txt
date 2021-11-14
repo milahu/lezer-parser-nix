@@ -156,11 +156,56 @@ Nix(If(if,BooleanLiteral,then,BooleanLiteral,else,BooleanLiteral))
 Nix(Braces(Int))
 
 # function
-a: b
+a: x
 ==>
 Nix(Function(Argument,Identifier))
 
 # function formals
-{ a }: b
+{ a }: x
 ==>
-Nix(Function(Formals(Identifier),Identifier))
+Nix(Function(Formals(Formal(Identifier)),Identifier))
+
+# function formals 2
+{ a, b }: x
+==>
+Nix(Function(Formals(Formal(Identifier),Formal(Identifier)),Identifier))
+
+# function formals 3
+{ a, b, c }: x
+==>
+Nix(Function(Formals(Formal(Identifier),Formal(Identifier),Formal(Identifier)),Identifier))
+
+# function formals default
+{ a ? 1 }: x
+==>
+Nix(Function(Formals(Formal(Identifier,FormalDefault(Int))),Identifier))
+
+# function formals default 2
+{ a ? 1, b ? 2 }: x
+==>
+Nix(Function(Formals(Formal(Identifier,FormalDefault(Int)),Formal(Identifier,FormalDefault(Int))),Identifier))
+
+# function formals all
+{ a } @ z: x
+==>
+Nix(Function(Formals(Formal(Identifier),FormalsAll(Identifier)),Identifier))
+
+# function formals all 2
+{ a, b } @ z: x
+==>
+Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsAll(Identifier)),Identifier))
+
+# function formals rest
+{ a, ... }: x
+==>
+Nix(Function(Formals(Formal(Identifier),FormalsRest),Identifier))
+
+# function formals rest 2
+{ a, b, ... }: x
+==>
+Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsRest),Identifier))
+
+# function formals rest only
+{ ... }: x
+==>
+Nix(Function(Formals(FormalsRest),Identifier))
