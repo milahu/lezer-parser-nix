@@ -1,6 +1,6 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update | path }
+expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | ConcatList | AttrSet | Select | If | boolean | Braces | Function | Update | path }
 
 @precedence {
   select @left,
@@ -91,6 +91,13 @@ If { keyword<"if"> expression keyword<"then"> expression keyword<"else"> express
   Int {
     std.digit+
   }
+
+  Float {
+    ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)?
+  }
+  // fix: Overlapping tokens Int and Float
+  // fix: Overlapping tokens Float and "."
+  @precedence { Float, Int, "." }
 
   StringLineContent { (!["] | "\\" _)+ }
 

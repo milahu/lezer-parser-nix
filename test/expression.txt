@@ -3,6 +3,26 @@
 ==>
 Nix(Int)
 
+# float
+1.2
+==>
+Nix(Float)
+
+# float only right of comma
+.1
+==>
+Nix(Float)
+
+# float exponent
+1.2e3
+==>
+Nix(Float)
+
+# float Exponent
+1.2E3
+==>
+Nix(Float)
+
 # add
 1+2
 ==>
