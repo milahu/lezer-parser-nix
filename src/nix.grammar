@@ -2,8 +2,7 @@
 
 expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path }
 
-// TODO Equal | And | Or | Imply
-binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal }
+binaryExpr { Mul | Div | Add | Sub | HasAttr | ConcatList | Update | compare | equal | And | Or | Imply }
 
 unaryExpr { Negative | Not }
 
@@ -118,6 +117,12 @@ CompareLTE { expression !compare "<=" expression }
 equal { Equal | NotEqual }
 Equal { expression !equal "==" expression }
 NotEqual { expression !equal "!=" expression }
+
+And { expression !and "&&" expression }
+
+Or { expression !or "||" expression }
+
+Imply { expression !imply "->" expression }
 
 // TODO better
 Identifier { identifier }

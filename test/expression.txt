@@ -401,3 +401,18 @@ Nix(Equal(Identifier,Identifier))
 a != b
 ==>
 Nix(NotEqual(Identifier,Identifier))
+
+# and
+a && b
+==>
+Nix(And(Identifier,Identifier))
+
+# or
+a || b
+==>
+Nix(Or(Identifier,Identifier))
+
+# imply
+a -> b
+==>
+Nix(Imply(Identifier,Identifier))
