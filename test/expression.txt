@@ -58,7 +58,7 @@ Nix(CommentBlock,Int)
 ==>
 Nix(CommentBlock)
 
-# sub
+# sub FIXME
 1-2
 ==>
 Nix(Sub(Int,Int))
@@ -111,7 +111,7 @@ Nix(ConcatList(List,List))
 # list concat 3
 [] ++ [] ++ []
 ==>
-Nix(ConcatList(List,List,List))
+Nix(ConcatList(List,ConcatList(List,List)))
 
 # string concat 2
 "a" + "b"
@@ -248,7 +248,7 @@ Nix(Update(Identifier,Identifier))
 # update 3
 a // b // c
 ==>
-Nix(Update(Identifier,Identifier,Identifier))
+Nix(Update(Identifier,Update(Identifier,Identifier)))
 
 # path absolute
 /etc
@@ -320,7 +320,12 @@ a ? b.c
 ==>
 Nix(HasAttr(Identifier,AttrPath(Identifier,Identifier)))
 
-# negate
+# negative
+-x
+==>
+Nix(Negative(Identifier))
+
+# not
 !x
 ==>
-Nix(Negate(Identifier))
+Nix(Not(Identifier))

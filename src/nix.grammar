@@ -1,23 +1,31 @@
 @top Nix { expression* }
 
-expression { Mul | Div | Add | Sub | Int | Float | string | Identifier | List | HasAttr | ConcatList | AttrSet | Select | Apply | Negate | If | boolean | null | Braces | Function | Update | path }
+expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | Select | Apply | If | boolean | null | Braces | Function | path }
+
+// TODO Imply
+// TODO and or compare
+// TODO Sub?
+binaryExpr { Mul | Div | Add | HasAttr | ConcatList | Update }
+
+unaryExpr { Negative | Not }
 
 @precedence {
   select @left,
-  list @left,
+  _list @left,
+  // TODO remove apply?
   apply @left,
-  negate @left,
+  negative @left,
   hasAttr @left,
-  concatList @left,
+  concatList @right,
   times @left,
   plus @left,
   not @left,
-  update @left,
+  update @right,
   compare @left,
   equal @left,
   and @left,
   or @left,
-  imply @left
+  imply @right
 }
 
 @skip { whitespace | CommentLine | CommentBlock }
@@ -41,9 +49,14 @@ Mul { expression !times "*" expression }
 Div { expression !times "/" expression }
 
 Add { expression (!plus "+" expression)+ }
-Sub { expression !plus "-" expression }
 
-List { "[" expression? (!list expression)* "]" }
+// FIXME
+// Sub is not used
+// Negative has higher precedence than Sub, so 1-2 -> (1) (-2) -> Apply
+// nix parser/interpreter: Nix(Apply(__sub,Int,Int))
+//Sub { expression !plus "-" expression }
+
+List { "[" expression? (!_list expression)* "]" }
 
 //Function { Arguments ":" whitespace expression }
 // FIXME Use of token whitespace conflicts with skip rule
@@ -73,17 +86,21 @@ SelectDefault { keyword<"or"> expression }
 
 Apply { expression !apply expression }
 
-Negate { "!" !negate expression }
+Negative { !negative "-" expression }
 
+// TODO allow interpolation
+// a.${x}.${y}
 AttrPath { (string | Identifier) ("." (string | Identifier))* }
 
 path { PathAbsolute | PathRelative | PathLibrary }
 
 HasAttr { expression !hasAttr "?" AttrPath }
 
-ConcatList { List (!concatList "++" List)+ }
+ConcatList { expression !concatList "++" expression }
 
-Update { expression (!update "//" expression)+ }
+Not { "!" !not expression }
+
+Update { expression !update "//" expression }
 
 // TODO better
 Identifier { identifier }
