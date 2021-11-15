@@ -26,11 +26,11 @@ export const stringBlock = new ExternalTokenizer(input => {
     let {next} = input
     if (devMode) console.log([
       `\ni = ${i}`,
-      //`peek(-2) = ${input.peek(-2)} = ${JSON.stringify(String.fromCharCode(input.peek(-2)))}`,
-      //`peek(-1) = ${input.peek(-1)} = ${JSON.stringify(String.fromCharCode(input.peek(-1)))}`,
       `next   = ${next} = ${JSON.stringify(String.fromCharCode(next))}`,
+      //`peek 0 = ${input.peek(0)} = ${JSON.stringify(String.fromCharCode(input.peek(0)))}`, // peek(0) == next
       `peek 1 = ${input.peek(1)} = ${JSON.stringify(String.fromCharCode(input.peek(1)))}`,
       `peek 2 = ${input.peek(2)} = ${JSON.stringify(String.fromCharCode(input.peek(2)))}`,
+      //`peek   = ${input.peek()} = ${JSON.stringify(String.fromCharCode(input.peek()))}`, // bug in lezer
       `afterQuote = ${afterQuote}`,
       `afterDollar = ${afterDollar}`
     ].map(s => `  ${s}\n`).join(''));
@@ -42,33 +42,25 @@ export const stringBlock = new ExternalTokenizer(input => {
       if (devMode) console.log(`  42 break`);
       break
     } else if (next == singlequote) {
-      if (input._todoStringBlockEnd) {
-        // end of string
-        input.advance(2)
-        if (devMode) console.log(`  63 acceptToken(stringBlockEnd), clear _todoStringBlockEnd`);
-        input.acceptToken(stringBlockEnd)
-        input._todoStringBlockEnd = false
-        break
-      }
-      if (input.peek() == singlequote) {
-        if (input.peek(2) == dollar) {
+      if (input.peek(1) == singlequote) {
+        if (i == 0) {
+          // end of string
+          input.advance(2)
+          if (devMode) console.log(`  49 acceptToken(stringBlockEnd)`);
+          input.acceptToken(stringBlockEnd)
+          break
+        }
+        if (input.peek(2) == dollar && input.peek(3) == braceL) {
           // escaped interpolation
           if (devMode) console.log(`  56 escaped interpolation -> advance 2`);
           input.advance(2)
         }
         else {
-          if (i) {
-            // end of content
-            input.acceptToken(StringBlockContent)
-            if (devMode) console.log(`  63 acceptToken(StringBlockContent) -> set _todoStringBlockEnd, break`);
-            input._todoStringBlockEnd = true
-          }
-          else {
-            // end of string
-            input.advance(2)
-            input.acceptToken(stringBlockEnd)
-            if (devMode) console.log(`  70 acceptToken(stringBlockEnd) -> break`);
-          }
+          // i > 0
+          // end of content
+          if (devMode) console.log(`  63 acceptToken(StringBlockContent) -> break`);
+          input.acceptToken(StringBlockContent)
+          // do not advance. '' is needed for stringBlockEnd token
           break
         }
       }
