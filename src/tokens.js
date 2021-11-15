@@ -22,16 +22,13 @@ const
 // based on javascript template parser
 // https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
 export const stringBlock = new ExternalTokenizer(input => {
-  for (let afterDollar = false, afterQuote = false, i = 0;; i++) {
+  for (let afterDollar = false, i = 0;; i++) {
     let {next} = input
     if (devMode) console.log([
       `\ni = ${i}`,
-      `next   = ${next} = ${JSON.stringify(String.fromCharCode(next))}`,
-      //`peek 0 = ${input.peek(0)} = ${JSON.stringify(String.fromCharCode(input.peek(0)))}`, // peek(0) == next
+      `next   = ${next} = ${JSON.stringify(String.fromCharCode(next))}`, // == input.peek(0)
       `peek 1 = ${input.peek(1)} = ${JSON.stringify(String.fromCharCode(input.peek(1)))}`,
       `peek 2 = ${input.peek(2)} = ${JSON.stringify(String.fromCharCode(input.peek(2)))}`,
-      //`peek   = ${input.peek()} = ${JSON.stringify(String.fromCharCode(input.peek()))}`, // bug in lezer
-      `afterQuote = ${afterQuote}`,
       `afterDollar = ${afterDollar}`
     ].map(s => `  ${s}\n`).join(''));
     if (next < 0) { // next == -1: end of file
