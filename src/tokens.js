@@ -1,7 +1,10 @@
 /* Hand-written tokenizers for Nix tokens that can't be
    expressed by lezer's built-in tokenizer. */
 
-import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
+import {
+  ExternalTokenizer,
+  //ContextTracker,
+} from "@lezer/lr"
 import {
   StringBlockContent, stringBlockInterpolationStart, stringBlockEnd,
   StringContent, stringInterpolationStart, stringEnd,
