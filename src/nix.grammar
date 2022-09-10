@@ -8,7 +8,7 @@
 
 @top Nix { expression* }
 
-expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | SelectExpr | ApplyExpr | IfExpr | Bool | Null | BracesExpr | FunctionExpr | Path | AssertExpr | WithExpr | LetExpr }
+expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | SelectExpr | ApplyExpr | IfExpr | bool | Null | BracesExpr | FunctionExpr | Path | AssertExpr | WithExpr | LetExpr }
 
 binaryExpr { MulExpr | DivExpr | AddExpr | SubExpr | HasAttrExpr | ConcatListExpr | UpdateExpr | compare | equal | AndExpr | OrExpr | ImplyExpr }
 
@@ -191,7 +191,7 @@ Identifier { identifier }
 
 keyword<term> { @specialize[@name={term}]<identifier, term> }
 
-Bool { True | False }
+bool { True | False }
 
 IfExpr { If expression Then expression Else expression }
 
