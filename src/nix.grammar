@@ -6,7 +6,7 @@
 // a.xxxxxxxxxxxxx.b { c = "d"; e = f; }  # ok
 // a.${xxxxxxxxxxxxx}.b { c = "d"; e = f; }  # broken
 
-@top Nix { expression* }
+@top NixExpr { expression* }
 
 expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | SelectExpr | ApplyExpr | IfExpr | bool | Null | BracesExpr | FunctionExpr | Path | AssertExpr | WithExpr | LetExpr }
 
