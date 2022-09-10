@@ -5,21 +5,21 @@ This is a Nix grammar for the
 
 The code is licensed under an MIT license.
 
-# Dev
+## Dev
 
 To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm run watch`
 
-# usage
+## usage
 
 * [monaco-lezer-parser](https://github.com/milahu/monaco-lezer-parser) - use lezer parsers in monaco-editor
   * also has a grammar file for nix: `monaco-lezer-parser/grammars/nix.json`
 * [codemirror editor](https://github.com/codemirror/view) has native support for lezer parsers, but is less mature than monaco-editor
 
-# demos
+## demos
 
 * [nixos-config-webui](https://github.com/milahu/nixos-config-webui) - web editor for nix files
 
-# related
+## related
 
 this project is based on
 
