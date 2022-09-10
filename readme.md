@@ -9,6 +9,11 @@ The code is licensed under an MIT license.
 
 To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm run watch`
 
+# usage
+
+* [monaco-lezer-parser](https://github.com/milahu/monaco-lezer-parser) - use lezer parsers in monaco-editor
+  * also has a grammar file for nix: `monaco-lezer-parser/grammars/nix.json`
+
 # related
 
 this project is based on
