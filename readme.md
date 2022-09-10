@@ -17,7 +17,7 @@ To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm
 
 # demos
 
-* [nixos-config-webui](https://github.com/milahu/nixos-config-webui)
+* [nixos-config-webui](https://github.com/milahu/nixos-config-webui) - web editor for nix files
 
 # related
 
