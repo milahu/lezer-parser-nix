@@ -90,25 +90,25 @@ Function { (Identifier | Formals) colonWithSpace }
 
 // we need the ~curlyOpen marker
 // to allow ambiguity between AttrSet and Formal
-FormalsOpen { "{"}
-FormalsClose { "}"}
-FormalsComma { ","}
-FormalsInner { (Formal? (FormalsComma Formal)* (FormalsComma FormalsRest)?) | FormalsRest }
 Formals {
   (FormalsAllBefore? FormalsOpen ~curlyOpen FormalsInner FormalsClose) |
   (FormalsOpen ~curlyOpen FormalsInner FormalsClose FormalsAllAfter?)
 }
+FormalsOpen { "{" }
+FormalsClose { "}" }
+FormalsComma { "," }
+FormalsInner { (Formal? (FormalsComma Formal)* (FormalsComma FormalsRest)?) | FormalsRest }
 FormalsAllBefore { Identifier FormalsAt }
-FormalsAt { "@" }
 FormalsAllAfter { FormalsAt Identifier }
+FormalsAt { "@" }
 FormalsRest { "..." }
 Formal { Identifier FormalDefaultExpr? }
 FormalDefault { "?" }
 FormalDefaultExpr { FormalDefault expression }
 
+AttrSet { AttrSetOpen ~curlyOpen (attr)* AttrSetClose }
 AttrSetOpen { "{" }
 AttrSetClose { "}" }
-AttrSet { AttrSetOpen ~curlyOpen (attr)* AttrSetClose }
 attr { Attr | InheritExpr | AttrInheritFrom }
 Attr { (string | Identifier | SelectExpr) "=" expression ";" }
 InheritExpr { Inherit (Identifier | SelectExpr)+ ";" }
