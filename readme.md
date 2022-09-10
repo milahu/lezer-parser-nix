@@ -15,6 +15,10 @@ To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm
   * also has a grammar file for nix: `monaco-lezer-parser/grammars/nix.json`
 * [codemirror editor](https://github.com/codemirror/view) has native support for lezer parsers, but is less mature than monaco-editor
 
+# demos
+
+* [nixos-config-webui](https://github.com/milahu/nixos-config-webui)
+
 # related
 
 this project is based on
