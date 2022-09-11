@@ -14,7 +14,7 @@ To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm
 * [monaco-lezer-parser](https://github.com/milahu/monaco-lezer-parser) - use lezer parsers in monaco-editor
   * also has a grammar file for nix: `monaco-lezer-parser/grammars/nix.json`
 * [codemirror editor](https://github.com/codemirror/view) has native support for lezer parsers
-  * pro: lightweight
+  * pro: lightweight, modular
   * con: less mature than monaco-editor
 
 ## demos
