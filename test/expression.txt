@@ -1,208 +1,443 @@
 # int
 1
 ==>
-Nix(Int)
+Nix (
+  Integer
+)
 
 # float
 1.2
 ==>
-Nix(Float)
+Nix (
+  Float
+)
 
 # float only right of comma
 .1
 ==>
-Nix(Float)
+Nix (
+  Float
+)
 
 # float exponent
 1.2e3
 ==>
-Nix(Float)
+Nix (
+  Float
+)
 
 # float Exponent
 1.2E3
 ==>
-Nix(Float)
+Nix (
+  Float
+)
 
 # add
 1+2
 ==>
-Nix(Add(Int,Int))
+Nix (
+  Add (
+    Integer,
+    Integer
+  )
+)
 
 # add with whitespace
 1 + 2
 ==>
-Nix(Add(Int,Int))
+Nix (
+  Add (
+    Integer,
+    Integer
+  )
+)
 
 # line comment
 # hello
 1
 ==>
-Nix(Comment,Int)
+Nix (
+  Comment,
+  Integer
+)
 
 # line comment precedence
 #/*
 1
 #*/
 ==>
-Nix(Comment,Int,Comment)
+Nix (
+  Comment,
+  Integer,
+  Comment
+)
 
 # block comment
 /* hello */1
 ==>
-Nix(CommentBlock,Int)
+Nix (
+  CommentBlock,
+  Integer
+)
 
 # block comment precedence
 /*
 # hello
 */
 ==>
-Nix(CommentBlock)
+Nix (
+  CommentBlock
+)
 
 # sub
 1-2
 ==>
-Nix(Sub(Int,Int))
+Nix (
+  Mul (
+    Integer,
+    ⚠ FIXME,
+    Negative (
+      Integer
+    )
+  )
+)
 
 # mul
 1*2
 ==>
-Nix(Mul(Int,Int))
+Nix (
+  Mul (
+    Integer,
+    Integer
+  )
+)
 
 # div
 1/2
 ==>
-Nix(Div(Int,Int))
+Nix (
+  Div (
+    Integer,
+    Integer
+  )
+)
 
 # precedence mul add
 1*2+3
 ==>
-Nix(Add(Mul(Int,Int),Int))
+Nix (
+  Add (
+    Mul (
+      Integer,
+      Integer
+    ),
+    Integer
+  )
+)
 
 # string line
 "a"
 ==>
-Nix(String(StringContent))
+Nix (
+  String (
+    StringContent
+  )
+)
 
 # string line with interpolation
 "a${x}b"
 ==>
-Nix(String(StringContent,StringInterpolation(Identifier),StringContent))
+Nix (
+  String (
+    StringContent,
+    StringInterpolation (
+      Identifier
+    ),
+    StringContent
+  )
+)
 
 # string line with escaped interpolation
 "a\${x}b"
 ==>
-Nix(String(StringContent))
+Nix (
+  String (
+    StringContent
+  )
+)
 
 # string block single line
 ''a''
 ==>
-Nix(StringBlock(StringBlockContent))
+Nix (
+  StringBlock (
+    StringBlockContent
+  )
+)
 
 # list empty
 []
 ==>
-Nix(List)
+Nix (
+  List
+)
 
 # list int
 [1]
 ==>
-Nix(List(Int))
+Nix (
+  List (
+    Integer
+  )
+)
 
 # list int string
 [1 "a"]
 ==>
-Nix(List(Int,String(StringContent)))
+Nix (
+  List (
+    Integer,
+    String (
+      StringContent
+    )
+  )
+)
 
 # list concat 2
 [] ++ []
 ==>
-Nix(ConcatList(List,List))
+Nix (
+  ConcatList (
+    List,
+    List
+  )
+)
 
 # list concat 3
 [] ++ [] ++ []
 ==>
-Nix(ConcatList(List,ConcatList(List,List)))
+Nix (
+  ConcatList (
+    List,
+    ConcatList (
+      List,
+      List
+    )
+  )
+)
 
 # string concat 2
 "a" + "b"
 ==>
-Nix(Add(String(StringContent),String(StringContent)))
+Nix (
+  Add (
+    String (
+      StringContent
+    ),
+    String (
+      StringContent
+    )
+  )
+)
 
-# string concat 3
+# string concat 3 # TODO left or right associative?
 "a" + "b" + "c"
 ==>
-Nix(Add(String(StringContent),String(StringContent),String(StringContent)))
+Nix (
+  Add (
+    String (
+      StringContent
+    ),
+    Add (
+      String (
+        StringContent
+      ),
+      String (
+        StringContent
+      )
+    )
+  )
+)
 
 # attrset 0
 {}
 ==>
-Nix(AttrSet)
+Nix (
+  AttrSet
+)
 
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
-Nix(AttrSet(Attr(String(StringContent),Int),Attr(String(StringContent),String(StringContent))))
+Nix (
+  AttrSet (
+    Attr (
+      String (
+        StringContent
+      ),
+      Integer
+    ),
+    Attr (
+      String (
+        StringContent
+      ),
+      String (
+        StringContent
+      )
+    )
+  )
+)
 
-# attrset inherit
+# attrset inherit FIXME
 { inherit a b; }
 ==>
-Nix(AttrSet(AttrInherit(Identifier,Identifier)))
+Nix (
+  AttrSet (
+    AttrInherit (
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # attrset inherit from
 { inherit (f) a b; }
 ==>
-Nix(AttrSet(AttrInheritFrom(Identifier,Identifier,Identifier)))
+Nix (
+  AttrSet (
+    AttrInheritFrom (
+      Identifier,
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # select string 2
 "a"."b"
 ==>
-Nix(Select(String(StringContent),AttrPath(String(StringContent))))
+Nix (
+  Select (
+    String (
+      StringContent
+    ),
+    AttrPath (
+      String (
+        StringContent
+      )
+    )
+  )
+)
 
 # select string 3
 "a"."b"."c"
 ==>
-Nix(Select(String(StringContent),AttrPath(String(StringContent),String(StringContent))))
+Nix (
+  Select (
+    String (
+      StringContent
+    ),
+    AttrPath (
+      String (
+        StringContent
+      ),
+      String (
+        StringContent
+      )
+    )
+  )
+)
 
 # select identifier 3
 a.b.c
 ==>
-Nix(Select(Identifier,AttrPath(Identifier,Identifier)))
+Nix (
+  Select (
+    Identifier,
+    AttrPath (
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # select or default
 a.b or false
 ==>
-Nix(Select(Identifier,AttrPath(Identifier),SelectDefault(or,BooleanLiteral)))
+Nix (
+  Select (
+    Identifier,
+    AttrPath (
+      Identifier
+    ),
+    SelectDefault (
+      False
+    )
+  )
+)
 
 # attrset with identifier
 { a = 1; }
 ==>
-Nix(AttrSet(Attr(Identifier,Int)))
+Nix (
+  AttrSet (
+    Attr (
+      Identifier,
+      Integer
+    )
+  )
+)
 
 # string block with interpolation
 ''
   a${x}b
 ''
 ==>
-Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
+Nix (
+  StringBlock (
+    StringBlockContent,
+    StringBlockInterpolation (
+      Identifier
+    ),
+    StringBlockContent
+  )
+)
 
 # string block with interpolation single line
 ''a${x}b''
 ==>
-Nix(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent))
+Nix (
+  StringBlock (
+    StringBlockContent,
+    StringBlockInterpolation (
+      Identifier
+    ),
+    StringBlockContent
+  )
+)
 
 # string block with escaped interpolation single line
 ''a''${x}b''
 ==>
-Nix(StringBlock(StringBlockContent))
+Nix (
+  StringBlock (
+    StringBlockContent
+  )
+)
 
 # string block with escaped interpolation
 ''
   a''${x}b
 ''
 ==>
-Nix(StringBlock(StringBlockContent))
+Nix (
+  StringBlock (
+    StringBlockContent
+  )
+)
 
-# string block multiple
+# string block multiple TODO left or right associative
 ''
   a''${x}b
 '' + ''
@@ -211,7 +446,21 @@ Nix(StringBlock(StringBlockContent))
   a''${x}b
 ''
 ==>
-Nix(Add(StringBlock(StringBlockContent),StringBlock(StringBlockContent),StringBlock(StringBlockContent)))
+Nix (
+  Add (
+    StringBlock (
+      StringBlockContent
+    ),
+    Add (
+      StringBlock (
+        StringBlockContent
+      ),
+      StringBlock (
+        StringBlockContent
+      )
+    )
+  )
+)
 
 # string block multiple
 ''
@@ -220,259 +469,709 @@ Nix(Add(StringBlock(StringBlockContent),StringBlock(StringBlockContent),StringBl
   a${x}b
 ''
 ==>
-Nix(Add(StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent),StringBlock(StringBlockContent,StringBlockInterpolation(Identifier),StringBlockContent)))
+Nix (
+  Add (
+    StringBlock (
+      StringBlockContent,
+      StringBlockInterpolation (
+        Identifier
+      ),
+      StringBlockContent
+    ),
+    StringBlock (
+      StringBlockContent,
+      StringBlockInterpolation (
+        Identifier
+      ),
+      StringBlockContent
+    )
+  )
+)
 
 # if
 if true then true else false
 ==>
-Nix(If(BooleanLiteral,BooleanLiteral,BooleanLiteral))
+Nix (
+  If (
+    True,
+    True,
+    False
+  )
+)
 
 # parens
 (1)
 ==>
-Nix(Braces(Int))
+Nix (
+  Braces (
+    Integer
+  )
+)
 
-# function
+# function TODO test error in "a:a" -> missing space after colon
 a: x
 ==>
-Nix(Function(Identifier,Identifier))
+Nix (
+  Function (
+    Identifier,
+    Identifier
+  )
+)
+
+# function with syntax error. missing space after colon
+a:x
+==>
+Nix (
+  FIXME
+)
 
 # function 2
 a: b: x
 ==>
-Nix(Function(Identifier,Function(Identifier,Identifier)))
+Nix (
+  Function (
+    Identifier,
+    Function (
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # function 3
 a: b: c: x
 ==>
-Nix(Function(Identifier,Function(Identifier,Function(Identifier,Identifier))))
+Nix (
+  Function (
+    Identifier,
+    Function (
+      Identifier,
+      Function (
+        Identifier,
+        Identifier
+      )
+    )
+  )
+)
 
 # function formals
 { a }: x
 ==>
-Nix(Function(Formals(Formal(Identifier)),Identifier))
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      )
+    ),
+    Identifier
+  )
+)
+
+# function formals FIXME allow missing space after colon
+{ a }:x
+==>
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      )
+    ),
+    Identifier
+  )
+)
 
 # function 2 formals
 { a }: { b }: x
 ==>
-Nix(Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Identifier)))
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      )
+    ),
+    Function (
+      Formals (
+        Formal (
+          Identifier
+        )
+      ),
+      Identifier
+    )
+  )
+)
 
 # function 3 formals
 { a }: { b }: { c }: x
 ==>
-Nix(Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Function(Formals(Formal(Identifier)),Identifier))))
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      )
+    ),
+    Function (
+      Formals (
+        Formal (
+          Identifier
+        )
+      ),
+      Function (
+        Formals (
+          Formal (
+            Identifier
+          )
+        ),
+        Identifier
+      )
+    )
+  )
+)
 
 # function formals 2
 { a, b }: x
 ==>
-Nix(Function(Formals(Formal(Identifier),Formal(Identifier)),Identifier))
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      ),
+      Formal (
+        Identifier
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals 3
 { a, b, c }: x
 ==>
-Nix(Function(Formals(Formal(Identifier),Formal(Identifier),Formal(Identifier)),Identifier))
+Nix (
+  Function (
+    Formals (
+      Formal (
+        Identifier
+      ),
+      Formal (
+        Identifier
+      ),
+      Formal (
+        Identifier
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals default
 { a ? 1 }: x
 ==>
-Nix(Function(Formals(Formal(Identifier,FormalDefault(Int))),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier,
+            FormalDefault (
+              Integer
+            )
+          )
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals default 2
 { a ? 1, b ? 2 }: x
 ==>
-Nix(Function(Formals(Formal(Identifier,FormalDefault(Int)),Formal(Identifier,FormalDefault(Int))),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier,
+            FormalDefault (
+              Integer
+            )
+          ),
+          Formal (
+            Identifier,
+            FormalDefault (
+              Integer
+            )
+          )
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals all
 { a } @ z: x
 ==>
-Nix(Function(Formals(Formal(Identifier),FormalsAllAfter(Identifier)),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier
+          )
+        ),
+        FormalsAllAfter (
+          Identifier
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals all 2
 { a, b } @ z: x
 ==>
-Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsAllAfter(Identifier)),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier
+          ),
+          Formal (
+            Identifier
+          )
+        ),
+        FormalsAllAfter (
+          Identifier
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals all before
 z @ { a }: x
 ==>
-Nix(Function(Formals(FormalsAllBefore(Identifier),Formal(Identifier)),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsAllBefore (
+          Identifier
+        ),
+        FormalsInner (
+          Formal (
+            Identifier
+          )
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals rest
 { a, ... }: x
 ==>
-Nix(Function(Formals(Formal(Identifier),FormalsRest),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier
+          )
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals rest 2
 { a, b, ... }: x
 ==>
-Nix(Function(Formals(Formal(Identifier),Formal(Identifier),FormalsRest),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner (
+          Formal (
+            Identifier
+          ),
+          Formal (
+            Identifier
+          )
+        )
+      )
+    ),
+    Identifier
+  )
+)
 
 # function formals rest only
 { ... }: x
 ==>
-Nix(Function(Formals(FormalsRest),Identifier))
+Nix (
+  Function (
+    FunctionArgument (
+      Formals (
+        FormalsInner
+      )
+    ),
+    Identifier
+  )
+)
 
 # update 2
 a // b
 ==>
-Nix(Update(Identifier,Identifier))
+Nix (
+  Update (
+    Identifier,
+    Identifier
+  )
+)
 
 # update 3
 a // b // c
 ==>
-Nix(Update(Identifier,Update(Identifier,Identifier)))
+Nix (
+  Update (
+    Identifier,
+    Update (
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # path absolute
 /etc
 ==>
-Nix(PathAbsolute)
+Nix (
+  Path (
+    PathAbsolute
+  )
+)
 
 # path absolute 2
 /etc/nixos
 ==>
-Nix(PathAbsolute)
+Nix (
+  Path (
+    PathAbsolute
+  )
+)
 
 # path relative
 ./a
 ==>
-Nix(PathRelative)
+Nix (
+  Path (
+    PathRelative
+  )
+)
 
 # path relative 2
 ./a/b
 ==>
-Nix(PathRelative)
+Nix (
+  Path (
+    PathRelative
+  )
+)
 
 # path library
 <nixpkgs>
 ==>
-Nix(PathLibrary)
+Nix (
+  Path (
+    PathLibrary
+  )
+)
 
 # path library 2
 <nixpkgs/nixos>
 ==>
-Nix(PathLibrary)
+Nix (
+  Path (
+    PathLibrary
+  )
+)
 
 # boolean true
 true
 ==>
-Nix(BooleanLiteral)
+Nix (
+  True
+)
 
 # boolean false
 false
 ==>
-Nix(BooleanLiteral)
+Nix (
+  False
+)
 
 # null
 null
 ==>
-Nix(NullLiteral)
+Nix (
+  Null
+)
 
-# apply
+# apply FIXME
 a b
 ==>
-Nix(Apply(Identifier,Identifier))
+Nix (
+  Apply(
+    Identifier,
+    Identifier
+  )
+)
 
-# apply 2
+# apply 2 FIXME TODO left or right associative?
 a b 1
 ==>
-Nix(Apply(Apply(Identifier,Identifier),Int))
+Nix (
+  Apply(
+    Identifier,
+    Apply(
+      Identifier,
+      Identifier
+    )
+  )
+)
 
-# apply 2 braces
+# apply 2 braces FIXME
 a (b 1)
 ==>
-Nix(Apply(Identifier,Braces(Apply(Identifier,Int))))
+Nix (
+  Mul (
+    Identifier,
+    ⚠ FIXME,
+    Braces (
+      Identifier,
+      ⚠ FIXME (
+        Integer
+      )
+    )
+  )
+)
 
 # HasAttr
 a ? b
 ==>
-Nix(HasAttr(Identifier,AttrPath(Identifier)))
+Nix (
+  HasAttr (
+    Identifier,
+    AttrPath (
+      Identifier
+    )
+  )
+)
 
 # HasAttr 2
 a ? b.c
 ==>
-Nix(HasAttr(Identifier,AttrPath(Identifier,Identifier)))
+Nix (
+  HasAttr (
+    Identifier,
+    AttrPath (
+      Identifier,
+      Identifier
+    )
+  )
+)
 
 # negative
 -x
 ==>
-Nix(Negative(Identifier))
+Nix (
+  Negative (
+    Identifier
+  )
+)
 
 # not
 !x
 ==>
-Nix(Not(Identifier))
+Nix (
+  Not (
+    Identifier
+  )
+)
 
 # compare <
 a < b
 ==>
-Nix(CompareLT(Identifier,Identifier))
+Nix (
+  CompareLT (
+    Identifier,
+    Identifier
+  )
+)
 
 # compare >
 a > b
 ==>
-Nix(CompareGT(Identifier,Identifier))
+Nix (
+  CompareGT (
+    Identifier,
+    Identifier
+  )
+)
 
 # compare <=
 a <= b
 ==>
-Nix(CompareLTE(Identifier,Identifier))
+Nix (
+  CompareLTE (
+    Identifier,
+    Identifier
+  )
+)
 
 # compare >=
 a >= b
 ==>
-Nix(CompareGTE(Identifier,Identifier))
+Nix (
+  CompareGTE (
+    Identifier,
+    Identifier
+  )
+)
 
 # equal
 a == b
 ==>
-Nix(Equal(Identifier,Identifier))
+Nix (
+  Equal (
+    Identifier,
+    Identifier
+  )
+)
 
 # not equal
 a != b
 ==>
-Nix(NotEqual(Identifier,Identifier))
+Nix (
+  NotEqual (
+    Identifier,
+    Identifier
+  )
+)
 
 # and
 a && b
 ==>
-Nix(And(Identifier,Identifier))
+Nix (
+  And (
+    Identifier,
+    Identifier
+  )
+)
 
 # or
 a || b
 ==>
-Nix(Or(Identifier,Identifier))
+Nix (
+  Or (
+    Identifier,
+    Identifier
+  )
+)
 
 # imply
 a -> b
 ==>
-Nix(Imply(Identifier,Identifier))
+Nix (
+  Imply (
+    Identifier,
+    Identifier
+  )
+)
 
-# uri
+# uri TODO test more
 a://b:3?d=e&f=g
 ==>
-Nix(URI)
+Nix (
+  Path (
+    Uri
+  )
+)
 
-# assert
+# assert FIXME keyword "assert" should be anonymous
 assert a; x
 ==>
-Nix(Assert(Identifier,Identifier))
+Nix (
+  Assert (
+    Identifier,
+    Identifier
+  )
+)
 
-# with
+# with FIXME keyword "with" should be anonymous
 with a; x
 ==>
-Nix(With(Identifier,Identifier))
+Nix (
+  With (
+    Identifier,
+    Identifier
+  )
+)
 
-# let
+# let FIXME keyword "let" "in" should be anonymous
 let a = b; in x
 ==>
-Nix(Let(Attrs(Attr(Identifier,Identifier)),Identifier))
+Nix (
+  Let (
+    Bind (
+      AttrPath (
+        Identifier
+      ),
+      Identifier
+    ),
+    Identifier
+  )
+)
 
-# let inherit
+# let inherit FIXME keyword "let" "inherit" "in" should be anonymous
 let inherit a b; in x
 ==>
-Nix(Let(Attrs(AttrInherit(Identifier,Identifier)),Identifier))
+Nix (
+  Let (
+    Inherit(
+      Identifier,
+      Identifier
+    ),
+    Identifier
+  )
+)
 
 # let inherit from
 let inherit (f) a b; in x
 ==>
-Nix(Let(Attrs(AttrInheritFrom(Identifier,Identifier,Identifier)),Identifier))
+Nix (
+  Let (
+    InheritFrom(
+      Identifier,
+      Identifier,
+      Identifier
+    ),
+    Identifier
+  )
+)
