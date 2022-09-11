@@ -518,11 +518,11 @@ Nix (
   )
 )
 
-# function with syntax error. missing space after colon
+# function with syntax error. missing space after colon FIXME
 a:x
 ==>
 Nix (
-  FIXME
+  String
 )
 
 # function 2
@@ -673,15 +673,11 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier,
-            FormalDefault (
-              Integer
-            )
-          )
+    Formals (
+      Formal (
+        Identifier,
+        FormalDefault (
+          Integer
         )
       )
     ),
@@ -694,21 +690,17 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier,
-            FormalDefault (
-              Integer
-            )
-          ),
-          Formal (
-            Identifier,
-            FormalDefault (
-              Integer
-            )
-          )
+    Formals (
+      Formal (
+        Identifier,
+        FormalDefault (
+          Integer
+        )
+      ),
+      Formal (
+        Identifier,
+        FormalDefault (
+          Integer
         )
       )
     ),
@@ -721,16 +713,12 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier
-          )
-        ),
-        FormalsAllAfter (
-          Identifier
-        )
+    Formals (
+      Formal (
+        Identifier
+      ),
+      FormalsBindAfter (
+        Identifier
       )
     ),
     Identifier
@@ -742,19 +730,15 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier
-          ),
-          Formal (
-            Identifier
-          )
-        ),
-        FormalsAllAfter (
-          Identifier
-        )
+    Formals (
+      Formal (
+        Identifier
+      ),
+      Formal (
+        Identifier
+      ),
+      FormalsBindAfter (
+        Identifier
       )
     ),
     Identifier
@@ -766,16 +750,12 @@ z @ { a }: x
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsAllBefore (
-          Identifier
-        ),
-        FormalsInner (
-          Formal (
-            Identifier
-          )
-        )
+    Formals (
+      FormalsBindBefore (
+        Identifier
+      ),
+      Formal (
+        Identifier
       )
     ),
     Identifier
@@ -787,14 +767,11 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier
-          )
-        )
-      )
+    Formals (
+      Formal (
+        Identifier
+      ),
+      FormalsRest
     ),
     Identifier
   )
@@ -805,17 +782,14 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner (
-          Formal (
-            Identifier
-          ),
-          Formal (
-            Identifier
-          )
-        )
-      )
+    Formals (
+      Formal (
+        Identifier
+      ),
+      Formal (
+        Identifier
+      ),
+      FormalsRest
     ),
     Identifier
   )
@@ -826,10 +800,8 @@ Nix (
 ==>
 Nix (
   Function (
-    FunctionArgument (
-      Formals (
-        FormalsInner
-      )
+    Formals (
+      FormalsRest
     ),
     Identifier
   )
@@ -1154,12 +1126,11 @@ let inherit a b; in x
 ==>
 Nix (
   Let (
-    Inherit(
-      Identifier,
-      Identifier
-    ),
+    Identifier,
+    Identifier,
     Identifier
-  )
+  ),
+  ⚠ FIXME
 )
 
 # let inherit from
@@ -1167,11 +1138,10 @@ let inherit (f) a b; in x
 ==>
 Nix (
   Let (
-    InheritFrom(
-      Identifier,
-      Identifier,
-      Identifier
-    ),
+    Identifier,
+    Identifier,
+    Identifier,
     Identifier
-  )
+  ),
+  ⚠ FIXME
 )
