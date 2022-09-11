@@ -94,12 +94,9 @@ Nix (
 1-2
 ==>
 Nix (
-  Mul (
+  CallSub (
     Int,
-    ⚠ FIXME,
-    Negative (
-      Int
-    )
+    Int
   )
 )
 
@@ -107,14 +104,16 @@ Nix (
 a-b
 ==>
 Nix (
-  Identifier
+  Var (
+    Identifier
+  )
 )
 
 # mul
 1*2
 ==>
 Nix (
-  Mul (
+  CallMul (
     Int,
     Int
   )
@@ -124,7 +123,7 @@ Nix (
 1/2
 ==>
 Nix (
-  Div (
+  CallDiv (
     Int,
     Int
   )
@@ -135,7 +134,7 @@ Nix (
 ==>
 Nix (
   ConcatStrings (
-    Mul (
+    CallMul (
       Int,
       Int
     ),
@@ -185,7 +184,7 @@ Nix (
 ''a''
 ==>
 Nix (
-  StringBlock (
+  IndentedString (
     StringBlockContent
   )
 )
@@ -194,7 +193,7 @@ Nix (
 ''''
 ==>
 Nix (
-  StringBlock
+  IndentedString
 )
 
 # list empty
@@ -229,7 +228,7 @@ Nix (
 [] ++ []
 ==>
 Nix (
-  ConcatList (
+  OpConcatLists (
     List,
     List
   )
@@ -239,9 +238,9 @@ Nix (
 [] ++ [] ++ []
 ==>
 Nix (
-  ConcatList (
+  OpConcatLists (
     List,
-    ConcatList (
+    OpConcatLists (
       List,
       List
     )
@@ -447,7 +446,7 @@ Nix (
 ''
 ==>
 Nix (
-  StringBlock (
+  IndentedString (
     StringBlockContent,
     StringBlockInterpolation (
       Identifier
@@ -460,7 +459,7 @@ Nix (
 ''a${x}b''
 ==>
 Nix (
-  StringBlock (
+  IndentedString (
     StringBlockContent,
     StringBlockInterpolation (
       Identifier
@@ -473,7 +472,7 @@ Nix (
 ''a''${x}b''
 ==>
 Nix (
-  StringBlock (
+  IndentedString (
     StringBlockContent
   )
 )
@@ -484,7 +483,7 @@ Nix (
 ''
 ==>
 Nix (
-  StringBlock (
+  IndentedString (
     StringBlockContent
   )
 )
@@ -500,16 +499,16 @@ Nix (
 ==>
 Nix (
   ConcatStrings (
-    StringBlock (
-      StringBlockContent
-    ),
     ConcatStrings (
-      StringBlock (
+      IndentedString (
         StringBlockContent
       ),
-      StringBlock (
+      IndentedString (
         StringBlockContent
       )
+    ),
+    IndentedString (
+      StringBlockContent
     )
   )
 )
@@ -523,14 +522,14 @@ Nix (
 ==>
 Nix (
   ConcatStrings (
-    StringBlock (
+    IndentedString (
       StringBlockContent,
       StringBlockInterpolation (
         Identifier
       ),
       StringBlockContent
     ),
-    StringBlock (
+    IndentedString (
       StringBlockContent,
       StringBlockInterpolation (
         Identifier
@@ -555,7 +554,7 @@ Nix (
 (1)
 ==>
 Nix (
-  Braces (
+  Parens (
     Int
   )
 )
@@ -564,7 +563,7 @@ Nix (
 a: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Identifier,
     Identifier
   )
@@ -574,16 +573,18 @@ Nix (
 a:x
 ==>
 Nix (
-  String
+  String (
+    URI
+  )
 )
 
 # function 2
 a: b: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Identifier,
-    Function (
+    Lambda (
       Identifier,
       Identifier
     )
@@ -594,11 +595,11 @@ Nix (
 a: b: c: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Identifier,
-    Function (
+    Lambda (
       Identifier,
-      Function (
+      Lambda (
         Identifier,
         Identifier
       )
@@ -610,7 +611,7 @@ Nix (
 { a }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -624,7 +625,7 @@ Nix (
 { a }:x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -638,13 +639,13 @@ Nix (
 { a }: { b }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
       )
     ),
-    Function (
+    Lambda (
       Formals (
         Formal (
           Identifier
@@ -659,19 +660,19 @@ Nix (
 { a }: { b }: { c }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
       )
     ),
-    Function (
+    Lambda (
       Formals (
         Formal (
           Identifier
         )
       ),
-      Function (
+      Lambda (
         Formals (
           Formal (
             Identifier
@@ -687,7 +688,7 @@ Nix (
 { a, b }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -704,7 +705,7 @@ Nix (
 { a, b, c }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -724,7 +725,7 @@ Nix (
 { a ? 1 }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier,
@@ -741,7 +742,7 @@ Nix (
 { a ? 1, b ? 2 }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier,
@@ -764,7 +765,7 @@ Nix (
 { a } @ z: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -781,7 +782,7 @@ Nix (
 { a, b } @ z: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -818,7 +819,7 @@ Nix (
 { a, ... }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -833,7 +834,7 @@ Nix (
 { a, b, ... }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       Formal (
         Identifier
@@ -851,7 +852,7 @@ Nix (
 { ... }: x
 ==>
 Nix (
-  Function (
+  Lambda (
     Formals (
       FormalsRest
     ),
@@ -863,7 +864,7 @@ Nix (
 a // b
 ==>
 Nix (
-  Update (
+  OpUpdate (
     Identifier,
     Identifier
   )
@@ -873,9 +874,9 @@ Nix (
 a // b // c
 ==>
 Nix (
-  Update (
+  OpUpdate (
     Identifier,
-    Update (
+    OpUpdate (
       Identifier,
       Identifier
     )
@@ -1025,7 +1026,7 @@ Nix (
 -1
 ==>
 Nix (
-  Negative (
+  CallNeg (
     Int
   )
 )
@@ -1034,7 +1035,7 @@ Nix (
 -x
 ==>
 Nix (
-  Negative (
+  CallNeg (
     Identifier
   )
 )
@@ -1043,7 +1044,7 @@ Nix (
 !x
 ==>
 Nix (
-  Not (
+  OpNot (
     Identifier
   )
 )
@@ -1052,7 +1053,7 @@ Nix (
 a < b
 ==>
 Nix (
-  CompareLT (
+  CallLT (
     Identifier,
     Identifier
   )
@@ -1062,7 +1063,7 @@ Nix (
 a > b
 ==>
 Nix (
-  CompareGT (
+  CallGT (
     Identifier,
     Identifier
   )
@@ -1072,7 +1073,7 @@ Nix (
 a <= b
 ==>
 Nix (
-  CompareLTE (
+  CallLE (
     Identifier,
     Identifier
   )
@@ -1082,7 +1083,7 @@ Nix (
 a >= b
 ==>
 Nix (
-  CompareGTE (
+  CallGE (
     Identifier,
     Identifier
   )
@@ -1092,7 +1093,7 @@ Nix (
 a == b
 ==>
 Nix (
-  Equal (
+  OpEq (
     Identifier,
     Identifier
   )
@@ -1102,7 +1103,7 @@ Nix (
 a != b
 ==>
 Nix (
-  NotEqual (
+  OpNEq (
     Identifier,
     Identifier
   )
@@ -1112,7 +1113,7 @@ Nix (
 a && b
 ==>
 Nix (
-  And (
+  OpAnd (
     Identifier,
     Identifier
   )
@@ -1122,7 +1123,7 @@ Nix (
 a || b
 ==>
 Nix (
-  Or (
+  OpOr (
     Identifier,
     Identifier
   )
@@ -1132,7 +1133,7 @@ Nix (
 a -> b
 ==>
 Nix (
-  Imply (
+  OpImpl (
     Identifier,
     Identifier
   )
