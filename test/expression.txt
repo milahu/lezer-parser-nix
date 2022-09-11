@@ -103,6 +103,13 @@ Nix (
   )
 )
 
+# Identifier not sub
+a-b
+==>
+Nix (
+  Identifier
+)
+
 # mul
 1*2
 ==>
@@ -969,7 +976,16 @@ Nix (
   )
 )
 
-# negative
+# negative Integer
+-1
+==>
+Nix (
+  Negative (
+    Integer
+  )
+)
+
+# negative Identifier
 -x
 ==>
 Nix (
