@@ -384,6 +384,37 @@ Nix (
   )
 )
 
+# select interpolation 1
+a.${b}
+==>
+Nix (
+  Select (
+    Identifier,
+    AttrPath (
+      TODOInterpolation(
+        Identifier
+      )
+    )
+  )
+)
+
+# select interpolation 2
+a.${b}.${c}
+==>
+Nix (
+  Select (
+    Identifier,
+    AttrPath (
+      TODOInterpolation(
+        Identifier
+      ),
+      TODOInterpolation(
+        Identifier
+      )
+    )
+  )
+)
+
 # attrset with identifier
 { a = 1; }
 ==>
