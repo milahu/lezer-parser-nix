@@ -152,6 +152,13 @@ Nix (
   )
 )
 
+# string line empty
+""
+==>
+Nix (
+  String
+)
+
 # string line with interpolation
 "a${x}b"
 ==>
@@ -181,6 +188,13 @@ Nix (
   StringBlock (
     StringBlockContent
   )
+)
+
+# string block empty
+''''
+==>
+Nix (
+  StringBlock
 )
 
 # list empty
