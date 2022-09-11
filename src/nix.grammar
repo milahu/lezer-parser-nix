@@ -7,12 +7,12 @@ expr { expr_function }
 
 expr_function
   { Lambda { Identifier ':' expr_function }
-  //| Lambda { '{' formals '}' ':' expr_function }
-  //| Lambda { '{' formals '}' '@' Identifier ':' expr_function }
-  //| Lambda { Identifier '@' '{' formals '}' ':' expr_function }
+  | Lambda { '{' formals '}' ':' expr_function }
+  | Lambda { '{' formals '}' '@' Identifier ':' expr_function }
+  | Lambda { Identifier '@' '{' formals '}' ':' expr_function }
   | Assert { _ASSERT expr ';' expr_function }
-  //| With { WITH expr ';' expr_function }
-/////// TODO  | Let { LET binds IN expr_function }
+  | With { WITH expr ';' expr_function }
+  ///// FIXME | Let { LET binds IN expr_function }
   | expr_if
   }
 
@@ -89,13 +89,13 @@ expr_simple
 
 // FIXME strings
 //  //| String { '"' string_parts '"' }
-//  | String { string_parts }
-//  //| IndentedString { IND_STRING_OPEN ind_string_parts IND_STRING_CLOSE }
-//  | IndentedString { ind_string_parts }
+  | String { string_parts }
+  //| IndentedString { IND_STRING_OPEN ind_string_parts IND_STRING_CLOSE }
+  | IndentedString { ind_string_parts }
 //  | Path { path_start PATH_END } // TODO path_start PATH_END { $$ = $1; }
 //  | ConcatStrings { path_start string_parts_interpolated PATH_END }
 //  //// TODO what is SPATH? // | CallStringPath { SPATH }
-//  | String { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
+  | String { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
 
   | Parens { '(' expr ')' }
 
@@ -169,7 +169,7 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 
   string_parts
     //{ String { STR }
-    { ConcatStrings { string_parts_interpolated+ }
+    { ConcatStrings { string_parts_interpolated }
     //| String { "" } // empty string // FIXME?
     }
 
