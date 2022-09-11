@@ -6,82 +6,82 @@
 expr { expr_function }
 
 expr_function
-  { ExprLambda { Identifier ':' expr_function }
-  //| ExprLambda { '{' formals '}' ':' expr_function }
-  //| ExprLambda { '{' formals '}' '@' Identifier ':' expr_function }
-  //| ExprLambda { Identifier '@' '{' formals '}' ':' expr_function }
-  | ExprAssert { _ASSERT expr ';' expr_function }
-  //| ExprWith { WITH expr ';' expr_function }
-/////// TODO  | ExprLet { LET binds IN expr_function }
+  { Lambda { Identifier ':' expr_function }
+  //| Lambda { '{' formals '}' ':' expr_function }
+  //| Lambda { '{' formals '}' '@' Identifier ':' expr_function }
+  //| Lambda { Identifier '@' '{' formals '}' ':' expr_function }
+  | Assert { _ASSERT expr ';' expr_function }
+  //| With { WITH expr ';' expr_function }
+/////// TODO  | Let { LET binds IN expr_function }
   | expr_if
   }
 
 expr_if
-  { ExprIf { _IF expr _THEN expr _ELSE expr }
+  { If { _IF expr _THEN expr _ELSE expr }
   | expr_op
   }
 
 expr_op
-  { ExprOpNot         {                        '!' expr_op !prec_not }
-  | ExprCallNeg       {                        '-' expr_op !prec_neg }
-  | ExprOpEq          { expr_op !prec_equal   '==' expr_op }
-  | ExprOpNEq         { expr_op !prec_equal   '!=' expr_op }
-  | ExprCallLT        { expr_op !prec_compare '<'  expr_op }
-  | ExprCallLE        { expr_op !prec_compare '<=' expr_op }
-  | ExprCallGT        { expr_op !prec_compare '>'  expr_op }
-  | ExprCallGE        { expr_op !prec_compare '>=' expr_op }
-  | ExprOpAnd         { expr_op !prec_and     '&&' expr_op }
-  | ExprOpOr          { expr_op !prec_or      '||' expr_op }
-  | ExprOpImpl        { expr_op !prec_impl    '->' expr_op }
-  | ExprOpUpdate      { expr_op !prec_update  '//' expr_op }
+  { OpNot         {                        '!' expr_op !prec_not }
+  | CallNeg       {                        '-' expr_op !prec_neg }
+  | OpEq          { expr_op !prec_equal   '==' expr_op }
+  | OpNEq         { expr_op !prec_equal   '!=' expr_op }
+  | CallLT        { expr_op !prec_compare '<'  expr_op }
+  | CallLE        { expr_op !prec_compare '<=' expr_op }
+  | CallGT        { expr_op !prec_compare '>'  expr_op }
+  | CallGE        { expr_op !prec_compare '>=' expr_op }
+  | OpAnd         { expr_op !prec_and     '&&' expr_op }
+  | OpOr          { expr_op !prec_or      '||' expr_op }
+  | OpImpl        { expr_op !prec_impl    '->' expr_op }
+  | OpUpdate      { expr_op !prec_update  '//' expr_op }
 
 // TODO
-//  | ExprOpHasAttr     { expr_op !prec_hasAttr  '?' attrpath }
+//  | OpHasAttr     { expr_op !prec_hasAttr  '?' attrpath }
 
-  | ExprConcatStrings { expr_op !prec_plus     '+' expr_op } // concat strings, Add
-  | ExprCallSub       { expr_op !prec_callSub  '-' expr_op }
-  | ExprCallMul       { expr_op !prec_mul_div  '*' expr_op }
-  | ExprCallDiv       { expr_op !prec_mul_div  '/' expr_op }
-  | ExprOpConcatLists { expr_op !prec_concat  '++' expr_op } // concat lists
+  | ConcatStrings { expr_op !prec_plus     '+' expr_op } // concat strings, Add
+  | CallSub       { expr_op !prec_callSub  '-' expr_op }
+  | CallMul       { expr_op !prec_mul_div  '*' expr_op }
+  | CallDiv       { expr_op !prec_mul_div  '/' expr_op }
+  | OpConcatLists { expr_op !prec_concat  '++' expr_op } // concat lists
   | expr_app
   }
 
 
 expr_app
   {
-    //ExprCall { expr_app !prec_apply expr_select }
+    //Call { expr_app !prec_apply expr_select }
     //|
     expr_select
   }
 //
 expr_select
   {
-    //ExprSelect { expr_simple !prec_select '.' attrpath }
-    //| ExprSelect { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
+    //Select { expr_simple !prec_select '.' attrpath }
+    //| Select { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
 
   // Backwards compatibility: because Nixpkgs has a rarely used
   // function named ‘or’, allow stuff like ‘map or [...]’.
-  //| ExprCallOr { expr_simple keyword<"or"> }
+  //| CallOr { expr_simple keyword<"or"> }
 
   //|
   expr_simple // TODO expr_simple { $$ = $1; }
   }
 
 expr_simple
-  //{ ExprPos { "__curPos" }
-  { ExprPos { keyword<"__curPos"> }
-  | ExprVar { Identifier }
-  | ExprInt { integer }
-  | ExprFloat { float }
+  //{ Pos { "__curPos" }
+  { Pos { keyword<"__curPos"> }
+  | Var { Identifier }
+  | Int { integer }
+  | Float { float }
 
   | TRUE
   | FALSE
   | NULL
 
-//  | ExprBool { True { _TRUE } | False { _FALSE } }
-//  | ExprNull { Null { _NULL } }
+//  | Bool { True { _TRUE } | False { _FALSE } }
+//  | Null { Null { _NULL } }
 
-//| ExprBool { _TRUE | _FALSE }
+//| Bool { _TRUE | _FALSE }
 //
 //_TRUE { keyword<"true"> }
 //_FALSE { keyword<"false"> }
@@ -93,19 +93,19 @@ expr_simple
 //  //| IndentedString { IND_STRING_OPEN ind_string_parts IND_STRING_CLOSE }
 //  | IndentedString { ind_string_parts }
 //  | Path { path_start PATH_END } // TODO path_start PATH_END { $$ = $1; }
-//  | ExprConcatStrings { path_start string_parts_interpolated PATH_END }
-//  //// TODO what is SPATH? // | ExprCallStringPath { SPATH }
-//  | ExprString { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
+//  | ConcatStrings { path_start string_parts_interpolated PATH_END }
+//  //// TODO what is SPATH? // | CallStringPath { SPATH }
+//  | String { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
 
-  | ExprParens { '(' expr ')' }
+  | Parens { '(' expr ')' }
 
   // Let expressions `let {..., body = ...}' are just desugared
   // into `(rec {..., body = ...}).body'.
-/////////// TODO  | ExprSelectLetAttrSet { LET '{' binds '}' }
+/////////// TODO  | SelectLetAttrSet { LET '{' binds '}' }
 //
-//  | ExprRecAttrSet { REC '{' binds '}' }
-//  | ExprAttrSet { '{' binds '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
-  | ExprList { '[' expr? (!prec_list expr)* ']' }
+//  | RecAttrSet { REC '{' binds '}' }
+//  | AttrSet { '{' binds '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
+  | List { '[' expr? (!prec_list expr)* ']' }
   }
 
 // precedences
@@ -168,19 +168,19 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 @skip {} {
 
   string_parts
-    //{ ExprString { STR }
-    { ExprConcatStrings { string_parts_interpolated+ }
-    //| ExprString { "" } // empty string // FIXME?
+    //{ String { STR }
+    { ConcatStrings { string_parts_interpolated+ }
+    //| String { "" } // empty string // FIXME?
     }
 
   ind_string_parts
     { stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
-      // { stringBlockStart (ExprStringBlock | ExprStringBlockInterpolation)* stringBlockEnd
+      // { stringBlockStart (StringBlock | StringBlockInterpolation)* stringBlockEnd
     }
 
   string_parts_interpolated
     { stringStart (StringContent | StringInterpolation)* stringEnd
-      // stringStart (ExprString | ExprStringInterpolation)* stringEnd
+      // stringStart (String | StringInterpolation)* stringEnd
     }
 
   // TODO ind_string_parts_interpolated? not in nix/src/libexpr/parser.y
@@ -191,8 +191,8 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 }
 
 //path_start
-//  { ExprPath { PATH }
-//  | ExprPath { HOME_PATH } // if evalSettings.pureEval: Error, the path '%s' can not be resolved in pure mode
+//  { Path { PATH }
+//  | Path { HOME_PATH } // if evalSettings.pureEval: Error, the path '%s' can not be resolved in pure mode
 //  }
 
 // 
@@ -205,7 +205,7 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 // attribute sets
 
 // binds
-//   { ExprAttrs
+//   { Attrs
 //     {
 //       ( Attr { attrpath '=' expr ';' }
 //       | AttrInherit { INHERIT attrs ';' }
@@ -217,14 +217,14 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 // TODO restore
 // 
 // attrs
-//   { AttrPath { ( AttrName_ExprString { string_attr } )* }
+//   { AttrPath { ( AttrName_String { string_attr } )* }
 //   }
 // 
 // attrpath
 //   { AttrName { attrpath '.' attr }
-//   | AttrName_ExprString { attrpath '.' string_attr }
+//   | AttrName_String { attrpath '.' string_attr }
 //   | AttrName { attr } // $$ = new std::vector<AttrName>; $$->push_back(AttrName(data->symbols.create($1)));
-//   | AttrName_ExprString { string_attr }
+//   | AttrName_String { string_attr }
 //   }
 // 
 // attr
@@ -237,9 +237,9 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 //   }
 
 // FIXME Unused rule 'expr_list'
-// -> ExprList?
+// -> List?
 // expr_list
-//  { ExprList { expr_list expr_select } // $$ = $1; $1->elems.push_back($2); // !!! dangerous
+//  { List { expr_list expr_select } // $$ = $1; $1->elems.push_back($2); // !!! dangerous
 //  }
 
 formals
