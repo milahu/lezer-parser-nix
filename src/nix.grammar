@@ -6,18 +6,59 @@
 // a.xxxxxxxxxxxxx.b { c = "d"; e = f; }  # ok
 // a.${xxxxxxxxxxxxx}.b { c = "d"; e = f; }  # broken
 
-@top NixExpr { expression* }
+@top Nix { expression? }
 
-expression { binaryExpr | unaryExpr | Int | Float | string | Identifier | List | AttrSet | SelectExpr | ApplyExpr | IfExpr | bool | Null | BracesExpr | FunctionExpr | Path | AssertExpr | WithExpr | LetExpr }
+expression {
+  Integer |
+  Float |
+  If |
+  bool |
+  Null |
+  Identifier |
 
-binaryExpr { MulExpr | DivExpr | AddExpr | SubExpr | HasAttrExpr | ConcatListExpr | UpdateExpr | compare | equal | AndExpr | OrExpr | ImplyExpr }
+  string |
+  Path |
 
-unaryExpr { NegativeExpr | NotExpr }
+  Braces |
+  List |
+  AttrSet |
+  Select |
+
+  Assert |
+  With |
+  Let
+
+  Apply |
+  unary |
+  binary |
+  Function
+}
+
+binary {
+  Mul |
+  Div |
+  Add |
+  // Sub | // not used
+  HasAttr |
+  ConcatList |
+  Update |
+  compare |
+  Equal |
+  NotEqual |
+  And |
+  Or |
+  Imply
+}
+
+unary {
+  Negative |
+  Not
+}
 
 @precedence {
   select @left,
   _list @left,
-  // workaround for SubExpr/NegativeExpr conflict
+  // workaround for Sub/Negative conflict
   _applySub @left,
   apply @left,
   negative @left,
@@ -38,7 +79,11 @@ unaryExpr { NegativeExpr | NotExpr }
   selectOrAttrPathDot
 }
 
-@skip { whitespace | Comment | CommentBlock }
+@skip {
+  whitespace |
+  Comment |
+  CommentBlock
+}
 
 @skip {} {
   // String can be multiline, but then the indent is preserved
@@ -60,149 +105,174 @@ StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockI
 // "string ${expr} \${escaped} string"
 StringInterpolation { stringInterpolationStart expression stringInterpolationEnd }
 
-BraceOpen { "(" }
-BraceClose { ")" }
-BracesExpr { BraceOpen expression BraceClose }
+braceOpen { "(" }
+braceClose { ")" }
+Braces { braceOpen expression braceClose }
 
-Mul { "*" }
-MulExpr { expression !times Mul expression }
+mul { "*" }
+Mul { expression !times mul expression }
 
-Div { "/" }
-DivExpr { expression !times Div expression }
+div { "/" }
+Div { expression !times div expression }
 
-Add { "+" }
-AddExpr { expression (!plus Add expression)+ }
+add { "+" }
+//Add { expression (!plus add expression)+ }
+// Add is binary
+Add { expression !plus add expression }
 
-// FIXME
-// SubExpr is not used
-// NegativeExpr has higher precedence than SubExpr, so 1-2 -> (1) (-2) -> ApplyExpr
-// nix parser/interpreter: Nix(ApplyExpr(__sub,Int,Int))
-//SubExpr { expression !plus "-" expression }
+// Sub is not used
+// Negative has higher precedence than Sub, so 1-2 -> (1) (-2) -> Apply
+// nix parser/interpreter: Nix(Apply(__sub,Integer,Integer))
+//sub { "-" }
+//Sub { expression !plus sub expression }
 
-ListOpen { "[" }
-ListClose { "]" }
-List { ListOpen expression? (!_list expression)* ListClose }
+listOpen { "[" }
+listClose { "]" }
+List { listOpen expression? (!_list expression)* listClose }
 
 // aka Lambda
-FunctionExpr { Function expression }
-
-Function { (Identifier | Formals) colonWithSpace }
+Function { functionArgument expression }
+functionArgument { (Identifier | Formals) colonWithSpace }
 
 // we need the ~curlyOpen marker
 // to allow ambiguity between AttrSet and Formal
 Formals {
-  (FormalsAllBefore? FormalsOpen ~curlyOpen FormalsInner FormalsClose) |
-  (FormalsOpen ~curlyOpen FormalsInner FormalsClose FormalsAllAfter?)
+  (FormalsBindBefore? formalsOpen ~curlyOpen formalsInner formalsClose) |
+  (formalsOpen ~curlyOpen formalsInner formalsClose FormalsBindAfter?)
 }
-FormalsOpen { "{" }
-FormalsClose { "}" }
-FormalsComma { "," }
-FormalsInner { (Formal? (FormalsComma Formal)* (FormalsComma FormalsRest)?) | FormalsRest }
-FormalsAllBefore { Identifier FormalsAt }
-FormalsAllAfter { FormalsAt Identifier }
-FormalsAt { "@" }
+formalsOpen { "{" }
+formalsClose { "}" }
+formalsComma { "," }
+formalsInner { (Formal? (formalsComma Formal)* (formalsComma FormalsRest)?) | FormalsRest }
+FormalsBindBefore { Identifier formalsAt }
+FormalsBindAfter { formalsAt Identifier }
+formalsAt { "@" }
 FormalsRest { "..." }
-Formal { Identifier FormalDefaultExpr? }
-FormalDefault { "?" }
-FormalDefaultExpr { FormalDefault expression }
+Formal { Identifier FormalDefault? }
+formalDefault { "?" }
+FormalDefault { formalDefault expression }
 
-AttrSet { AttrSetOpen ~curlyOpen (attr)* AttrSetClose }
-AttrSetOpen { "{" }
-AttrSetClose { "}" }
-attr { Attr | InheritExpr | AttrInheritFrom }
-Attr { (string | Identifier | SelectExpr) "=" expression ";" }
-InheritExpr { Inherit (Identifier | SelectExpr)+ ";" }
-AttrInheritFrom { InheritFromExpr (Identifier | SelectExpr)+ ";" }
-
-InheritBraceOpen { "(" }
-InheritBraceClose { ")" }
-InheritFromExpr { Inherit InheritBraceOpen expression InheritBraceClose }
+AttrSet { attrSetOpen ~curlyOpen (attr)* attrSetClose }
+attrSetOpen { "{" }
+attrSetClose { "}" }
+attr { Attr | AttrInherit | AttrInheritFrom }
+Attr { (string | Identifier | Select) "=" expression ";" }
+AttrInherit { inherit (Identifier | Select)+ ";" }
+AttrInheritFrom { "(" expression ")" (Identifier | Select)+ ";" }
 
 // need marker ~selectOrAttrPathDot for ambiguity
 // between SelectDot and AttrPathDot
-SelectDot { "." }
-SelectExpr { (string | Identifier) !selectOrAttrPathDot SelectDot AttrPath SelectDefault? }
+selectDot { "." }
+Select { (string | Identifier) !selectOrAttrPathDot selectDot AttrPath SelectDefault? }
 
-SelectOr { keyword<"or"> }
-SelectDefault { SelectOr expression }
+selectOr { keyword<"or"> }
+SelectDefault { selectOr expression }
 
 // we need the ~subOrNegative marker
 // to allow ambiguity between Sub and Negative
-// workaround for SubExpr/NegativeExpr conflict
-Sub { "-" }
-SubExpr { expression !_applySub Sub ~subOrNegative expression }
+// workaround for Sub/Negative conflict
+//Sub { "-" }
+//Sub { expression !_applySub Sub ~subOrNegative expression }
 
-ApplyExpr { expression !apply expression }
+// TODO more specific than expression?
+Apply { expression !apply expression }
 
-Negative { "-" }
-NegativeExpr { !negative Negative ~subOrNegative expression }
+negative { "-" }
+//Negative { !negative negative ~subOrNegative expression }
+Negative { !negative negative expression }
 
 // TODO allow interpolation
 // a.${x}.${y}
-AttrPathDot { "." }
-AttrPath { (string | Identifier) (!selectOrAttrPathDot AttrPathDot (string | Identifier))* }
+attrPathDot { "." }
+AttrPath { (string | Identifier) (!selectOrAttrPathDot attrPathDot (string | Identifier))* }
 
-Path { PathAbsolute | !pathRelative PathRelative | PathLibraryExpr | URI }
+Path { PathAbsolute | !pathRelative PathRelative | PathLibrary | Uri }
 
-HasAttr { "?" }
-HasAttrExpr { expression !hasAttr HasAttr AttrPath }
+hasAttr { "?" }
+HasAttr { expression !hasAttr hasAttr AttrPath }
 
-ConcatList { "++" }
-ConcatListExpr { expression !concatList ConcatList expression }
+concatList { "++" }
+ConcatList { expression !concatList concatList expression }
 
-Not { "!" }
-NotExpr { Not !not expression }
+not { "!" }
+Not { not !not expression }
 
-Update { "//" }
-UpdateExpr { expression !update Update expression }
+update { "//" }
+Update { expression !update update expression }
 
-compare { CompareGTExpr | CompareLTExpr | CompareGTEExpr | CompareLTEExpr }
+compare { CompareGT | CompareLT | CompareGTE | CompareLTE }
 
-CompareGT { ">" }
-CompareGTExpr { expression !compare CompareGT expression }
+compareGT { ">" }
+CompareGT { expression !compare compareGT expression }
 
-CompareLT { "<" }
-CompareLTExpr { expression !compare CompareLT expression }
+compareLT { "<" }
+CompareLT { expression !compare compareLT expression }
 
-CompareGTE { ">=" }
-CompareGTEExpr { expression !compare CompareGTE expression }
+compareGTE { ">=" }
+CompareGTE { expression !compare compareGTE expression }
 
-CompareLTE { "<=" }
-CompareLTEExpr { expression !compare CompareLTE expression }
+compareLTE { "<=" }
+CompareLTE { expression !compare compareLTE expression }
 
-equal { EqualExpr | NotEqualExpr }
+equal { "==" }
+Equal { expression !equal equal expression }
 
-Equal { "==" }
-EqualExpr { expression !equal Equal expression }
+notEqual { "!=" }
+NotEqual { expression !equal notEqual expression }
 
-NotEqual { "!=" }
-NotEqualExpr { expression !equal NotEqual expression }
+and { "&&" }
+And { expression !and and expression }
 
-And { "&&" }
-AndExpr { expression !and And expression }
+or { "||" }
+Or { expression !or or expression }
 
-Or { "||" }
-OrExpr { expression !or Or expression }
+imply { "->" }
+Imply { expression !imply imply expression }
 
-Imply { "->" }
-ImplyExpr { expression !imply Imply expression }
-
-Identifier { identifier }
-
-keyword<term> { @specialize[@name={term}]<identifier, term> }
 
 bool { True | False }
+// i need True False Null for my evaluator
+//Boolean { @specialize<Identifier, "true" | "false"> }
+True { @specialize<Identifier, "true"> }
+False { @specialize<Identifier, "false"> }
+Null { @specialize<Identifier, "null"> }
 
-IfExpr { If expression Then expression Else expression }
+//If { if expression then expression else expression }
+//IfExpr { kw<'if'> expression kw<'then'> expression kw<'else'> expression }
+If { kw<'if'> expression kw<'then'> expression kw<'else'> expression }
 
-AssertExprSemicolon { ";" }
-AssertExpr { Assert expression AssertExprSemicolon expression }
+//assertSemicolon { ";" }
+//Assert { assert expression assertSemicolon expression }
+//Assert { kw<"assert"> expression ";" exprFunction }
 
-WithExprSemicolon { ";" }
-WithExpr { With expression WithExprSemicolon expression }
+// FIXME keyword "assert" should be anonymous
+Assert { kw<"assert"> expression ";" expression }
 
-LetExpr { Let Attrs In expression }
-Attrs { attr* }
+
+exprFunction {
+  Function |
+  Assert |
+  With |
+  Let |
+  exprIf
+}
+
+//withSemicolon { ";" }
+//With { with expression withSemicolon expression }
+//With { kw<"with"> expression ";" exprFunction }
+With { kw<"with"> expression ";" expression }
+
+//Let { let Attrs in expression }
+//Attrs { attr* }
+//Let { kw<"let"> binds? kw<"in"> exprFunction }
+Let { kw<"let"> binds? kw<"in"> expression }
+
+
+binds { (Bind | inherit | inheritFrom)+ }
+Bind { AttrPath "=" expression ";" }
+inherit { kw<"inherit"> attrsInherited ";" }
+inheritFrom { kw<"inherit"> "(" expression ")" attrsInherited ";" }
+
 
 @external tokens stringBlock from "./tokens" {
   StringBlockContent,
@@ -217,16 +287,11 @@ Attrs { attr* }
 }
 
 @tokens {
-  Int {
-    std.digit+
-  }
-
-  Float {
-    ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)?
-  }
-  // fix: Overlapping tokens Int and Float
+  Integer { std.digit+ }
+  Float { ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)? }
+  // fix: Overlapping tokens Integer and Float
   // fix: Overlapping tokens Float and "."
-  @precedence { Float, Int, "." }
+  @precedence { Float, Integer, "." }
 
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
@@ -235,12 +300,15 @@ Attrs { attr* }
   stringInterpolationEnd { "}" }
 
   // note: nix allows minus in identifiers
-  identifier { identifierChar (identifierChar | std.digit | "-" )* }
-  identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+  Identifier { identifierChar (identifierChar | std.digit | "-" )* }
 
-  // fix error: Overlapping tokens identifier and whitespace
-  // TODO why overlapping? identifier is non-whitespace
-  @precedence { identifier, whitespace }
+  // TODO test
+  //identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+  identifierChar { std.asciiLetter }
+
+  // fix error: Overlapping tokens Identifier and whitespace
+  // TODO why overlapping? Identifier is non-whitespace
+  @precedence { Identifier, whitespace }
 
   whitespace { std.whitespace+ }
 
@@ -270,41 +338,99 @@ Attrs { attr* }
   // fix: Overlapping tokens PathRelative and "."
   @precedence { PathRelative, "." }
 
-  PathLibraryExpr { "<" PathLibrary ">" }
-  PathLibrary { pathContent }
+  // TODO angle braces as tokens
+  PathLibrary { "<" PathLibraryValue ">" }
+  PathLibraryValue { pathContent }
 
   // TODO add more special characters?
-  pathContent { (identifier | ".")+ ("/" (identifier | ".")+)* }
+  pathContent { (Identifier | ".")+ ("/" (Identifier | ".")+)* }
 
   uriSchema { std.asciiLetter (std.asciiLetter | std.digit | "+" | "-")* }
   uriPath { (std.asciiLetter | std.digit | "%" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," | "-" | "_" | "." | "!" | "~" | "*" | "'")+ }
-  URISchema { uriSchema }
-  URIPath { uriPath }
-  URI { URISchema ":" URIPath }
+  Uri { uriSchema ":" uriPath }
 
-  // fix: Overlapping tokens identifier and URI
-  @precedence { URI, identifier }
+  // fix: Overlapping tokens Identifier and Uri
+  @precedence { Uri, Identifier }
 
-  If { "if" }
-  Then { "then" }
-  Else { "else" }
-  Assert { "assert" }
-  With { "with" }
-  Let { "let" }
-  In { "in" }
-  Inherit { "inherit" }
-
-  False { "false" }
-  True { "true" }
-  Null { "null" }
-
-  // fix: Overlapping tokens identifier and x
+  // fix: Overlapping tokens Identifier and x
+  // better?
+  // kw<word> { @specialize[@name={word}]<Identifier, word> }
   @precedence {
-    If, Then, Else,
-    Assert, With, Let, In,
-    Inherit,
-    URI,
-    False, True, Null,
-    identifier
+    //if, then, else,
+    //assert,
+    //with,
+    //let,
+    //in,
+    //inherit,
+    //Uri,
+    //False, True, Null,
+    //Identifier
   }
 }
+
+
+
+// based on codemirror-lang-nix/src/syntax.grammar
+
+// named tokens
+//kw<word> { @specialize[@name={word}]<Identifier, word> }
+//keyword<term> { @specialize[@name={term}]<Identifier, term> }
+
+// anonymous tokens
+kw<word> { @specialize<Identifier, word> }
+keyword<term> { @specialize<Identifier, term> }
+
+attrsInherited {
+  (Identifier | String | Interpolation<"${">)+
+}
+
+Interpolation<start> { start expression "}" }
+
+exprIf {
+  //IfExpr |
+  If |
+  exprOp
+}
+
+exprOp {
+  binary |
+  unary |
+  exprApp
+}
+
+exprApp {
+  Apply |
+  exprSelect
+}
+
+exprSelect {
+  Select
+  // | exprSimple
+}
+
+exprSimple {
+  Identifier |
+  kw<"builtins"> |
+  Null |
+  Integer |
+  Float |
+
+  // FIXME? reduce/reduce conflict
+  // Boolean |
+  //True |
+  //False |
+  //String |
+  //StringBlock |
+
+  Path |
+  // HPath |
+  // SPath |
+  // URI |
+  Parenthesized |
+  AttrSet |
+  //LetAttrSet | # TODO
+  //RecAttrSet | # TODO
+  List
+}
+
+Parenthesized { "(" expression ")" }
