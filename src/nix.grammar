@@ -6,9 +6,248 @@
 // a.xxxxxxxxxxxxx.b { c = "d"; e = f; }  # ok
 // a.${xxxxxxxxxxxxx}.b { c = "d"; e = f; }  # broken
 
-@top Nix { expression? }
 
-expression {
+
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
+// based on nix/src/libexpr/parser.y
+// based on tree-sitter-nix/blob/master/grammar.js
+// based on tree-sitter-nix/blob/master/grammar.js
+// based on lezer-clojure/src/clojure.grammar
+
+
+
+@precedence {
+  prec_select @left,
+  prec_list @left,
+  prec_callSub @left, // workaround for Sub/Negative conflict
+  prec_apply @left,
+  prec_neg @left,
+  prec_hasAttr @left,
+  prec_concatLists @right,
+  prec_mul_div @left,
+  prec_plus @left,
+  prec_not @left,
+  prec_update @right,
+  prec_compare @left,
+  prec_equal @left,
+  prec_and @left,
+  prec_or @left,
+  prec_impl @right,
+
+  // FIXME?
+  prec_pathRelative @right,
+  prec_selectOrAttrPathDot
+}
+
+@skip {
+  whitespace |
+  Comment |
+  CommentBlock
+}
+
+@skip {} {
+  // String can be multiline, but then the indent is preserved
+  // StringBlock is similar to python docstrings -> indent is removed
+  string { String | StringBlock }
+  StringBlock {
+    stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
+  }
+  String {
+    stringStart (StringContent | StringInterpolation)* stringEnd
+  }
+}
+
+
+
+@top start { expr? }
+
+expr { expr_function }
+
+expr_function
+  { ExprLambda { Identifier ':' expr_function }
+  | ExprLambda { '{' formals '}' ':' expr_function }
+  | ExprLambda { '{' formals '}' '@' Identifier ':' expr_function }
+  | ExprLambda { Identifier '@' '{' formals '}' ':' expr_function }
+  | ExprAssert { ASSERT expr ';' expr_function }
+  | ExprWith { WITH expr ';' expr_function }
+  | ExprLet { LET binds IN expr_function }
+  | expr_if
+  }
+
+expr_if
+  { ExprIf { IF expr THEN expr ELSE expr }
+  | expr_op
+  }
+
+expr_op
+  { ExprOpNot         {          '!' expr_op !prec_not }
+  | ExprCallNeg       {          '-' expr_op !prec_neg }
+  | ExprOpEq          { expr_op !prec_equal '==' expr_op }
+  | ExprOpNEq         { expr_op !prec_equal '!=' expr_op }
+  | ExprCallLT        { expr_op !prec_compare '<'  expr_op }
+  | ExprCallLE        { expr_op !prec_compare '<=' expr_op }
+  | ExprCallGT        { expr_op !prec_compare '>'  expr_op }
+  | ExprCallGE        { expr_op !prec_compare '>=' expr_op }
+  | ExprOpAnd         { expr_op !prec_and '&&' expr_op }
+  | ExprOpOr          { expr_op !prec_or '||' expr_op }
+  | ExprOpImpl        { expr_op !prec_impl '->' expr_op }
+  | ExprOpUpdate      { expr_op !prec_update '//' expr_op }
+  | ExprOpHasAttr     { expr_op !prec_hasAttr '?' attrpath }
+  | ExprConcatStrings { expr_op !prec_plus '+'  expr_op } // Add
+  | ExprCallSub       { expr_op !prec_callSub '-'  expr_op }
+  | ExprCallMul       { expr_op !prec_mul_div '*'  expr_op }
+  | ExprCallDiv       { expr_op !prec_mul_div '/'  expr_op }
+  | ExprOpConcatLists { expr_op !prec_concatLists '++' expr_op }
+  | expr_app
+  }
+
+expr_app
+  { ExprCall { expr_app !prec_apply expr_select }
+  | expr_select
+  }
+
+expr_select
+  { ExprSelect { expr_simple !prec_select '.' attrpath }
+  | ExprSelect { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
+
+  // Backwards compatibility: because Nixpkgs has a rarely used
+  // function named ‘or’, allow stuff like ‘map or [...]’.
+  | ExprCallOr { expr_simple keyword<"or"> }
+
+  | expr_simple // TODO expr_simple { $$ = $1; }
+  }
+
+expr_simple
+  //{ ExprPos { "__curPos" }
+  { ExprPos { keyword<"__curPos"> }
+  | ExprVar { Identifier }
+  | ExprInt { INT }
+  | ExprFloat { FLOAT }
+  | String { '"' string_parts '"' }
+  | IndentedString { IND_STRING_OPEN ind_string_parts IND_STRING_CLOSE }
+  | Path { path_start PATH_END } // TODO path_start PATH_END { $$ = $1; }
+  | ExprConcatStrings { path_start string_parts_interpolated PATH_END }
+  | ExprCallStringPath { SPATH }
+  | ExprString { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
+  | ExprParens { '(' expr ')' }
+
+  // Let expressions `let {..., body = ...}' are just desugared
+  // into `(rec {..., body = ...}).body'.
+  | ExprSelectLetAttrSet { LET '{' binds '}' }
+
+  | ExprRecAttrSet { REC '{' binds '}' }
+  | ExprAttrSet { '{' binds '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
+  | ExprList { '[' expr? (!prec_list expr)* ']' }
+  }
+
+string_parts
+  { ExprString { STR }
+  | ExprConcatStrings { string_parts_interpolated }
+  | ExprString { "" } // TODO { $$ = new ExprString(""); }
+  }
+
+string_parts_interpolated
+  { ExprString { string_parts_interpolated STR }
+  | ExprStringTODO { string_parts_interpolated DOLLAR_CURLY expr '}' } // TODO $$ = $1; $1->emplace_back(makeCurPos(@2, data), $3);
+  | ExprStringTODO { DOLLAR_CURLY expr '}' } // TODO $$ = new std::vector<std::pair<PosIdx, Expr *>>; $$->emplace_back(makeCurPos(@1, data), $2);
+  | ExprStringTODO { STR DOLLAR_CURLY expr '}' }
+    // TODO
+    //  $$ = new std::vector<std::pair<PosIdx, Expr *>>;
+    //  $$->emplace_back(makeCurPos(@1, data), new ExprString(std::string($1)));
+    //  $$->emplace_back(makeCurPos(@2, data), $3);
+  |
+  |
+  }
+
+path_start
+  { ExprPath { PATH }
+  | ExprPath { HOME_PATH } // if evalSettings.pureEval: Error, the path '%s' can not be resolved in pure mode
+  }
+
+ind_string_parts
+  { StringToken { ind_string_parts IND_STR } // TODO $$ = $1; $1->emplace_back(makeCurPos(@2, data), $2);
+  | StringToken { ind_string_parts DOLLAR_CURLY expr '}' } // TODO $$ = $1; $1->emplace_back(makeCurPos(@2, data), $3);
+  }
+
+binds
+  { ExprAttrs
+    {
+      ( Attr { attrpath '=' expr ';' }
+      | AttrInherit { INHERIT attrs ';' }
+      | AttrInheritFrom { INHERIT '(' expr ')' attrs ';' } // !!! Should ensure sharing of the expression in $4.
+      )*
+    }
+  }
+
+attrs
+  { AttrPath
+    {
+      ( AttrName_ExprString { string_attr }
+      )*
+    }
+  }
+
+attrpath
+  {
+  |
+  |
+  |
+  }
+
+attrpath
+  { AttrName { attrpath '.' attr }
+  | AttrName_ExprString { attrpath '.' string_attr }
+  | AttrName { attr } // $$ = new std::vector<AttrName>; $$->push_back(AttrName(data->symbols.create($1)));
+  | AttrName_ExprString { string_attr }
+  }
+
+attr
+  { asdf { Identifier } // $$ = $1;
+  | asdf { OR_KW } // { $$ = {"or", 2}; }
+  }
+
+string_attr
+  { asdf { '"' string_parts '"' } // $$ = $2;
+  | asdf { DOLLAR_CURLY expr '}' } // $$ = $2;
+  }
+
+expr_list
+  { ExprList { expr_list expr_select } // $$ = $1; $1->elems.push_back($2); // !!! dangerous
+  }
+
+formals
+  { asdf { formal ',' formals } // { $$ = $3; $$->formals.push_back(*$1); }
+  { ParserFormals { formal }
+  { asdf { formal ',' formals }
+  |
+  }
+
+formals
+  : formal ',' formals
+    { $$ = $3; $$->formals.push_back(*$1); }
+  | formal
+    { $$ = new ParserFormals; $$->formals.push_back(*$1); $$->ellipsis = false; }
+  |
+    { $$ = new ParserFormals; $$->ellipsis = false; }
+  | ELLIPSIS
+    { $$ = new ParserFormals; $$->ellipsis = true; }
+  ;
+
+formal
+  : Identifier { $$ = new Formal{CUR_POS, data->symbols.create($1), 0}; }
+  | Identifier '?' expr { $$ = new Formal{CUR_POS, data->symbols.create($1), $3}; }
+  ;
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
+expr {
   Integer |
   Float |
   If |
@@ -19,7 +258,6 @@ expression {
   string |
   Path |
 
-  Braces |
   List |
   AttrSet |
   Select |
@@ -55,83 +293,44 @@ unary {
   Not
 }
 
-@precedence {
-  select @left,
-  _list @left,
-  // workaround for Sub/Negative conflict
-  _applySub @left,
-  apply @left,
-  negative @left,
-  hasAttr @left,
-  concatList @right,
-  times @left,
-  plus @left,
-  not @left,
-  update @right,
-  compare @left,
-  equal @left,
-  and @left,
-  or @left,
-  imply @right,
 
-  // FIXME?
-  pathRelative @right,
-  selectOrAttrPathDot
-}
 
-@skip {
-  whitespace |
-  Comment |
-  CommentBlock
-}
 
-@skip {} {
-  // String can be multiline, but then the indent is preserved
-  // StringBlock is similar to python docstrings -> indent is removed
-  string { String | StringBlock }
-  StringBlock {
-    stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
-  }
-  String {
-    stringStart (StringContent | StringInterpolation)* stringEnd
-  }
-}
+
+
 
 // TODO separate tokens for "${" and "}" of StringInterpolation etc
 
 // ''string ${expr} ''${escaped} string''
-StringBlockInterpolation { stringBlockInterpolationStart expression stringBlockInterpolationEnd }
+StringBlockInterpolation { stringBlockInterpolationStart expr stringBlockInterpolationEnd }
 
 // "string ${expr} \${escaped} string"
-StringInterpolation { stringInterpolationStart expression stringInterpolationEnd }
+StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
 
 braceOpen { "(" }
 braceClose { ")" }
-Braces { braceOpen expression braceClose }
-
-mul { "*" }
-Mul { expression !times mul expression }
+Braces { braceOpen expr braceClose }
 
 div { "/" }
-Div { expression !times div expression }
+Div { expr !times div expr }
 
 add { "+" }
-//Add { expression (!plus add expression)+ }
+//Add { expr (!plus add expr)+ }
 // Add is binary
-Add { expression !plus add expression }
+Add { expr !plus add expr }
 
 // Sub is not used
 // Negative has higher precedence than Sub, so 1-2 -> (1) (-2) -> Apply
-// nix parser/interpreter: Nix(Apply(__sub,Integer,Integer))
+// nix parser/interpreter: nix(Apply(__sub,Integer,Integer))
 //sub { "-" }
-//Sub { expression !plus sub expression }
+//Sub { expr !plus sub expr }
 
 listOpen { "[" }
 listClose { "]" }
-List { listOpen expression? (!_list expression)* listClose }
+List { listOpen expr? (!prec_list expr)* listClose }
 
 // aka Lambda
-Function { functionArgument expression }
+Function { functionArgument expr }
 functionArgument { (Identifier | Formals) colonWithSpace }
 
 // we need the ~curlyOpen marker
@@ -150,84 +349,73 @@ formalsAt { "@" }
 FormalsRest { "..." }
 Formal { Identifier FormalDefault? }
 formalDefault { "?" }
-FormalDefault { formalDefault expression }
-
-AttrSet { attrSetOpen ~curlyOpen (attr)* attrSetClose }
-attrSetOpen { "{" }
-attrSetClose { "}" }
-attr { Attr | AttrInherit | AttrInheritFrom }
-Attr { (string | Identifier | Select) "=" expression ";" }
-AttrInherit { inherit (Identifier | Select)+ ";" }
-AttrInheritFrom { "(" expression ")" (Identifier | Select)+ ";" }
+FormalDefault { formalDefault expr }
 
 // need marker ~selectOrAttrPathDot for ambiguity
 // between SelectDot and AttrPathDot
 selectDot { "." }
-Select { (string | Identifier) !selectOrAttrPathDot selectDot AttrPath SelectDefault? }
+Select { (string | Identifier) !prec_selectOrAttrPathDot selectDot AttrPath SelectDefault? }
 
 selectOr { keyword<"or"> }
-SelectDefault { selectOr expression }
+SelectDefault { selectOr expr }
 
 // we need the ~subOrNegative marker
 // to allow ambiguity between Sub and Negative
 // workaround for Sub/Negative conflict
 //Sub { "-" }
-//Sub { expression !_applySub Sub ~subOrNegative expression }
+//Sub { expr !_applySub Sub ~subOrNegative expr }
 
-// TODO more specific than expression?
-Apply { expression !apply expression }
+// TODO more specific than expr?
+Apply { expr !apply expr }
 
 negative { "-" }
-//Negative { !negative negative ~subOrNegative expression }
-Negative { !negative negative expression }
+//Negative { !negative negative ~subOrNegative expr }
+Negative { !negative negative expr }
 
 // TODO allow interpolation
 // a.${x}.${y}
 attrPathDot { "." }
-AttrPath { (string | Identifier) (!selectOrAttrPathDot attrPathDot (string | Identifier))* }
+AttrPath { (string | Identifier) (!prec_selectOrAttrPathDot attrPathDot (string | Identifier))* }
 
-Path { PathAbsolute | !pathRelative PathRelative | PathLibrary | Uri }
+Path { PathAbsolute | !prec_pathRelative PathRelative | PathLibrary | Uri }
 
 hasAttr { "?" }
-HasAttr { expression !hasAttr hasAttr AttrPath }
-
-concatList { "++" }
-ConcatList { expression !concatList concatList expression }
+HasAttr { expr !hasAttr hasAttr AttrPath }
 
 not { "!" }
-Not { not !not expression }
+Not { not !not expr }
 
 update { "//" }
-Update { expression !update update expression }
+Update { expr !update update expr }
 
 compare { CompareGT | CompareLT | CompareGTE | CompareLTE }
 
 compareGT { ">" }
-CompareGT { expression !compare compareGT expression }
+CompareGT { expr !compare compareGT expr }
 
 compareLT { "<" }
-CompareLT { expression !compare compareLT expression }
+CompareLT { expr !compare compareLT expr }
 
 compareGTE { ">=" }
-CompareGTE { expression !compare compareGTE expression }
+CompareGTE { expr !compare compareGTE expr }
 
 compareLTE { "<=" }
-CompareLTE { expression !compare compareLTE expression }
+CompareLTE { expr !compare compareLTE expr }
 
 equal { "==" }
-Equal { expression !equal equal expression }
+Equal { expr !equal equal expr }
 
 notEqual { "!=" }
-NotEqual { expression !equal notEqual expression }
+NotEqual { expr !equal notEqual expr }
 
 and { "&&" }
-And { expression !and and expression }
+And { expr !and and expr }
 
 or { "||" }
-Or { expression !or or expression }
+Or { expr !or or expr }
 
 imply { "->" }
-Imply { expression !imply imply expression }
+Imply { expr !imply imply expr }
 
 
 bool { True | False }
@@ -237,16 +425,16 @@ True { @specialize<Identifier, "true"> }
 False { @specialize<Identifier, "false"> }
 Null { @specialize<Identifier, "null"> }
 
-//If { if expression then expression else expression }
-//IfExpr { kw<'if'> expression kw<'then'> expression kw<'else'> expression }
-If { kw<'if'> expression kw<'then'> expression kw<'else'> expression }
+//If { if expr then expr else expr }
+//IfExpr { kw<'if'> expr kw<'then'> expr kw<'else'> expr }
+If { kw<'if'> expr kw<'then'> expr kw<'else'> expr }
 
 //assertSemicolon { ";" }
-//Assert { assert expression assertSemicolon expression }
-//Assert { kw<"assert"> expression ";" exprFunction }
+//Assert { assert expr assertSemicolon expr }
+//Assert { kw<"assert"> expr ";" exprFunction }
 
 // FIXME keyword "assert" should be anonymous
-Assert { kw<"assert"> expression ";" expression }
+Assert { kw<"assert"> expr ";" expr }
 
 
 exprFunction {
@@ -258,20 +446,20 @@ exprFunction {
 }
 
 //withSemicolon { ";" }
-//With { with expression withSemicolon expression }
-//With { kw<"with"> expression ";" exprFunction }
-With { kw<"with"> expression ";" expression }
+//With { with expr withSemicolon expr }
+//With { kw<"with"> expr ";" exprFunction }
+With { kw<"with"> expr ";" expr }
 
-//Let { let Attrs in expression }
+//Let { let Attrs in expr }
 //Attrs { attr* }
 //Let { kw<"let"> binds? kw<"in"> exprFunction }
-Let { kw<"let"> binds? kw<"in"> expression }
+Let { kw<"let"> binds? kw<"in"> expr }
 
 
 binds { (Bind | inherit | inheritFrom)+ }
-Bind { AttrPath "=" expression ";" }
+Bind { AttrPath "=" expr ";" }
 inherit { kw<"inherit"> attrsInherited ";" }
-inheritFrom { kw<"inherit"> "(" expression ")" attrsInherited ";" }
+inheritFrom { kw<"inherit"> "(" expr ")" attrsInherited ";" }
 
 
 @external tokens stringBlock from "./tokens" {
@@ -384,7 +572,7 @@ attrsInherited {
   (Identifier | String | Interpolation<"${">)+
 }
 
-Interpolation<start> { start expression "}" }
+Interpolation<start> { start expr "}" }
 
 exprIf {
   //IfExpr |
@@ -433,4 +621,4 @@ exprSimple {
   List
 }
 
-Parenthesized { "(" expression ")" }
+Parenthesized { "(" expr ")" }
