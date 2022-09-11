@@ -37,7 +37,7 @@ Nix (
 1+2
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     Integer,
     Integer
   )
@@ -47,7 +47,7 @@ Nix (
 1 + 2
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     Integer,
     Integer
   )
@@ -134,7 +134,7 @@ Nix (
 1*2+3
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     Mul (
       Integer,
       Integer
@@ -252,7 +252,7 @@ Nix (
 "a" + "b"
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     String (
       StringContent
     ),
@@ -266,11 +266,11 @@ Nix (
 "a" + "b" + "c"
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     String (
       StringContent
     ),
-    Add (
+    ConcatStrings (
       String (
         StringContent
       ),
@@ -499,11 +499,11 @@ Nix (
 ''
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     StringBlock (
       StringBlockContent
     ),
-    Add (
+    ConcatStrings (
       StringBlock (
         StringBlockContent
       ),
@@ -522,7 +522,7 @@ Nix (
 ''
 ==>
 Nix (
-  Add (
+  ConcatStrings (
     StringBlock (
       StringBlockContent,
       StringBlockInterpolation (
