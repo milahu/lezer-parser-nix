@@ -19,6 +19,11 @@ To watch & test, with [entr](http://eradman.com/entrproject/) installed run `npm
 
 * [nixos-config-webui](https://github.com/milahu/nixos-config-webui) - web editor for nix files
 
+## similar projects
+
+* [codemirror-lang-nix](https://github.com/replit/codemirror-lang-nix) - nix language for codemirror editor
+  * [syntax.grammar](https://github.com/replit/codemirror-lang-nix/blob/main/src/syntax.grammar) - nix grammar for lezer parser
+
 ## related
 
 this project is based on
