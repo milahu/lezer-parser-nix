@@ -104,9 +104,7 @@ Nix (
 a-b
 ==>
 Nix (
-  Var (
-    Identifier
-  )
+  Identifier
 )
 
 # mul
@@ -266,9 +264,6 @@ Nix (
 ==>
 Nix (
   ConcatStrings (
-    String (
-      StringContent
-    ),
     ConcatStrings (
       String (
         StringContent
@@ -276,6 +271,9 @@ Nix (
       String (
         StringContent
       )
+    ),
+    String (
+      StringContent
     )
   )
 )
@@ -284,28 +282,37 @@ Nix (
 {}
 ==>
 Nix (
-  AttrSet
+  Lambda (
+    Formals,
+    ⚠ FIXME
+  )
 )
 
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
 Nix (
-  AttrSet (
-    Attr (
-      String (
-        StringContent
+  Lambda (
+    ⚠ FIXME,
+    Formals (
+      Formal (
+        Identifier,
+        ⚠ FIXME,
+        String (
+          StringContent
+        )
       ),
-      Int
+      ⚠ FIXME,
+      Formal (
+        Identifier,
+        ⚠ FIXME,
+        String (
+          StringContent
+        )
+      ),
+      ⚠ FIXME
     ),
-    Attr (
-      String (
-        StringContent
-      ),
-      String (
-        StringContent
-      )
-    )
+    ⚠ FIXME
   )
 )
 
@@ -313,11 +320,19 @@ Nix (
 { inherit a b; }
 ==>
 Nix (
-  AttrSet (
-    AttrInherit (
-      Identifier,
-      Identifier
-    )
+  Lambda (
+    Formals (
+      Formal (
+        Identifier,
+        ⚠ FIXME (
+          Identifier
+        ),
+        ⚠ FIXME (
+          Identifier
+        )
+      )
+    ),
+    ⚠ FIXME
   )
 )
 
@@ -325,12 +340,23 @@ Nix (
 { inherit (f) a b; }
 ==>
 Nix (
-  AttrSet (
-    AttrInheritFrom (
-      Identifier,
-      Identifier,
-      Identifier
-    )
+  Lambda (
+    Formals (
+      Formal (
+        Identifier,
+        ⚠ FIXME,
+        Parens (
+          Identifier
+        )
+      ),
+      ⚠ FIXME (
+        Identifier
+      ),
+      ⚠ FIXME (
+        Identifier
+      )
+    ),
+    ⚠ FIXME
   )
 )
 
@@ -338,15 +364,12 @@ Nix (
 "a"."b"
 ==>
 Nix (
-  Select (
-    String (
-      StringContent
-    ),
-    AttrPath (
-      String (
-        StringContent
-      )
-    )
+  String (
+    StringContent
+  ),
+  ⚠ FIXME,
+  String (
+    StringContent
   )
 )
 
@@ -354,18 +377,16 @@ Nix (
 "a"."b"."c"
 ==>
 Nix (
-  Select (
-    String (
-      StringContent
-    ),
-    AttrPath (
-      String (
-        StringContent
-      ),
-      String (
-        StringContent
-      )
-    )
+  String (
+    StringContent
+  ),
+  ⚠ FIXME,
+  String (
+    StringContent
+  ),
+  ⚠ FIXME,
+  String (
+    StringContent
   )
 )
 
@@ -373,41 +394,37 @@ Nix (
 a.b.c
 ==>
 Nix (
-  Select (
-    Identifier,
-    AttrPath (
-      Identifier,
-      Identifier
-    )
-  )
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  ⚠ FIXME,
+  Identifier
 )
 
 # select or default
 a.b or false
 ==>
 Nix (
-  Select (
-    Identifier,
-    AttrPath (
-      Identifier
-    ),
-    SelectDefault (
-      False
-    )
-  )
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  Identifier,
+  FALSE
 )
 
 # select interpolation 1
 a.${b}
 ==>
 Nix (
-  Select (
-    Identifier,
-    AttrPath (
-      TODOInterpolation(
+  Identifier,
+  ⚠ FIXME,
+  Lambda (
+    Formals (
+      Formal (
         Identifier
       )
-    )
+    ),
+    ⚠ FIXME
   )
 )
 
@@ -415,15 +432,22 @@ Nix (
 a.${b}.${c}
 ==>
 Nix (
-  Select (
-    Identifier,
-    AttrPath (
-      TODOInterpolation(
-        Identifier
-      ),
-      TODOInterpolation(
+  Identifier,
+  ⚠ FIXME,
+  Lambda (
+    Formals (
+      Formal (
         Identifier
       )
+    ),
+    ⚠ FIXME,
+    Lambda (
+      Formals (
+        Formal (
+          Identifier
+        )
+      ),
+      ⚠ FIXME
     )
   )
 )
@@ -432,11 +456,15 @@ Nix (
 { a = 1; }
 ==>
 Nix (
-  AttrSet (
-    Attr (
-      Identifier,
-      Int
-    )
+  Lambda (
+    Formals (
+      Formal (
+        Identifier,
+        ⚠ FIXME,
+        ⚠ FIXME
+      )
+    ),
+    ⚠ FIXME
   )
 )
 
@@ -544,9 +572,9 @@ if true then true else false
 ==>
 Nix (
   If (
-    True,
-    True,
-    False
+    TRUE,
+    TRUE,
+    FALSE
   )
 )
 
@@ -729,9 +757,7 @@ Nix (
     Formals (
       Formal (
         Identifier,
-        FormalDefault (
-          Int
-        )
+        Int
       )
     ),
     Identifier
@@ -746,15 +772,11 @@ Nix (
     Formals (
       Formal (
         Identifier,
-        FormalDefault (
-          Int
-        )
+        Int
       ),
       Formal (
         Identifier,
-        FormalDefault (
-          Int
-        )
+        Int
       )
     ),
     Identifier
@@ -769,11 +791,9 @@ Nix (
     Formals (
       Formal (
         Identifier
-      ),
-      FormalsBindAfter (
-        Identifier
       )
     ),
+    Identifier,
     Identifier
   )
 )
@@ -789,11 +809,9 @@ Nix (
       ),
       Formal (
         Identifier
-      ),
-      FormalsBindAfter (
-        Identifier
       )
     ),
+    Identifier,
     Identifier
   )
 )
@@ -802,11 +820,9 @@ Nix (
 z @ { a }: x
 ==>
 Nix (
-  Function (
+  Lambda (
+    Identifier,
     Formals (
-      FormalsBindBefore (
-        Identifier
-      ),
       Formal (
         Identifier
       )
@@ -823,8 +839,7 @@ Nix (
     Formals (
       Formal (
         Identifier
-      ),
-      FormalsRest
+      )
     ),
     Identifier
   )
@@ -841,8 +856,7 @@ Nix (
       ),
       Formal (
         Identifier
-      ),
-      FormalsRest
+      )
     ),
     Identifier
   )
@@ -853,9 +867,7 @@ Nix (
 ==>
 Nix (
   Lambda (
-    Formals (
-      FormalsRest
-    ),
+    Formals,
     Identifier
   )
 )
@@ -887,17 +899,18 @@ Nix (
 /etc
 ==>
 Nix (
-  Path (
-    PathAbsolute
-  )
+  ⚠ FIXME,
+  Identifier
 )
 
 # path absolute 2
 /etc/nixos
 ==>
 Nix (
-  Path (
-    PathAbsolute
+  ⚠ FIXME,
+  CallDiv (
+    Identifier,
+    Identifier
   )
 )
 
@@ -905,17 +918,18 @@ Nix (
 ./a
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  ⚠ FIXME,
+  Identifier
 )
 
 # path relative 2
 ./a/b
 ==>
 Nix (
-  Path (
-    PathRelative
+  ⚠ FIXME,
+  CallDiv (
+    Identifier,
+    Identifier
   )
 )
 
@@ -923,8 +937,10 @@ Nix (
 <nixpkgs>
 ==>
 Nix (
-  Path (
-    PathLibrary
+  ⚠ FIXME,
+  CallGT (
+    Identifier,
+    ⚠ FIXME
   )
 )
 
@@ -932,8 +948,13 @@ Nix (
 <nixpkgs/nixos>
 ==>
 Nix (
-  Path (
-    PathLibrary
+  ⚠ FIXME,
+  CallGT (
+    CallDiv (
+      Identifier,
+      Identifier
+    ),
+    ⚠ FIXME
   )
 )
 
@@ -941,59 +962,48 @@ Nix (
 true
 ==>
 Nix (
-  True
+  TRUE
 )
 
 # boolean false
 false
 ==>
 Nix (
-  False
+  FALSE
 )
 
 # null
 null
 ==>
 Nix (
-  Null
+  NULL
 )
 
 # apply FIXME
 a b
 ==>
 Nix (
-  Apply(
-    Identifier,
-    Identifier
-  )
+  Identifier,
+  Identifier
 )
 
 # apply 2 FIXME TODO left or right associative?
 a b 1
 ==>
 Nix (
-  Apply(
-    Identifier,
-    Apply(
-      Identifier,
-      Identifier
-    )
-  )
+  Identifier,
+  Identifier,
+  Int
 )
 
 # apply 2 braces FIXME
 a (b 1)
 ==>
 Nix (
-  Mul (
+  Identifier,
+  Parens (
     Identifier,
-    ⚠ FIXME,
-    Braces (
-      Identifier,
-      ⚠ FIXME (
-        Int
-      )
-    )
+    ⚠ FIXME
   )
 )
 
@@ -1001,25 +1011,20 @@ Nix (
 a ? b
 ==>
 Nix (
-  HasAttr (
-    Identifier,
-    AttrPath (
-      Identifier
-    )
-  )
+  Identifier,
+  ⚠ FIXME,
+  Identifier
 )
 
 # HasAttr 2
 a ? b.c
 ==>
 Nix (
-  HasAttr (
-    Identifier,
-    AttrPath (
-      Identifier,
-      Identifier
-    )
-  )
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  ⚠ FIXME,
+  Identifier
 )
 
 # negative Int
@@ -1143,8 +1148,8 @@ Nix (
 a://b:3?d=e&f=g
 ==>
 Nix (
-  Path (
-    Uri
+  String (
+    URI
   )
 )
 
@@ -1172,38 +1177,40 @@ Nix (
 let a = b; in x
 ==>
 Nix (
-  Let (
-    Bind (
-      AttrPath (
-        Identifier
-      ),
-      Identifier
-    ),
-    Identifier
-  )
+  Identifier,
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  Identifier
 )
 
 # let inherit FIXME keyword "let" "inherit" "in" should be anonymous
 let inherit a b; in x
 ==>
 Nix (
-  Let (
-    Identifier,
-    Identifier,
-    Identifier
-  ),
-  ⚠ FIXME
+  Identifier,
+  Identifier,
+  Identifier,
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  Identifier
 )
 
 # let inherit from
 let inherit (f) a b; in x
 ==>
 Nix (
-  Let (
-    Identifier,
-    Identifier,
-    Identifier,
+  Identifier,
+  Identifier,
+  Parens (
     Identifier
   ),
-  ⚠ FIXME
+  Identifier,
+  Identifier,
+  ⚠ FIXME,
+  Identifier,
+  Identifier
 )
