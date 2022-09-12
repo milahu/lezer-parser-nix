@@ -59,7 +59,8 @@ expr_app
 expr_select
   {
     Select { expr_simple !prec_select '.' attrpath }
-    | Select { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
+    //| Select { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
+    | SelectOr { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
 
   // FIXME test
   //
@@ -80,7 +81,28 @@ expr_select
   //
   // Backwards compatibility: because Nixpkgs has a rarely used
   // function named ‘or’, allow stuff like ‘map or [...]’.
-    | CallOr { expr_simple keyword<"or"> expr_simple }
+
+
+
+    // FIXME how does "or" work in nix?
+    // nix-repl> __sub or __mul 
+    // error: undefined variable 'or'
+    //
+    // https://nixery.dev/nix-1p.html#overrides--overlays
+    // 
+    // someProgram.overrideAttrs(old: {
+    //     configureFlags = old.configureFlags or [] ++ ["--mimic-threaten-tag"];
+    // })
+    // 
+    // Note the use of the `or` operator
+    // to default to an empty list
+    // if the original flags do not include `configureFlags`.
+    // This is required in case a package does not set any flags by itself.
+
+    // no. see SelectOr
+    ///////| CallOr { expr_simple keyword<"or"> expr_simple }
+
+
 
     | expr_simple // TODO expr_simple { $$ = $1; }
   }
