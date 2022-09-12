@@ -442,7 +442,7 @@ Nix (
       Identifier,
       Int
     ),
-    ⚠ ❌ FIXME,
+    ⚠,
     String (
       StringContent
     )
@@ -504,7 +504,7 @@ Nix (
   )
 )
 
-# ⚠ string block with empty interpolation single line
+# string block with empty interpolation single line
 ''a${}b''
 ==>
 Nix (
@@ -517,7 +517,7 @@ Nix (
   )
 )
 
-# ⚠ string block with comment in interpolation single line
+# string block with comment in interpolation single line
 ''a${/* hello */}b''
 ==>
 Nix (
