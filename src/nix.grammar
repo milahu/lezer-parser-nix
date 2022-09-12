@@ -53,7 +53,7 @@ expr_select
 
 expr_simple
   { Pos { keyword<"__curPos"> }
-  | Identifier // TODO? Var { Identifier }
+  | Var { Identifier }
   | Int { integer }
   | Float { float }
   | TRUE
