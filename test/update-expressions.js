@@ -68,28 +68,53 @@ for (let file of fs.readdirSync(caseDir)) {
   let fileContent = fs.readFileSync(filePath, "utf8")
   const result = []
   for (let testData of fileTests(fileContent, file)) {
-    const { name, text, configStr, strict } = testData;
+    const { name, text, expected: oldExpected, configStr, strict } = testData;
     const tree = parser.parse(testData.text);
     const stringifyOptions = writePrettyTree && { pretty: true, text };
-    const actual = stringifyTree(tree, stringifyOptions);
+    const newExpected = stringifyTree(tree, stringifyOptions);
     if (name == 'string block with empty interpolation single line') {
       console.dir(testData)
     }
+    result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${newExpected}`)
+
+    const oldExpectedErrors = (oldExpected.match(/⚠/g) || []).length;
+    const newExpectedErrors = (newExpected.match(/⚠/g) || []).length;
+
+    if (oldExpectedErrors != newExpectedErrors) {
+      console.log(`# ${name}\n# error count changed: ${oldExpectedErrors} -> ${newExpectedErrors}\n# old expected:\n${oldExpected}\n# new expected:\n${newExpected}\n`)
+    }
+
+    /* too complex. simple: log to console if error count has changed vs the last version
     // WONTFIX?
     // parse error -> make test fail by adding " ☹ FIXME"
-    // note: to test for parse errors, add ⚠ to test name
+    // note: to test for parse errors, add ⚠ to the test name
     // other error symbols: ❌ 🚫 ☹ ⚐ ⛔ 🐞
     // note: strict is useless here
     //   let strict = !/⚠|\.\.\./.test(expected)
-    const isFailing = /⚠|\.\.\./.test(actual) // TODO do we need to test for "..."?
-    const shouldFailMarker = ' ❌ FIXME';
-    const shouldFail = (actual.indexOf(shouldFailMarker) > -1);
-    // NOTE allowFailByName is a custom convention we use here,
+    const isFailing = /⚠|\.\.\./.test(newExpected) // TODO do we need to test for "..."?
+    const shouldFailMarker = '❌ FIXME this test should fail. if this test should pass, remove ⚠ from the test name\n';
+    const shouldPassMarker = '❌ FIXME this test should pass. if this test should fail, add ⚠ to the test name\n';
+    
+    // FIXME
+    const shouldFail = (newExpected.indexOf(shouldFailMarker) > -1);
+    const hasMarker = (newExpected.indexOf(shouldFailMarker) > -1) || (newExpected.indexOf(shouldPassMarker) > -1);
+
+    // NOTE oldExpectedErrors is a custom convention we use here,
     // to mark tests with known parse errors.
     // this is non-standard, but useful for this script.
-    const allowFailByName = /⚠/.test(name)
-    const actualWithFixme = (isFailing && !shouldFail && !allowFailByName) ? actual.replace(/⚠/g, '⚠'+shouldFailMarker) : actual;
+    const oldExpectedErrors = (name.match(/⚠/g) || []).length;
+    const actualErrors = (newExpected.match(/⚠/g) || []).length;
+    let actualWithFixme = newExpected;
+    if (oldExpectedErrors != actualErrors) {
+      const shouldWhat = (oldExpectedErrors > 0) ? 'fail' : 'pass';
+      const helpMessage = (
+        '\n❌ if this test should pass, remove all ⚠ from the test name.' +
+        '\n❌ if this test should fail, add ⚠ to the test name, one ⚠ for each error.'
+      );
+      actualWithFixme = `❌ FIXME this test should ${shouldWhat}. expected ${oldExpectedErrors} errors, actual ${actualErrors} errors.${helpMessage}\n` + actualWithFixme;
+    }
     result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${actualWithFixme}`)
+    */
   }
   const newFileContent = result.join("\n\n") + "\n";
   // TODO backup?
