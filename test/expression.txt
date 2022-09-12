@@ -1475,3 +1475,10 @@ Nix (
     )
   )
 )
+
+# Primop
+__add
+==>
+Nix (
+  Primop
+)

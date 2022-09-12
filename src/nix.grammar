@@ -54,6 +54,7 @@ expr_select
 expr_simple
   { Pos { keyword<"__curPos"> }
   | Var { Identifier }
+  | Primop { primop }
   | Int { integer }
   | Float { float }
   | TRUE
@@ -267,3 +268,86 @@ _REC { keyword<"rec"> }
   uriPath { (std.asciiLetter | std.digit | "%" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," | "-" | "_" | "." | "!" | "~" | "*" | "'")+ }
   @precedence { URI, Identifier }
 }
+
+
+
+// cat nix/src/libexpr/primops.cc | grep '.name = "__' | cut -d'"' -f2 | sed -E 's/^(.*)$/  | "\1"/'
+
+primop
+  { "__typeOf"
+  | "__isFunction"
+  | "__isInt"
+  | "__isFloat"
+  | "__isString"
+  | "__isBool"
+  | "__isPath"
+  | "__genericClosure"
+  | "__addErrorContext"
+  | "__ceil"
+  | "__floor"
+  | "__tryEval"
+  | "__getEnv"
+  | "__seq"
+  | "__deepSeq"
+  | "__trace"
+  | "__toPath"
+  | "__storePath"
+  | "__pathExists"
+  | "__readFile"
+  | "__findFile"
+  | "__hashFile"
+  | "__readDir"
+  | "__toXML"
+  | "__toJSON"
+  | "__fromJSON"
+  | "__toFile"
+  | "__filterSource"
+  | "__path"
+  | "__attrNames"
+  | "__attrValues"
+  | "__getAttr"
+  | "__unsafeGetAttrPos"
+  | "__hasAttr"
+  | "__isAttrs"
+  | "__listToAttrs"
+  | "__intersectAttrs"
+  | "__catAttrs"
+  | "__functionArgs"
+  | "__mapAttrs"
+  | "__zipAttrsWith"
+  | "__isList"
+  | "__elemAt"
+  | "__head"
+  | "__tail"
+  | "__filter"
+  | "__elem"
+  | "__concatLists"
+  | "__length"
+  | "__foldl'"
+  | "__any"
+  | "__all"
+  | "__genList"
+  | "__sort"
+  | "__partition"
+  | "__groupBy"
+  | "__concatMap"
+  | "__add"
+  | "__sub"
+  | "__mul"
+  | "__div"
+  | "__bitAnd"
+  | "__bitOr"
+  | "__bitXor"
+  | "__lessThan"
+  | "__substring"
+  | "__stringLength"
+  | "__hashString"
+  | "__match"
+  | "__split"
+  | "__concatStringsSep"
+  | "__replaceStrings"
+  | "__parseDrvName"
+  | "__compareVersions"
+  | "__splitVersion"
+  | "__traceVerbose"
+  }
