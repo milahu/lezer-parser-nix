@@ -72,9 +72,10 @@ for (let file of fs.readdirSync(caseDir)) {
     const tree = parser.parse(testData.text);
     const stringifyOptions = writePrettyTree && { pretty: true, text };
     const newExpected = stringifyTree(tree, stringifyOptions);
-    if (name == 'string block with empty interpolation single line') {
-      console.dir(testData)
-    }
+    // debug
+    //if (name == 'some test name') {
+    //  console.dir(testData)
+    //}
     result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${newExpected}`)
 
     const oldExpectedErrors = (oldExpected.match(/⚠/g) || []).length;
