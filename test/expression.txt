@@ -316,6 +316,18 @@ Nix (
   )
 )
 
+# attrset empty key
+{ "" = 1; }
+==>
+Nix (
+  AttrSet (
+    Attr (
+      String,
+      Int
+    )
+  )
+)
+
 # attrset inherit FIXME
 { inherit a b; }
 ==>
