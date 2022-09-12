@@ -17,7 +17,7 @@ function toLineContext(file, index) {
 }
 const defaultIgnore = false
 function fileTests(file, fileName, mayIgnore = defaultIgnore) {
-  let caseExpr = /\s*#\s*(.*)(?:\r\n|\r|\n)([^]*?)==+>([^]*?)(?:$|(?:\r\n|\r|\n)+(?=#))/gy
+  let caseExpr = /#[ \t]*(.*)(?:\r\n|\r|\n)([^]*?)==+>([^]*?)(?:$|(?:\r\n|\r|\n)+(?=#))/gy
   let tests = []
   let lastIndex = 0;
   for (;;) {
