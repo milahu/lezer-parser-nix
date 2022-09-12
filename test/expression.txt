@@ -215,9 +215,11 @@ Nix (
 ==>
 Nix (
   List (
-    Int,
-    String (
-      StringContent
+    Call (
+      Int,
+      String (
+        StringContent
+      )
     )
   )
 )
@@ -282,37 +284,28 @@ Nix (
 {}
 ==>
 Nix (
-  Lambda (
-    Formals,
-    ⚠ FIXME
-  )
+  AttrSet
 )
 
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
 Nix (
-  Lambda (
-    ⚠ FIXME,
-    Formals (
-      Formal (
-        Identifier,
-        ⚠ FIXME,
-        String (
-          StringContent
-        )
+  AttrSet (
+    Attr (
+      String (
+        StringContent
       ),
-      ⚠ FIXME,
-      Formal (
-        Identifier,
-        ⚠ FIXME,
-        String (
-          StringContent
-        )
-      ),
-      ⚠ FIXME
+      Int
     ),
-    ⚠ FIXME
+    Attr (
+      String (
+        StringContent
+      ),
+      String (
+        StringContent
+      )
+    )
   )
 )
 
@@ -334,29 +327,23 @@ Nix (
 Nix (
   AttrSet (
     Attr (
-      String,
+      String (
+        StringContent
+      ),
       Int
     )
   )
 )
 
-# attrset inherit FIXME
+# attrset inherit
 { inherit a b; }
 ==>
 Nix (
-  Lambda (
-    Formals (
-      Formal (
-        Identifier,
-        ⚠ FIXME (
-          Identifier
-        ),
-        ⚠ FIXME (
-          Identifier
-        )
-      )
-    ),
-    ⚠ FIXME
+  AttrSet (
+    AttrInherit (
+      Identifier,
+      Identifier
+    )
   )
 )
 
@@ -364,30 +351,21 @@ Nix (
 { inherit; }
 ==>
 Nix (
-  AttrSet
+  AttrSet (
+    AttrInherit
+  )
 )
 
 # attrset inherit from
 { inherit (f) a b; }
 ==>
 Nix (
-  Lambda (
-    Formals (
-      Formal (
-        Identifier,
-        ⚠ FIXME,
-        Parens (
-          Identifier
-        )
-      ),
-      ⚠ FIXME (
-        Identifier
-      ),
-      ⚠ FIXME (
-        Identifier
-      )
-    ),
-    ⚠ FIXME
+  AttrSet (
+    AttrInheritFrom (
+      Identifier,
+      Identifier,
+      Identifier
+    )
   )
 )
 
@@ -395,12 +373,13 @@ Nix (
 "a"."b"
 ==>
 Nix (
-  String (
-    StringContent
-  ),
-  ⚠ FIXME,
-  String (
-    StringContent
+  Select (
+    String (
+      StringContent
+    ),
+    String (
+      StringContent
+    )
   )
 )
 
@@ -408,16 +387,16 @@ Nix (
 "a"."b"."c"
 ==>
 Nix (
-  String (
-    StringContent
-  ),
-  ⚠ FIXME,
-  String (
-    StringContent
-  ),
-  ⚠ FIXME,
-  String (
-    StringContent
+  Select (
+    String (
+      StringContent
+    ),
+    String (
+      StringContent
+    ),
+    String (
+      StringContent
+    )
   )
 )
 
@@ -425,37 +404,22 @@ Nix (
 a.b.c
 ==>
 Nix (
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  ⚠ FIXME,
-  Identifier
-)
-
-# select or default
-a.b or false
-==>
-Nix (
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  Identifier,
-  FALSE
+  Select (
+    Identifier,
+    Identifier,
+    Identifier
+  )
 )
 
 # select interpolation 1
 a.${b}
 ==>
 Nix (
-  Identifier,
-  ⚠ FIXME,
-  Lambda (
-    Formals (
-      Formal (
-        Identifier
-      )
-    ),
-    ⚠ FIXME
+  Select (
+    Identifier,
+    AttrInterpolation (
+      Identifier
+    )
   )
 )
 
@@ -463,22 +427,13 @@ Nix (
 a.${b}.${c}
 ==>
 Nix (
-  Identifier,
-  ⚠ FIXME,
-  Lambda (
-    Formals (
-      Formal (
-        Identifier
-      )
+  Select (
+    Identifier,
+    AttrInterpolation (
+      Identifier
     ),
-    ⚠ FIXME,
-    Lambda (
-      Formals (
-        Formal (
-          Identifier
-        )
-      ),
-      ⚠ FIXME
+    AttrInterpolation (
+      Identifier
     )
   )
 )
@@ -487,15 +442,11 @@ Nix (
 { a = 1; }
 ==>
 Nix (
-  Lambda (
-    Formals (
-      Formal (
-        Identifier,
-        ⚠ FIXME,
-        ⚠ FIXME
-      )
-    ),
-    ⚠ FIXME
+  AttrSet (
+    Attr (
+      Identifier,
+      Int
+    )
   )
 )
 
@@ -527,28 +478,29 @@ Nix (
   )
 )
 
-# string block with empty interpolation single line
+# ⚠ string block with empty interpolation single line
 ''a${}b''
 ==>
 Nix (
   IndentedString (
     StringBlockContent,
     StringBlockInterpolation (
-      FIXME parse error
+      ⚠
     ),
     StringBlockContent
   )
 )
 
-# string block with comment in interpolation single line
+# ⚠ string block with comment in interpolation single line
 ''a${/* hello */}b''
 ==>
 Nix (
   IndentedString (
     StringBlockContent,
     StringBlockInterpolation (
-      CommentBlock
+      ⚠
     ),
+    CommentBlock,
     StringBlockContent
   )
 )
@@ -654,7 +606,7 @@ Nix (
   )
 )
 
-# function with syntax error. missing space after colon FIXME
+# function with syntax error. missing space after colon
 a:x
 ==>
 Nix (
@@ -692,7 +644,7 @@ Nix (
   )
 )
 
-# function formals
+# function formals with space after colon
 { a }: x
 ==>
 Nix (
@@ -706,7 +658,7 @@ Nix (
   )
 )
 
-# function formals FIXME allow missing space after colon
+# function formals no space after colon
 { a }:x
 ==>
 Nix (
@@ -956,18 +908,17 @@ Nix (
 /etc
 ==>
 Nix (
-  ⚠ FIXME,
-  Identifier
+  Path (
+    PathAbsolute
+  )
 )
 
 # path absolute 2
 /etc/nixos
 ==>
 Nix (
-  ⚠ FIXME,
-  CallDiv (
-    Identifier,
-    Identifier
+  Path (
+    PathAbsolute
   )
 )
 
@@ -975,18 +926,17 @@ Nix (
 ./a
 ==>
 Nix (
-  ⚠ FIXME,
-  Identifier
+  Path (
+    PathRelative
+  )
 )
 
 # path relative 2
 ./a/b
 ==>
 Nix (
-  ⚠ FIXME,
-  CallDiv (
-    Identifier,
-    Identifier
+  Path (
+    PathRelative
   )
 )
 
@@ -994,10 +944,8 @@ Nix (
 <nixpkgs>
 ==>
 Nix (
-  ⚠ FIXME,
-  CallGT (
-    Identifier,
-    ⚠ FIXME
+  Path (
+    PathLibrary
   )
 )
 
@@ -1005,13 +953,8 @@ Nix (
 <nixpkgs/nixos>
 ==>
 Nix (
-  ⚠ FIXME,
-  CallGT (
-    CallDiv (
-      Identifier,
-      Identifier
-    ),
-    ⚠ FIXME
+  Path (
+    PathLibrary
   )
 )
 
@@ -1036,31 +979,41 @@ Nix (
   NULL
 )
 
-# apply FIXME
+# apply
 a b
 ==>
 Nix (
-  Identifier,
-  Identifier
+  Call (
+    Identifier,
+    Identifier
+  )
 )
 
-# apply 2 FIXME TODO left or right associative?
+# apply 2
 a b 1
 ==>
 Nix (
-  Identifier,
-  Identifier,
-  Int
+  Call (
+    Call (
+      Identifier,
+      Identifier
+    ),
+    Int
+  )
 )
 
-# apply 2 braces FIXME
+# apply 2 braces
 a (b 1)
 ==>
 Nix (
-  Identifier,
-  Parens (
+  Call (
     Identifier,
-    ⚠ FIXME
+    Parens (
+      Call (
+        Identifier,
+        Int
+      )
+    )
   )
 )
 
@@ -1068,20 +1021,35 @@ Nix (
 a ? b
 ==>
 Nix (
-  Identifier,
-  ⚠ FIXME,
-  Identifier
+  OpHasAttr (
+    Identifier,
+    Identifier
+  )
 )
 
 # HasAttr 2
 a ? b.c
 ==>
 Nix (
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  ⚠ FIXME,
-  Identifier
+  OpHasAttr (
+    Identifier,
+    Identifier,
+    Identifier
+  )
+)
+
+# Select + HasAttr
+a.b ? c.d
+==>
+Nix (
+  OpHasAttr (
+    Select (
+      Identifier,
+      Identifier
+    ),
+    Identifier,
+    Identifier
+  )
 )
 
 # negative Int
@@ -1210,7 +1178,7 @@ Nix (
   )
 )
 
-# assert FIXME keyword "assert" should be anonymous
+# assert
 assert a; x
 ==>
 Nix (
@@ -1220,7 +1188,7 @@ Nix (
   )
 )
 
-# with FIXME keyword "with" should be anonymous
+# with
 with a; x
 ==>
 Nix (
@@ -1230,44 +1198,42 @@ Nix (
   )
 )
 
-# let FIXME keyword "let" "in" should be anonymous
+# let
 let a = b; in x
 ==>
 Nix (
-  Identifier,
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  Identifier
+  Let (
+    Attr (
+      Identifier,
+      Identifier
+    ),
+    Identifier
+  )
 )
 
-# let inherit FIXME keyword "let" "inherit" "in" should be anonymous
+# let inherit
 let inherit a b; in x
 ==>
 Nix (
-  Identifier,
-  Identifier,
-  Identifier,
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  Identifier
+  Let (
+    AttrInherit (
+      Identifier,
+      Identifier
+    ),
+    Identifier
+  )
 )
 
 # let inherit from
 let inherit (f) a b; in x
 ==>
 Nix (
-  Identifier,
-  Identifier,
-  Parens (
+  Let (
+    AttrInheritFrom (
+      Identifier,
+      Identifier,
+      Identifier
+    ),
     Identifier
-  ),
-  Identifier,
-  Identifier,
-  ⚠ FIXME,
-  Identifier,
-  Identifier
+  )
 )
