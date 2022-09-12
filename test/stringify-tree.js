@@ -1,6 +1,8 @@
 // FIXME dont print empty lines in pretty tree. this happens in rare cases
 // example: extra newline before ")" tokens
 
+// FIXME remove extra space after root node name in compact mode
+
 // dirty: this will patch the tree's toString methods
 export function stringifyTree(tree, options) {
 
