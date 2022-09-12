@@ -336,6 +336,13 @@ Nix (
   )
 )
 
+# attrset inherit empty
+{ inherit; }
+==>
+Nix (
+  AttrSet
+)
+
 # attrset inherit from
 { inherit (f) a b; }
 ==>
