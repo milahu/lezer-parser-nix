@@ -433,7 +433,7 @@ Nix (
   )
 )
 
-# call or
+# call or FIXME?
 a or 2 or "c"
 ==>
 Nix (
