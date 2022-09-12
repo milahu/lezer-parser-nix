@@ -427,25 +427,36 @@ Nix (
 a or 2
 ==>
 Nix (
-  CallOr (
+  Call (
+    Identifier,
+    ⚠,
+    Int
+  )
+)
+
+# select or
+a.b or 3
+==>
+Nix (
+  SelectOr (
+    Identifier,
     Identifier,
     Int
   )
 )
 
-# call or FIXME?
-a or 2 or "c"
+# select or error
+a.b or 3 or 4
 ==>
 Nix (
   Call (
-    CallOr (
+    SelectOr (
       Identifier,
-      Int
+      Identifier,
+      Int,
+      ⚠
     ),
-    ⚠,
-    String (
-      StringContent
-    )
+    Int
   )
 )
 
