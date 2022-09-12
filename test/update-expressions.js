@@ -69,15 +69,27 @@ for (let file of fs.readdirSync(caseDir)) {
   const result = []
   for (let testData of fileTests(fileContent, file)) {
     const { name, text, configStr, strict } = testData;
-    //const strictStr = strict ? '' : '... ' // prefer ascii ... over unicode ⚠
-    const strictStr = ''; // FIXME ...
     const tree = parser.parse(testData.text);
     const stringifyOptions = writePrettyTree && { pretty: true, text };
     const actual = stringifyTree(tree, stringifyOptions);
-    // parse error -> make tests fail
-    // FIXME make this optional, to allow testing for parser errors
-    const actualWithFixme = actual.replace(/⚠/g, '⚠ FIXME');
-    result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${strictStr}${actualWithFixme}`)
+    if (name == 'string block with empty interpolation single line') {
+      console.dir(testData)
+    }
+    // WONTFIX?
+    // parse error -> make test fail by adding " ☹ FIXME"
+    // note: to test for parse errors, add ⚠ to test name
+    // other error symbols: ❌ 🚫 ☹ ⚐ ⛔ 🐞
+    // note: strict is useless here
+    //   let strict = !/⚠|\.\.\./.test(expected)
+    const isFailing = /⚠|\.\.\./.test(actual) // TODO do we need to test for "..."?
+    const shouldFailMarker = ' ❌ FIXME';
+    const shouldFail = (actual.indexOf(shouldFailMarker) > -1);
+    // NOTE allowFailByName is a custom convention we use here,
+    // to mark tests with known parse errors.
+    // this is non-standard, but useful for this script.
+    const allowFailByName = /⚠/.test(name)
+    const actualWithFixme = (isFailing && !shouldFail && !allowFailByName) ? actual.replace(/⚠/g, '⚠'+shouldFailMarker) : actual;
+    result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${actualWithFixme}`)
   }
   const newFileContent = result.join("\n\n") + "\n";
   // TODO backup?
