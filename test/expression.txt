@@ -214,16 +214,34 @@ Nix (
   )
 )
 
+# list int 2
+[1 1]
+==>
+Nix (
+  List (
+    Int,
+    Int
+  )
+)
+
+# list int 3
+[1 1]
+==>
+Nix (
+  List (
+    Int,
+    Int
+  )
+)
+
 # list int string
 [1 "a"]
 ==>
 Nix (
   List (
-    Call (
-      Int,
-      String (
-        StringContent
-      )
+    Int,
+    String (
+      StringContent
     )
   )
 )
