@@ -423,6 +423,29 @@ Nix (
   )
 )
 
+# call or
+a or 2
+==>
+Nix (
+  CallOr (
+    Identifier,
+    Int
+  )
+)
+
+# call or
+a or 2 or "c"
+==>
+Nix (
+  CallOr (
+    Identifier,
+    Int,
+    String (
+      StringContent
+    )
+  )
+)
+
 # select interpolation 2
 a.${b}.${c}
 ==>
