@@ -527,6 +527,32 @@ Nix (
   )
 )
 
+# string block with empty interpolation single line
+''a${}b''
+==>
+Nix (
+  IndentedString (
+    StringBlockContent,
+    StringBlockInterpolation (
+      FIXME parse error
+    ),
+    StringBlockContent
+  )
+)
+
+# string block with comment in interpolation single line
+''a${/* hello */}b''
+==>
+Nix (
+  IndentedString (
+    StringBlockContent,
+    StringBlockInterpolation (
+      CommentBlock
+    ),
+    StringBlockContent
+  )
+)
+
 # string block with escaped interpolation single line
 ''a''${x}b''
 ==>
