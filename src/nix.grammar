@@ -1,18 +1,15 @@
-// Nix grammar for lezer-parser
-// MIT License (c) 2022 Milan Hauth
+// Nix grammar for lezer-parser. MIT License (c) 2022 Milan Hauth
 
 @top Nix { expr? }
 
-expr { expr_function }
-
-expr_function
-  { Lambda { Identifier ':' expr_function }
-  | Lambda { '{' ~markCurlyOpen formals '}' ':' expr_function }
-  | Lambda { '{' ~markCurlyOpen formals '}' '@' Identifier ':' expr_function }
-  | Lambda { Identifier '@' '{' ~markCurlyOpen formals '}' ':' expr_function }
-  | Assert { _ASSERT expr ';' expr_function }
-  | With { _WITH expr ';' expr_function }
-  | Let { _LET binds _IN expr_function }
+expr
+  { Lambda { Identifier ':' expr }
+  | Lambda { '{' ~markCurlyOpen formals '}' ':' expr }
+  | Lambda { '{' ~markCurlyOpen formals '}' '@' Identifier ':' expr }
+  | Lambda { Identifier '@' '{' ~markCurlyOpen formals '}' ':' expr }
+  | Assert { _ASSERT expr ';' expr }
+  | With { _WITH expr ';' expr }
+  | Let { _LET bindings _IN expr } // syntax sugar: let a=1; in a -> (rec {a=1;}).a
   | expr_if
   }
 
@@ -34,10 +31,7 @@ expr_op
   | OpOr          { expr_op !prec_or      '||' expr_op }
   | OpImpl        { expr_op !prec_impl    '->' expr_op }
   | OpUpdate      { expr_op !prec_update  '//' expr_op }
-
-// TODO
   | OpHasAttr     { expr_op !prec_hasAttr  '?' attrpath }
-
   | ConcatStrings { expr_op !prec_plus     '+' expr_op } // concat strings, Add
   | CallSub       { expr_op !prec_callSub  '-' expr_op }
   | CallMul       { expr_op !prec_mul_div  '*' expr_op }
@@ -46,117 +40,35 @@ expr_op
   | expr_app
   }
 
-
-
 expr_app
   { Call { expr_app !prec_apply expr_select }
   | expr_select
   }
 
-
-
-// TODO refactor with attrpath
 expr_select
-  {
-    Select { expr_simple !prec_select '.' attrpath }
-    //| Select { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
-    | SelectOr { expr_simple !prec_select '.' attrpath keyword<"or"> expr_select }
-
-  // FIXME test
-  //
-  // # select or default
-  // a.b or false
-  // ==>
-  // Nix (
-  //   Call (
-  //     Select (
-  //       Identifier,
-  //       Identifier,
-  //       OR_KW,
-  //       ⚠ FIXME
-  //     ),
-  //     FALSE
-  //   )
-  // )
-  //
-  // Backwards compatibility: because Nixpkgs has a rarely used
-  // function named ‘or’, allow stuff like ‘map or [...]’.
-
-
-
-    // FIXME how does "or" work in nix?
-    // nix-repl> __sub or __mul 
-    // error: undefined variable 'or'
-    //
-    // https://nixery.dev/nix-1p.html#overrides--overlays
-    // 
-    // someProgram.overrideAttrs(old: {
-    //     configureFlags = old.configureFlags or [] ++ ["--mimic-threaten-tag"];
-    // })
-    // 
-    // Note the use of the `or` operator
-    // to default to an empty list
-    // if the original flags do not include `configureFlags`.
-    // This is required in case a package does not set any flags by itself.
-
-    // no. see SelectOr
-    ///////| CallOr { expr_simple keyword<"or"> expr_simple }
-
-
-
-    | expr_simple // TODO expr_simple { $$ = $1; }
+  { Select { expr_simple !prec_select '.' attrpath }
+  | SelectOr { expr_simple !prec_select '.' attrpath _OR_KW expr_select }
+  | expr_simple
   }
 
-
-
 expr_simple
-  //{ Pos { "__curPos" }
   { Pos { keyword<"__curPos"> }
-
-  // TODO Var(Identifier) or Identifier?
-  //| Var { Identifier }
-  | Identifier
-
+  | Identifier // TODO? Var { Identifier }
   | Int { integer }
   | Float { float }
-
   | TRUE
   | FALSE
   | NULL
-
-//  | Bool { True { _TRUE } | False { _FALSE } }
-//  | Null { Null { _NULL } }
-
-//| Bool { _TRUE | _FALSE }
-//
-//_TRUE { keyword<"true"> }
-//_FALSE { keyword<"false"> }
-//_NULL { keyword<"null"> }
-
-// FIXME strings
-//  //| String { '"' string_parts '"' }
   | String { string_parts }
-  //| IndentedString { IND_STRING_OPEN ind_string_parts IND_STRING_CLOSE }
   | IndentedString { ind_string_parts }
-  //| Path { path_start PATH_END } // TODO path_start PATH_END { $$ = $1; }
   | Path { path_start }
-//  | concatStrings { path_start string_parts_interpolated PATH_END }
-//  //// TODO what is SPATH? // | CallStringPath { SPATH }
-
-  | String { URI } // NOTE: if noURLLiterals: ParseError, URL literals are disabled
-
+  //| CallStringPath { SPATH } // TODO what is StringPath?
+  | String { URI } // note: if noURLLiterals: ParseError, URL literals are disabled
   | Parens { '(' expr ')' }
-
-  // Let expressions `let {..., body = ...}' are just desugared
-  // into `(rec {..., body = ...}).body'.
-/////////// TODO  | SelectLetAttrSet { _LET '{' binds '}' }
-//
-//  | RecAttrSet { _REC '{' ~markCurlyOpen binds '}' }
-  | AttrSet { '{'~markCurlyOpen binds '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
+  | RecAttrSet { _REC '{' ~markCurlyOpen bindings '}' }
+  | AttrSet { '{'~markCurlyOpen bindings '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
   | List { '[' expr? (!prec_list expr)* ']' }
   }
-
-// precedences
 
 @precedence {
   prec_select @left,
@@ -190,22 +102,14 @@ expr_simple
 
 
 // strings
-// String can be multiline, but then the indent is preserved
-// StringBlock is similar to python docstrings -> indent is removed
 
-// TODO separate tokens for "${" and "}" of StringInterpolation etc
+StringInterpolation
+  { stringInterpolationStart expr stringInterpolationEnd
+  }
 
-// ''string ${expr} ''${escaped} string''
-StringBlockInterpolation { stringBlockInterpolationStart expr stringBlockInterpolationEnd }
-
-// "string ${expr} \${escaped} string"
-StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
-
-@external tokens stringBlock from "./tokens" {
-  StringBlockContent,
-  stringBlockInterpolationStart,
-  stringBlockEnd
-}
+StringBlockInterpolation
+  { stringBlockInterpolationStart expr stringBlockInterpolationEnd
+  }
 
 @external tokens string from "./tokens" {
   StringContent,
@@ -213,35 +117,26 @@ StringInterpolation { stringInterpolationStart expr stringInterpolationEnd }
   stringEnd
 }
 
+@external tokens stringBlock from "./tokens" { // aka: indented string
+  StringBlockContent,
+  stringBlockInterpolationStart,
+  stringBlockEnd
+}
+
 @skip {} {
 
   string_parts
-    //{ String { STR }
     { concatStrings { string_parts_interpolated }
-    //| String { "" } // empty string // FIXME?
     }
 
   ind_string_parts
     { stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
-      // { stringBlockStart (StringBlock | StringBlockInterpolation)* stringBlockEnd
     }
 
   string_parts_interpolated
     { stringStart (StringContent | StringInterpolation)* stringEnd
-      // stringStart (String | StringInterpolation)* stringEnd
     }
-
-  // TODO ind_string_parts_interpolated? not in nix/src/libexpr/parser.y
-
-  //string { String | StringBlock }
-  //StringBlock { stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd }
-  //String { stringStart (StringContent | StringInterpolation)* stringEnd }
 }
-
-//path_start
-//  { Path { PATH }
-//  | Path { HOME_PATH } // if evalSettings.pureEval: Error, the path '%s' can not be resolved in pure mode
-//  }
 
 // FIXME name: remove "start"
 path_start
@@ -255,7 +150,7 @@ path_start
 // note: Attr value is positional -> last child node
 // {a=1;} -> Nix(AttrSet(Attr(Identifier,Int)))
 
-binds
+bindings
   { _Attrs
     {
       ( Attr { attrpath '=' expr ';' }
@@ -265,10 +160,6 @@ binds
     }
   }
 
-// FIXME "{inherit;}"
-// actual Nix(AttrSet(AttrInherit(AttrPath)))
-// expect Nix(AttrSet(AttrInherit))
-
 // FIXME token name AttrPath
 // should be _AttrList?
 attrs
@@ -276,43 +167,21 @@ attrs
   { _AttrPath { ( _AttrName_String { attrpath } )* }
   }
 
-
-
-// attrpath
-
 // a.b."c".${d}
 //  |^^^^^^^^^^ attrpath
 //  ^ select
 
 attrpath
   { _AttrName { ((attr | string_attr) ('.' (attr | string_attr))*) }
-  //{ _AttrName { (attr ('.' attr)*) }
   }
 
-// attrpath
-//   { _AttrName { attrpath '.' attr }
-//   | _AttrName_String { attrpath '.' string_attr }
-//   | _AttrName { attr } // $$ = new std::vector<AttrName>; $$->push_back(AttrName(data->symbols.create($1)));
-//   | _AttrName_String { string_attr }
-//   }
-
-// TODO explain OR_KW
-// Backwards compatibility: because Nixpkgs has ....
-
 attr
-  //{ Identifier (OR_KW Identifier)* }
   { Identifier }
 
 string_attr
   { String { string_parts }
   | AttrInterpolation { '${' expr '}' }
   }
-
-// FIXME Unused rule 'expr_list'
-// -> List?
-// expr_list
-//  { List { expr_list expr_select } // $$ = $1; $1->elems.push_back($2); // !!! dangerous
-//  }
 
 formals
   { Formals { (formal? (',' formal)* (',' '...')?) | '...' }
@@ -325,16 +194,15 @@ formal
 
 
 
-// named keywords
-Keyword<term> { @specialize[@name={term}]<Identifier, term> }
+// keywords
 
-// anonymous keywords
+// underscore or lowercase prefix -> anonymous token
+
 keyword<term> { @specialize<Identifier, term> }
 
-
-
-// keywords
-// need underscore for anonymous nodes
+TRUE { keyword<"true"> }
+FALSE { keyword<"false"> }
+NULL { keyword<"null"> }
 
 _ASSERT { keyword<"assert"> }
 _IF { keyword<"if"> }
@@ -344,41 +212,24 @@ _ELSE { keyword<"else"> }
 _WITH { keyword<"with"> }
 _LET { keyword<"let"> }
 _IN { keyword<"in"> }
-OR_KW { keyword<"or"> }
+_OR_KW { keyword<"or"> }
 _INHERIT { keyword<"inherit"> }
 _REC { keyword<"rec"> }
-
-_TRUE { keyword<"true"> }
-_FALSE { keyword<"false"> }
-_NULL { keyword<"null"> }
-
-TRUE { keyword<"true"> }
-FALSE { keyword<"false"> }
-NULL { keyword<"null"> }
 
 
 
 @tokens {
-  //PATH_END { '/' } // TODO?
-
-  //Integer { std.digit+ }
   integer { std.digit+ }
-
-  //Float { ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)? }
   float   { ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)? }
+  @precedence { float, integer, "." }
 
-  // note: nix allows minus in identifiers
-  //identifier { identifierChar (identifierChar | std.digit | "-" )* }
-  Identifier { identifierChar (identifierChar | std.digit | "-" )* }
+  Identifier { identifierChar (identifierChar | std.digit | "-" )* } // note: nix allows minus in identifiers
+  @precedence { Identifier, whitespace }
 
-  // TODO test
+  // TODO test unicode identifiers
+  // FIXME Overlapping tokens Identifier and "${" used in same context (example: "$" vs "${")
   //identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
   identifierChar { std.asciiLetter }
-
-  // fix: Overlapping tokens Integer and Float
-  // fix: Overlapping tokens Float and "."
-  //@precedence { Float, Integer, "." }
-  @precedence { float, integer, "." }
 
   stringBlockStart { "''" }
   stringBlockInterpolationEnd { "}" }
@@ -386,84 +237,33 @@ NULL { keyword<"null"> }
   stringStart { '"' }
   stringInterpolationEnd { "}" }
 
-  // fix error: Overlapping tokens Identifier and whitespace
-  // TODO why overlapping? Identifier is non-whitespace
-  @precedence { Identifier, whitespace }
-
   whitespace { std.whitespace+ }
-
-  // FIXME no need for whitespace after formals
-  // this is valid:
-  // let f={a}:a; in f{a=1;}
-  // let f=a: a; in f 1
-  // this is not:
-  // let f=a:a; in f 1 # error: attempt to call something which is not a function but a string
-  //Colon { ":" }
-  //colonWithSpace { Colon std.whitespace+ }
 
   CommentOpen { "#" }
   Comment { CommentOpen ![\n]* }
 
-  // TODO CommentBlockClose */
+  // TODO? CommentBlockClose "*/" -> external scanner
   CommentBlockOpen { "/*" }
   CommentBlock { CommentBlockOpen blockCommentRest }
   blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
   blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
 
   PathAbsolute { "/" pathContent }
-  // fix: Overlapping tokens "/" and PathAbsolute
   @precedence { PathAbsolute, "/" }
 
   PathRelative { "./" pathContent }
-  // fix: Overlapping tokens PathRelative and "."
   @precedence { PathRelative, "." }
 
   PathHome { "~/" pathContent }
 
-  // TODO angle braces as tokens
   PathLibrary { "<" PathLibraryValue ">" }
   PathLibraryValue { pathContent }
 
-  // TODO add more special characters?
+  // TODO add more special characters? unicode?
   pathContent { (Identifier | ".")+ ("/" (Identifier | ".")+)* }
 
+  URI { uriSchema ":" uriPath }
   uriSchema { std.asciiLetter (std.asciiLetter | std.digit | "+" | "-")* }
   uriPath { (std.asciiLetter | std.digit | "%" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," | "-" | "_" | "." | "!" | "~" | "*" | "'")+ }
-  URI { uriSchema ":" uriPath }
-
-  // fix: Overlapping tokens Identifier and URI
   @precedence { URI, Identifier }
-
-  // fix: Overlapping tokens Identifier and x
-  // better?
-  // kw<word> { @specialize[@name={word}]<Identifier, word> }
-  @precedence {
-
-    _IF,
-    _THEN,
-    _ELSE,
-
-    _ASSERT,
-    _WITH,
-    _LET,
-    _IN,
-    OR_KW,
-    _INHERIT,
-    _REC,
-
-    //PATH_END,
-
-    //if, then, else,
-    //assert,
-    //with,
-    //let,
-    //in,
-    //inherit,
-    //URI,
-    //False, True, Null,
-
-    Identifier
-    //,
-    //identifier
-  }
 }
