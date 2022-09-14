@@ -108,8 +108,8 @@ StringInterpolation
   { stringInterpolationStart expr stringInterpolationEnd
   }
 
-StringBlockInterpolation
-  { stringBlockInterpolationStart expr stringBlockInterpolationEnd
+IndentedStringInterpolation
+  { indentedStringInterpolationStart expr indentedStringInterpolationEnd
   }
 
 @external tokens string from "./tokens" {
@@ -118,10 +118,10 @@ StringBlockInterpolation
   stringEnd
 }
 
-@external tokens stringBlock from "./tokens" { // aka: indented string
-  StringBlockContent,
-  stringBlockInterpolationStart,
-  stringBlockEnd
+@external tokens indentedString from "./tokens" { // aka: indented string
+  IndentedStringContent,
+  indentedStringInterpolationStart,
+  indentedStringEnd
 }
 
 @skip {} {
@@ -131,7 +131,7 @@ StringBlockInterpolation
     }
 
   ind_string_parts
-    { stringBlockStart (StringBlockContent | StringBlockInterpolation)* stringBlockEnd
+    { indentedStringStart (IndentedStringContent | IndentedStringInterpolation)* indentedStringEnd
     }
 
   string_parts_interpolated
@@ -232,8 +232,8 @@ _REC { keyword<"rec"> }
   //identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
   identifierChar { std.asciiLetter }
 
-  stringBlockStart { "''" }
-  stringBlockInterpolationEnd { "}" }
+  indentedStringStart { "''" }
+  indentedStringInterpolationEnd { "}" }
 
   stringStart { '"' }
   stringInterpolationEnd { "}" }

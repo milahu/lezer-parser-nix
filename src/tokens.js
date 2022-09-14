@@ -6,7 +6,7 @@ import {
   //ContextTracker,
 } from "@lezer/lr"
 import {
-  StringBlockContent, stringBlockInterpolationStart, stringBlockEnd,
+  IndentedStringContent, indentedStringInterpolationStart, indentedStringEnd,
   StringContent, stringInterpolationStart, stringEnd,
 } from "./parser.terms.js"
 
@@ -24,7 +24,7 @@ const
 
 // based on javascript template parser
 // https://github.com/lezer-parser/javascript/blob/main/src/tokens.js
-export const stringBlock = new ExternalTokenizer(input => {
+export const indentedString = new ExternalTokenizer(input => {
   for (let afterDollar = false, i = 0;; i++) {
     let {next} = input
     if (devMode) console.log([
@@ -36,8 +36,8 @@ export const stringBlock = new ExternalTokenizer(input => {
     ].map(s => `  ${s}\n`).join(''));
     if (next < 0) { // next == -1: end of file
       if (i) {
-        input.acceptToken(StringBlockContent)
-        if (devMode) console.log(`  40 acceptToken(StringBlockContent)`);
+        input.acceptToken(IndentedStringContent)
+        if (devMode) console.log(`  40 acceptToken(IndentedStringContent)`);
       }
       if (devMode) console.log(`  42 break`);
       break
@@ -46,8 +46,8 @@ export const stringBlock = new ExternalTokenizer(input => {
         if (i == 0) {
           // end of string
           input.advance(2)
-          if (devMode) console.log(`  49 acceptToken(stringBlockEnd)`);
-          input.acceptToken(stringBlockEnd)
+          if (devMode) console.log(`  49 acceptToken(indentedStringEnd)`);
+          input.acceptToken(indentedStringEnd)
           break
         }
         if (input.peek(2) == dollar && input.peek(3) == braceL) {
@@ -58,28 +58,28 @@ export const stringBlock = new ExternalTokenizer(input => {
         else {
           // i > 0
           // end of content
-          if (devMode) console.log(`  63 acceptToken(StringBlockContent) -> break`);
-          input.acceptToken(StringBlockContent)
-          // do not advance. '' is needed for stringBlockEnd token
+          if (devMode) console.log(`  63 acceptToken(IndentedStringContent) -> break`);
+          input.acceptToken(IndentedStringContent)
+          // do not advance. '' is needed for indentedStringEnd token
           break
         }
       }
     } else if (next == braceL && afterDollar) {
       if (i == 1) {
-        if (devMode) console.log(`  77 acceptToken(stringBlockInterpolationStart)`);
-        input.acceptToken(stringBlockInterpolationStart, 1)
+        if (devMode) console.log(`  77 acceptToken(indentedStringInterpolationStart)`);
+        input.acceptToken(indentedStringInterpolationStart, 1)
       }
       else {
-        if (devMode) console.log(`  81 acceptToken(StringBlockContent, -1)`);
-        input.acceptToken(StringBlockContent, -1)
+        if (devMode) console.log(`  81 acceptToken(IndentedStringContent, -1)`);
+        input.acceptToken(IndentedStringContent, -1)
       }
       if (devMode) console.log(`  84 break`);
       break
     } else if (next == newline && i > 0) {
-      // Break up stringBlock strings on lines, to avoid huge tokens
+      // Break up indentedString strings on lines, to avoid huge tokens
       input.advance() // add newline to current token
-      if (devMode) console.log(`  89 acceptToken(StringBlockContent) from newline`);
-      input.acceptToken(StringBlockContent)
+      if (devMode) console.log(`  89 acceptToken(IndentedStringContent) from newline`);
+      input.acceptToken(IndentedStringContent)
       if (devMode) console.log(`  91 break`);
       break
     }
