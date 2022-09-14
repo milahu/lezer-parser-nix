@@ -612,9 +612,9 @@ Nix (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
-      ⚠
+      ⚠,
+      CommentBlock
     ),
-    CommentBlock,
     IndentedStringContent
   )
 )
