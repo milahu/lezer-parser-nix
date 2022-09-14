@@ -187,7 +187,7 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -567,13 +567,13 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent,
-    StringBlockInterpolation (
+    IndentedStringContent,
+    IndentedStringInterpolation (
       Var (
         Identifier
       )
     ),
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -582,13 +582,13 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent,
-    StringBlockInterpolation (
+    IndentedStringContent,
+    IndentedStringInterpolation (
       Var (
         Identifier
       )
     ),
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -597,11 +597,11 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent,
-    StringBlockInterpolation (
+    IndentedStringContent,
+    IndentedStringInterpolation (
       ⚠
     ),
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -610,12 +610,12 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent,
-    StringBlockInterpolation (
+    IndentedStringContent,
+    IndentedStringInterpolation (
       ⚠
     ),
     CommentBlock,
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -624,7 +624,7 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -635,7 +635,7 @@ Nix (
 ==>
 Nix (
   IndentedString (
-    StringBlockContent
+    IndentedStringContent
   )
 )
 
@@ -652,14 +652,14 @@ Nix (
   ConcatStrings (
     ConcatStrings (
       IndentedString (
-        StringBlockContent
+        IndentedStringContent
       ),
       IndentedString (
-        StringBlockContent
+        IndentedStringContent
       )
     ),
     IndentedString (
-      StringBlockContent
+      IndentedStringContent
     )
   )
 )
@@ -674,22 +674,22 @@ Nix (
 Nix (
   ConcatStrings (
     IndentedString (
-      StringBlockContent,
-      StringBlockInterpolation (
+      IndentedStringContent,
+      IndentedStringInterpolation (
         Var (
           Identifier
         )
       ),
-      StringBlockContent
+      IndentedStringContent
     ),
     IndentedString (
-      StringBlockContent,
-      StringBlockInterpolation (
+      IndentedStringContent,
+      IndentedStringInterpolation (
         Var (
           Identifier
         )
       ),
-      StringBlockContent
+      IndentedStringContent
     )
   )
 )
