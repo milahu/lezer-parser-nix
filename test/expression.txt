@@ -1122,6 +1122,60 @@ Nix (
   )
 )
 
+# path relative workdir ./.
+./.
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path relative parent ../. # TODO is this "spath"?
+../.
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path relative parent ./..
+./..
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path relative parent 2 ../..
+../..
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path relative dots ./...
+./...
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path relative dots .../.
+.../.
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
 # path relative
 ./a
 ==>
