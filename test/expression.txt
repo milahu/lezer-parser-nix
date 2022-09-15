@@ -328,6 +328,18 @@ Nix (
   )
 )
 
+# attrset 1 underscore in identifier
+{a_a=1;}
+==>
+Nix (
+  AttrSet (
+    Attr (
+      Identifier,
+      Int
+    )
+  )
+)
+
 # attrset rec 1
 rec {a=1;}
 ==>
