@@ -228,9 +228,7 @@ _REC { keyword<"rec"> }
   @precedence { Identifier, whitespace }
 
   // TODO test unicode identifiers
-  // FIXME Overlapping tokens Identifier and "${" used in same context (example: "$" vs "${")
-  //identifierChar { std.asciiLetter | $[_$\u{a1}-\u{10ffff}] }
-  identifierChar { std.asciiLetter }
+  identifierChar { std.asciiLetter | $[_\u{a1}-\u{10ffff}] }
 
   indentedStringStart { "''" }
   indentedStringInterpolationEnd { "}" }
