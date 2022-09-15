@@ -92,7 +92,7 @@ export function formatErrorContext(text, pos, contextLines = 10) {
         caret: false,
         text: linePart,
       };
-      console.dir(outputLine)
+      //console.dir(outputLine)
       outputLineList.push(outputLine);
       // TODO refactor with branch 1
       if (inputIndex <= pos && pos < nextInputIndex) {
