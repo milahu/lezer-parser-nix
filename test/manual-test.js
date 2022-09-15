@@ -1,12 +1,16 @@
 import {parser as parserImported} from "../dist/index.js"
 import {stringifyTree} from "./stringify-tree.js"
+import {readFileSync} from "node:fs"
 
-if (process.argv.length < 3) {
+if (process.stdin.isTTY && process.argv.length < 3) {
   console.log(`usage: node ${process.argv[1].split('/').pop()} "input text"`);
   process.exit(1);
 }
 
-var text = process.argv[2];
+const text = process.stdin.isTTY
+  ? process.argv[2]
+  : readFileSync(0).toString(); // read from stdin
+
 var parser = parserImported; // allow reassign
 
 // based on https://github.com/lezer-parser/generator/blob/main/src/test.ts#L161
