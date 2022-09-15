@@ -3,13 +3,20 @@ import {stringifyTree} from "./stringify-tree.js"
 import {readFileSync} from "node:fs"
 
 if (process.stdin.isTTY && process.argv.length < 3) {
-  console.log(`usage: node ${process.argv[1].split('/').pop()} "input text"`);
+  const name = process.argv[1].split('/').pop();
+  console.log(`usage:`);
+  console.log(`node ${name} "__add 1 1"`);
+  console.log(`node ${name} -f path/to/input.nix`);
   process.exit(1);
 }
 
-const text = process.stdin.isTTY
-  ? process.argv[2]
-  : readFileSync(0).toString(); // read from stdin
+const text = (
+  !process.stdin.isTTY
+    ? readFileSync(0).toString() // read from stdin
+    : (process.argv[2] == '-f')
+      ? readFileSync(process.argv[3], 'utf8')
+      : process.argv[2]
+);
 
 var parser = parserImported; // allow reassign
 
