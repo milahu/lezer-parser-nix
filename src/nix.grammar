@@ -68,7 +68,7 @@ expr_simple
   | Parens { '(' expr ')' }
   | RecAttrSet { _REC '{' ~markCurlyOpen bindings '}' }
   | AttrSet { '{'~markCurlyOpen bindings '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
-  | List { '[' (expr_simple (!prec_list expr_simple)*)? ']' }
+  | List { '[' (expr_select (!prec_list expr_select)*)? ']' }
   }
 
 @precedence {
