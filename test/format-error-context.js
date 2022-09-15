@@ -49,12 +49,22 @@ export function formatErrorContext(text, pos, contextLines = 10) {
         posOutputLine = outputLineList.length;
         // add caret below pos
         outputLineList.push({
-          index: pos,
+          // index cannot be pos
+          // otherwise X position of caret is wrong with unpadded numbers
+          //index: pos,
+          index: inputIndex,
           line: inputLine,
           wrapped: false,
-          empty: false,
           caret: true,
-          text: ' '.repeat(pos - inputIndex) + '^',
+          text: ' '.repeat(pos - inputIndex) + `^`,
+        });
+        // add pos under caret
+        outputLineList.push({
+          index: inputIndex,
+          line: inputLine,
+          wrapped: false,
+          caret: true,
+          text: ' '.repeat(pos - inputIndex) + `${pos}`,
         });
         // add empty line after caret line
         outputLineList.push({
@@ -89,11 +99,14 @@ export function formatErrorContext(text, pos, contextLines = 10) {
         posOutputLine = outputLineList.length;
         // add caret below pos
         outputLineList.push({
-          index: pos,
+          // index cannot be pos
+          // otherwise X position of caret is wrong with unpadded numbers
+          //index: pos,
+          index: inputIndex,
           line: inputLine,
           wrapped,
           caret: true,
-          text: ' '.repeat(pos - inputIndex) + '^',
+          text: ' '.repeat(pos - inputIndex) + `^ ${pos}`,
         });
       }
       // update loop vars
