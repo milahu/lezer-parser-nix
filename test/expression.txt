@@ -496,6 +496,32 @@ Nix (
   )
 )
 
+# select a.b
+a.b
+==>
+Nix (
+  Select (
+    Var (
+      Identifier
+    ),
+    Identifier
+  )
+)
+
+# select a.b in list
+[ a.b ]
+==>
+Nix (
+  List (
+    Select (
+      Var (
+        Identifier
+      ),
+      Identifier
+    )
+  )
+)
+
 # call or
 a or 2
 ==>
