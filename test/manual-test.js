@@ -13,6 +13,8 @@ const text = process.stdin.isTTY
 
 var parser = parserImported; // allow reassign
 
+import { formatErrorContext } from './format-error-context.js';
+
 // based on https://github.com/lezer-parser/generator/blob/main/src/test.ts#L161
 
 var config = null;
@@ -28,7 +30,7 @@ catch (e) {
   // https://github.com/lezer-parser/lr/blob/main/src/parse.ts#L300
   if (e.message.startsWith("No parse at ")) {
     const pos = parseInt(e.message.slice("No parse at ".length));
-    e.message += `\n      ${text}\n      ${" ".repeat(pos)}^`;
+    e.message += '\n\n' + formatErrorContext(text, pos);
   }
   throw e;
 }
