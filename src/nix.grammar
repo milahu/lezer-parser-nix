@@ -19,24 +19,24 @@ expr_if
   }
 
 expr_op
-  { OpNot         {                        '!' expr_op !prec_not }
-  | CallNeg       {                        '-' expr_op !prec_neg }
-  | OpEq          { expr_op !prec_equal   '==' expr_op }
-  | OpNEq         { expr_op !prec_equal   '!=' expr_op }
-  | CallLT        { expr_op !prec_compare '<'  expr_op }
-  | CallLE        { expr_op !prec_compare '<=' expr_op }
-  | CallGT        { expr_op !prec_compare '>'  expr_op }
-  | CallGE        { expr_op !prec_compare '>=' expr_op }
-  | OpAnd         { expr_op !prec_and     '&&' expr_op }
-  | OpOr          { expr_op !prec_or      '||' expr_op }
-  | OpImpl        { expr_op !prec_impl    '->' expr_op }
-  | OpUpdate      { expr_op !prec_update  '//' expr_op }
-  | OpHasAttr     { expr_op !prec_hasAttr  '?' attrpath }
-  | ConcatStrings { expr_op !prec_plus     '+' expr_op } // concat strings, Add
-  | CallSub       { expr_op !prec_callSub  '-' expr_op }
-  | CallMul       { expr_op !prec_mul_div  '*' expr_op }
-  | CallDiv       { expr_op !prec_mul_div  '/' expr_op }
-  | OpConcatLists { expr_op !prec_concat  '++' expr_op } // concat lists
+  { Not      {                        '!' expr_op !prec_not }
+  | Neg      {                        '-' expr_op !prec_neg }
+  | Eq       { expr_op !prec_equal   '==' expr_op }
+  | NEq      { expr_op !prec_equal   '!=' expr_op }
+  | LT       { expr_op !prec_compare '<'  expr_op }
+  | LE       { expr_op !prec_compare '<=' expr_op }
+  | GT       { expr_op !prec_compare '>'  expr_op }
+  | GE       { expr_op !prec_compare '>=' expr_op }
+  | And      { expr_op !prec_and     '&&' expr_op }
+  | Or       { expr_op !prec_or      '||' expr_op }
+  | Imply    { expr_op !prec_impl    '->' expr_op }
+  | Update   { expr_op !prec_update  '//' expr_op }
+  | HasAttr  { expr_op !prec_hasAttr  '?' attrpath }
+  | Add      { expr_op !prec_plus     '+' expr_op } // concat strings, Add
+  | Sub      { expr_op !prec_callSub  '-' expr_op }
+  | Mul      { expr_op !prec_mul_div  '*' expr_op }
+  | Div      { expr_op !prec_mul_div  '/' expr_op }
+  | Concat   { expr_op !prec_concat  '++' expr_op } // concat lists
   | expr_app
   }
 

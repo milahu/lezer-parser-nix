@@ -37,7 +37,7 @@ Nix (
 1+2
 ==>
 Nix (
-  ConcatStrings (
+  Add (
     Int,
     Int
   )
@@ -47,7 +47,7 @@ Nix (
 1 + 2
 ==>
 Nix (
-  ConcatStrings (
+  Add (
     Int,
     Int
   )
@@ -94,7 +94,7 @@ Nix (
 1-2
 ==>
 Nix (
-  CallSub (
+  Sub (
     Int,
     Int
   )
@@ -113,7 +113,7 @@ Nix (
 1*2
 ==>
 Nix (
-  CallMul (
+  Mul (
     Int,
     Int
   )
@@ -123,7 +123,7 @@ Nix (
 1/2
 ==>
 Nix (
-  CallDiv (
+  Div (
     Int,
     Int
   )
@@ -133,8 +133,8 @@ Nix (
 1*2+3
 ==>
 Nix (
-  ConcatStrings (
-    CallMul (
+  Add (
+    Mul (
       Int,
       Int
     ),
@@ -250,7 +250,7 @@ Nix (
 [] ++ []
 ==>
 Nix (
-  OpConcatLists (
+  Concat (
     List,
     List
   )
@@ -260,9 +260,9 @@ Nix (
 [] ++ [] ++ []
 ==>
 Nix (
-  OpConcatLists (
+  Concat (
     List,
-    OpConcatLists (
+    Concat (
       List,
       List
     )
@@ -273,7 +273,7 @@ Nix (
 "a" + "b"
 ==>
 Nix (
-  ConcatStrings (
+  Add (
     String (
       StringContent
     ),
@@ -287,8 +287,8 @@ Nix (
 "a" + "b" + "c"
 ==>
 Nix (
-  ConcatStrings (
-    ConcatStrings (
+  Add (
+    Add (
       String (
         StringContent
       ),
@@ -687,8 +687,8 @@ Nix (
 ''
 ==>
 Nix (
-  ConcatStrings (
-    ConcatStrings (
+  Add (
+    Add (
       IndentedString (
         IndentedStringContent
       ),
@@ -710,7 +710,7 @@ Nix (
 ''
 ==>
 Nix (
-  ConcatStrings (
+  Add (
     IndentedString (
       IndentedStringContent,
       IndentedStringInterpolation (
@@ -1075,7 +1075,7 @@ Nix (
 a // b
 ==>
 Nix (
-  OpUpdate (
+  Update (
     Var (
       Identifier
     ),
@@ -1089,11 +1089,11 @@ Nix (
 a // b // c
 ==>
 Nix (
-  OpUpdate (
+  Update (
     Var (
       Identifier
     ),
-    OpUpdate (
+    Update (
       Var (
         Identifier
       ),
@@ -1287,7 +1287,7 @@ Nix (
 a ? b
 ==>
 Nix (
-  OpHasAttr (
+  HasAttr (
     Var (
       Identifier
     ),
@@ -1299,7 +1299,7 @@ Nix (
 a ? b.c
 ==>
 Nix (
-  OpHasAttr (
+  HasAttr (
     Var (
       Identifier
     ),
@@ -1312,7 +1312,7 @@ Nix (
 a.b ? c.d
 ==>
 Nix (
-  OpHasAttr (
+  HasAttr (
     Select (
       Var (
         Identifier
@@ -1328,7 +1328,7 @@ Nix (
 -1
 ==>
 Nix (
-  CallNeg (
+  Neg (
     Int
   )
 )
@@ -1337,7 +1337,7 @@ Nix (
 -x
 ==>
 Nix (
-  CallNeg (
+  Neg (
     Var (
       Identifier
     )
@@ -1348,7 +1348,7 @@ Nix (
 !x
 ==>
 Nix (
-  OpNot (
+  Not (
     Var (
       Identifier
     )
@@ -1359,7 +1359,7 @@ Nix (
 a < b
 ==>
 Nix (
-  CallLT (
+  LT (
     Var (
       Identifier
     ),
@@ -1373,7 +1373,7 @@ Nix (
 a > b
 ==>
 Nix (
-  CallGT (
+  GT (
     Var (
       Identifier
     ),
@@ -1387,7 +1387,7 @@ Nix (
 a <= b
 ==>
 Nix (
-  CallLE (
+  LE (
     Var (
       Identifier
     ),
@@ -1401,7 +1401,7 @@ Nix (
 a >= b
 ==>
 Nix (
-  CallGE (
+  GE (
     Var (
       Identifier
     ),
@@ -1415,7 +1415,7 @@ Nix (
 a == b
 ==>
 Nix (
-  OpEq (
+  Eq (
     Var (
       Identifier
     ),
@@ -1429,7 +1429,7 @@ Nix (
 a != b
 ==>
 Nix (
-  OpNEq (
+  NEq (
     Var (
       Identifier
     ),
@@ -1443,7 +1443,7 @@ Nix (
 a && b
 ==>
 Nix (
-  OpAnd (
+  And (
     Var (
       Identifier
     ),
@@ -1457,7 +1457,7 @@ Nix (
 a || b
 ==>
 Nix (
-  OpOr (
+  Or (
     Var (
       Identifier
     ),
@@ -1471,7 +1471,7 @@ Nix (
 a -> b
 ==>
 Nix (
-  OpImpl (
+  Imply (
     Var (
       Identifier
     ),
