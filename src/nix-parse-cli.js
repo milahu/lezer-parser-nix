@@ -2,21 +2,35 @@ import {parser as parserImported} from "../dist/index.js"
 import {stringifyTree} from "./stringify-tree.js"
 import {readFileSync} from "node:fs"
 
-if (process.stdin.isTTY && process.argv.length < 3) {
-  const name = process.argv[1].split('/').pop();
-  console.log(`usage:`);
-  console.log(`node ${name} "__add 1 1"`);
-  console.log(`node ${name} -f path/to/input.nix`);
-  process.exit(1);
-}
+const argv = process.argv.slice(1);
 
-const text = (
-  !process.stdin.isTTY
-    ? readFileSync(0).toString() // read from stdin
-    : (process.argv[2] == '-f')
-      ? readFileSync(process.argv[3], 'utf8')
-      : process.argv[2]
-);
+const { text } = (() => {
+  if (!process.stdin.isTTY) { // FIXME condition for stdin
+    return {
+      text: readFileSync(0).toString(), // read from stdin
+    };
+  }
+  if (argv[1] == '-f') {
+    return {
+      text: readFileSync(argv[2], 'utf8'),
+    };
+  }
+  if (argv[1] == '-e') {
+    return {
+      text: argv[2],
+    };
+  }
+  const name = argv[0].split('/').pop();
+  console.error(`usage:`);
+  console.error(`node ${name} -e "__add 1 1"`);
+  console.error(`node ${name} -f path/to/input.nix`);
+  console.error(`echo "__add 1 1" | node ${name}`);
+  process.exit(1);
+})();
+
+if (text === undefined) {
+  throw new Error('text is undefined');
+}
 
 var parser = parserImported; // allow reassign
 
