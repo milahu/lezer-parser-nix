@@ -306,21 +306,21 @@ Nix (
 {}
 ==>
 Nix (
-  AttrSet
+  Set
 )
 
 # attrset rec 0
 rec {}
 ==>
 Nix (
-  RecAttrSet
+  RecSet
 )
 
 # attrset 1
 {a=1;}
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       Identifier,
       Int
@@ -332,7 +332,7 @@ Nix (
 {a_a=1;}
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       Identifier,
       Int
@@ -344,7 +344,7 @@ Nix (
 rec {a=1;}
 ==>
 Nix (
-  RecAttrSet (
+  RecSet (
     Attr (
       Identifier,
       Int
@@ -356,7 +356,7 @@ Nix (
 { "a" = 1; "b" = "2"; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       String (
         StringContent
@@ -378,7 +378,7 @@ Nix (
 { "" = 1; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       String,
       Int
@@ -390,7 +390,7 @@ Nix (
 { "inherit" = 1; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       String (
         StringContent
@@ -404,7 +404,7 @@ Nix (
 { inherit a b; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     AttrInherit (
       Identifier,
       Identifier
@@ -416,7 +416,7 @@ Nix (
 { inherit; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     AttrInherit
   )
 )
@@ -425,7 +425,7 @@ Nix (
 { inherit (f) a b; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     AttrInheritFrom (
       Var (
         Identifier
@@ -590,7 +590,7 @@ Nix (
 { a = 1; }
 ==>
 Nix (
-  AttrSet (
+  Set (
     Attr (
       Identifier,
       Int

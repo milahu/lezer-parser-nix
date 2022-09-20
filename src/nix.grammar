@@ -66,8 +66,8 @@ expr_simple
   //| CallStringPath { SPATH } // TODO what is StringPath?
   | String { URI } // note: if noURLLiterals: ParseError, URL literals are disabled
   | Parens { '(' expr ')' }
-  | RecAttrSet { _REC '{' ~markCurlyOpen bindings '}' }
-  | AttrSet { '{'~markCurlyOpen bindings '}' } // TODO not needed ~curlyOpen marker? // AttrSet { "{" ~curlyOpen (attr)* "}" }
+  | RecSet { _REC '{' ~markCurlyOpen bindings '}' }
+  | Set { '{'~markCurlyOpen bindings '}' } // TODO not needed ~curlyOpen marker? // Set { "{" ~curlyOpen (attr)* "}" }
   | List { '[' (expr_select (!prec_list expr_select)*)? ']' }
   }
 
@@ -149,7 +149,7 @@ path_start
 // attribute sets
 
 // note: Attr value is positional -> last child node
-// {a=1;} -> Nix(AttrSet(Attr(Identifier,Int)))
+// {a=1;} -> Nix(Set(Attr(Identifier,Int)))
 
 bindings
   { _Attrs
