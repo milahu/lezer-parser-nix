@@ -2,7 +2,7 @@
 // based on manual-test.js
 
 import {parser} from "../dist/index.js"
-import {stringifyTree} from "./stringify-tree.js"
+import {stringifyTree} from "../src/stringify-tree.js"
 
 // use a patched version of fileTests to parse test files
 // https://github.com/lezer-parser/generator/pull/7
