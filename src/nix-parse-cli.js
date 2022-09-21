@@ -1,5 +1,5 @@
 import {parser as parserImported} from "../dist/index.js"
-import {stringifyTree} from "./stringify-tree.js"
+import {stringifyTree} from "./nix-format.js"
 import {readFileSync} from "node:fs"
 
 const argv = process.argv.slice(1);
