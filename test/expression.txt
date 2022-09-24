@@ -145,9 +145,7 @@ Nix (
 Nix (
   Call (
     Float,
-    Path (
-      PathAbsolute
-    )
+    PathAbsolute
   )
 )
 
@@ -155,81 +153,63 @@ Nix (
 1.0/2
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div int int
 1/2
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div add add
 +/+
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div dot add
 ./+
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div add dot
 +/.
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div concat dot
 ++/.
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div dot concat
 ./++
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div dot underscore
 ./_
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path not div neg concat
 -/++
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # precedence mul add
@@ -1211,108 +1191,84 @@ Nix (
 /etc
 ==>
 Nix (
-  Path (
-    PathAbsolute
-  )
+  PathAbsolute
 )
 
 # path absolute 2
 /etc/nixos
 ==>
 Nix (
-  Path (
-    PathAbsolute
-  )
+  PathAbsolute
 )
 
 # path relative workdir ./.
 ./.
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative parent ../. # TODO is this "spath"?
 ../.
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative parent ./..
 ./..
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative parent 2 ../..
 ../..
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative dots ./...
 ./...
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative dots .../.
 .../.
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative
 ./a
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path relative 2
 ./a/b
 ==>
 Nix (
-  Path (
-    PathRelative
-  )
+  PathRelative
 )
 
 # path library
 <nixpkgs>
 ==>
 Nix (
-  Path (
-    PathLibrary
-  )
+  PathLibrary
 )
 
 # path library 2
 <nixpkgs/nixos>
 ==>
 Nix (
-  Path (
-    PathLibrary
-  )
+  PathLibrary
 )
 
 # boolean true
