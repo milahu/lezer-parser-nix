@@ -749,6 +749,21 @@ Nix (
   )
 )
 
+# indented string with escaped interpolation after interpolation
+''a${x}''${x}b''
+==>
+Nix (
+  IndentedString (
+    IndentedStringContent,
+    IndentedStringInterpolation (
+      Var (
+        Identifier
+      )
+    ),
+    IndentedStringContent
+  )
+)
+
 # string block with escaped interpolation
 ''
   a''${x}b
