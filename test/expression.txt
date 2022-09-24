@@ -119,12 +119,33 @@ Nix (
   )
 )
 
+# path not div
+1.0/2
+==>
+Nix (
+  Path (
+    PathRelative
+  )
+)
+
+# path not div
+1.0 /2
+==>
+Nix (
+  Call (
+    Float,
+    Path (
+      PathAbsolute
+    )
+  )
+)
+
 # div
-1/2
+1.0/ 2
 ==>
 Nix (
   Div (
-    Int,
+    Float,
     Int
   )
 )
