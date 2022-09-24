@@ -38,11 +38,10 @@ expr_op
   | Div      { expr_op !prec_mul_div  '/' expr_op }
   | Concat   { expr_op !prec_concat  '++' expr_op } // concat lists
 
-  // TODO rename Path to path
   // TODO where should we handle paths? parse or eval?
   // copy of Path from expr_simple, to parse "1/2" as Path not Call(Int,Path)
   // note: no need for !prec_path
-  | Path { path_start }
+  | expr_path
 
   | expr_app
   }
@@ -70,10 +69,9 @@ expr_simple
   | String { string_parts }
   | IndentedString { ind_string_parts }
 
-  // TODO rename Path to path
   // TODO where should we handle paths? parse or eval?
   // note: here we need !prec_path
-  | Path { !prec_path path_start }
+  | !prec_path expr_path
 
   | String { URI } // note: if noURLLiterals: ParseError, URL literals are disabled
   | Parens { '(' expr ')' }
@@ -152,9 +150,11 @@ IndentedStringInterpolation
     }
 }
 
-// FIXME name: remove "start"
-path_start
-  { ___Path { PathLibrary | PathAbsolute | PathHome | PathRelative }
+expr_path
+  { PathLibrary
+  | PathAbsolute
+  | PathHome
+  | PathRelative
   }
 
 
@@ -280,6 +280,7 @@ _REC { keyword<"rec"> }
   @precedence { PathRelative, "." }
 
   // pathRaw matches almost anything with a "/"
+  // in "nix repl", these are interpreted as relative paths
   pathRaw { pathComponent "/" pathContent }
   // TODO why does PathRelative overlap with whitespace?
   //@precedence { PathRelative, whitespace }
