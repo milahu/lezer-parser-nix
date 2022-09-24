@@ -37,6 +37,13 @@ expr_op
   | Mul      { expr_op !prec_mul_div  '*' expr_op }
   | Div      { expr_op !prec_mul_div  '/' expr_op }
   | Concat   { expr_op !prec_concat  '++' expr_op } // concat lists
+
+  // TODO rename Path to path
+  // TODO where should we handle paths? parse or eval?
+  // copy of Path from expr_simple, to parse "1/2" as Path not Call(Int,Path)
+  // note: no need for !prec_path
+  | Path { path_start }
+
   | expr_app
   }
 
@@ -62,8 +69,12 @@ expr_simple
   | NULL
   | String { string_parts }
   | IndentedString { ind_string_parts }
-  | Path { path_start }
-  //| CallStringPath { SPATH } // TODO what is StringPath?
+
+  // TODO rename Path to path
+  // TODO where should we handle paths? parse or eval?
+  // note: here we need !prec_path
+  | Path { !prec_path path_start }
+
   | String { URI } // note: if noURLLiterals: ParseError, URL literals are disabled
   | Parens { '(' expr ')' }
   | RecSet { _REC '{' ~markCurlyOpen bindings '}' }
@@ -75,6 +86,7 @@ expr_simple
   prec_select @left,
   prec_list @left,
   prec_callSub @left, // workaround for Sub/Negative conflict
+  prec_path @right, // path over call
   prec_apply @left,
   prec_neg @left,
   prec_hasAttr @left,
@@ -90,7 +102,8 @@ expr_simple
   prec_impl @right,
 
   // FIXME?
-  prec_pathRelative @right,
+  //prec_pathRelative @right,
+  //prec_pathRaw @right,
   prec_selectOrAttrPathDot
 }
 
@@ -141,7 +154,7 @@ IndentedStringInterpolation
 
 // FIXME name: remove "start"
 path_start
-  { ___Path { PathAbsolute | !prec_pathRelative PathRelative | PathLibrary | PathHome }
+  { ___Path { PathLibrary | PathAbsolute | PathHome | PathRelative }
   }
 
 
@@ -219,6 +232,10 @@ _REC { keyword<"rec"> }
 
 
 
+// @precedence is needed to fix
+// "Overlapping tokens A and B used in same context"
+// https://discuss.codemirror.net/t/handling-overlapping-tokens/2624
+
 @tokens {
   integer { std.digit+ }
   float   { ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)? }
@@ -250,16 +267,35 @@ _REC { keyword<"rec"> }
   PathAbsolute { "/" pathContent }
   @precedence { PathAbsolute, "/" }
 
-  PathRelative { "./" pathContent }
-  @precedence { PathRelative, "." }
-
   PathHome { "~/" pathContent }
 
+  // aka "SPATH" in nix/src/libexpr/parser.y
+  // evaluated as __findFile __nixPath PathLibraryValue
   PathLibrary { "<" PathLibraryValue ">" }
   PathLibraryValue { pathContent }
 
-  // TODO add more special characters? unicode?
-  pathContent { (Identifier | ".")+ ("/" (Identifier | ".")+)* }
+  PathRelative { pathRelative | pathRaw }
+
+  pathRelative { ("./" | "../") pathContent }
+  @precedence { PathRelative, "." }
+
+  // pathRaw matches almost anything with a "/"
+  pathRaw { pathComponent "/" pathContent }
+  // TODO why does PathRelative overlap with whitespace?
+  //@precedence { PathRelative, whitespace }
+  @precedence { whitespace, PathRelative }
+  @precedence { PathRelative, "." }
+  @precedence { Identifier, PathRelative } // TODO reverse?
+  //@precedence { PathRelative, Identifier }
+  @precedence { PathRelative, integer }
+  @precedence { PathRelative, float }
+  @precedence { PathRelative, "-" }
+  @precedence { PathRelative, "+" }
+  @precedence { PathRelative, "++" }
+
+  // note: no unicode in paths
+  pathContent { pathComponent ("/" pathComponent)* }
+  pathComponent { (std.asciiLetter | std.digit | "+" | "-" | "_" | ".")+ }
 
   URI { uriSchema ":" uriPath }
   uriSchema { std.asciiLetter (std.asciiLetter | std.digit | "+" | "-")* }
