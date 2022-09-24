@@ -5,7 +5,7 @@ export function stringifyTree(tree, options) {
   const human = options.human || false; // human readable, like python or yaml
   const compact = (!pretty && !human);
   const format = compact ? 'compact' : pretty ? 'pretty' : human ? 'human' : null;
-  const source = options.text || '';
+  const source = options.source || options.text || '';
   const indentStep = options.indent || '  ';
 
   const cursor = tree.cursor();
