@@ -55,7 +55,7 @@ for (let file of fs.readdirSync(caseDir)) {
     const { name, text, expected: oldExpected, configStr, strict } = testData;
     const tree = parser.parse(testData.text);
     const stringifyOptions = writePrettyTree && { pretty: true, text };
-    const newExpected = stringifyTree(tree, stringifyOptions);
+    const newExpected = stringifyTree(tree, stringifyOptions).trim();
     //if (name == 'some test name') { console.dir(testData) } // debug
     result.push(`# ${name}${(configStr || '')}\n${text}\n==>\n${newExpected}`)
     const oldExpectedErrors = (oldExpected.match(/⚠/g) || []).length;
