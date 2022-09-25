@@ -109,6 +109,15 @@ Nix (
   )
 )
 
+# Identifier with single quote
+f'
+==>
+Nix (
+  Var (
+    Identifier
+  )
+)
+
 # mul
 1*2
 ==>
