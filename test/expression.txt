@@ -411,6 +411,19 @@ Nix (
   )
 )
 
+# attrset missing semicolon
+{a=1}
+==>
+Nix (
+  Set (
+    Attr (
+      Identifier,
+      Int,
+      ⚠
+    )
+  )
+)
+
 # attrset 1 underscore in identifier
 {a_a=1;}
 ==>
