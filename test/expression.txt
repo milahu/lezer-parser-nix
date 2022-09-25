@@ -221,6 +221,14 @@ Nix (
   PathRelative
 )
 
+# error path with single quote
+./f'
+==>
+Nix (
+  PathRelative,
+  ⚠
+)
+
 # precedence mul add
 1*2+3
 ==>
