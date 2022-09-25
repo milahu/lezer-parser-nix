@@ -241,7 +241,7 @@ _REC { keyword<"rec"> }
   float   { ((std.digit+ "." std.digit+) | ("." std.digit+)) (("e" | "E") std.digit+)? }
   @precedence { float, integer, "." }
 
-  Identifier { identifierChar (identifierChar | std.digit | "-" )* } // note: nix allows minus in identifiers
+  Identifier { identifierChar (identifierChar | std.digit | "-" | "'" )* } // note: nix allows minus in identifiers
   @precedence { Identifier, whitespace }
 
   // TODO test unicode identifiers
