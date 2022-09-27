@@ -1179,7 +1179,8 @@ Nix (
       ),
       Formal (
         Identifier
-      )
+      ),
+      TODO
     ),
     Var (
       Identifier
@@ -1192,7 +1193,9 @@ Nix (
 ==>
 Nix (
   Lambda (
-    Formals,
+    Formals (
+      TODO
+    ),
     Var (
       Identifier
     )
