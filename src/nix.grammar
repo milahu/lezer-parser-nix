@@ -198,7 +198,11 @@ string_attr
   }
 
 formals
-  { Formals { (formal? (',' formal)* (',' '...')?) | '...' }
+  { Formals { (formal? (',' formal)* (',' FormalsRest)?) | FormalsRest }
+  }
+
+FormalsRest
+  { '...'
   }
 
 formal

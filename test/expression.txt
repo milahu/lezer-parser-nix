@@ -1160,7 +1160,8 @@ Nix (
     Formals (
       Formal (
         Identifier
-      )
+      ),
+      FormalsRest
     ),
     Var (
       Identifier
@@ -1180,7 +1181,7 @@ Nix (
       Formal (
         Identifier
       ),
-      TODO
+      FormalsRest
     ),
     Var (
       Identifier
@@ -1194,7 +1195,7 @@ Nix (
 Nix (
   Lambda (
     Formals (
-      TODO
+      FormalsRest
     ),
     Var (
       Identifier
