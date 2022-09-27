@@ -1,8 +1,12 @@
+// called from nix-eval-js/demo/src/treeview.jsx
+
 export function stringifyTree(tree, options) {
 
   if (!options) options = {};
   const pretty = options.pretty || false;
   const human = options.human || false; // human readable, like python or yaml
+  const positions = options.positions || false; // add node positions
+  const firstLine = options.firstLine || false; // show only first line of node source
   const compact = (!pretty && !human);
   const format = compact ? 'compact' : pretty ? 'pretty' : human ? 'human' : null;
   const source = options.source || options.text || '';
@@ -15,8 +19,14 @@ export function stringifyTree(tree, options) {
   let result = '';
 
   const indent = () => indentStep.repeat(depth);
-  const cursorType = () => cursor.name;
-  const cursorText = () => source.slice(cursor.from, cursor.to);
+  const cursorType = () => positions ? `${cursor.name}:${cursor.from}` : cursor.name;
+  const cursorText = () => {
+    let src = source.slice(cursor.from, cursor.to);
+    if (firstLine) {
+      return src.split('\n')[0];
+    }
+    return src;
+  };
 
   const formatNodeByFormat = {
     human: () => `${indent()}${cursorType()}: ${cursorText()}\n`,
