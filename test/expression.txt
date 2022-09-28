@@ -1676,6 +1676,24 @@ Nix (
   )
 )
 
+# let old https://nixos.wiki/wiki/Nix_Language_Quirks
+let { x = 1; body = x; }
+==>
+Nix (
+  LetOld (
+    Attr (
+      Identifier,
+      Int
+    ),
+    Attr (
+      Identifier,
+      Var (
+        Identifier
+      )
+    )
+  )
+)
+
 # Primop
 __add
 ==>
