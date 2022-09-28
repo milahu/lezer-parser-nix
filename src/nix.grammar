@@ -10,8 +10,11 @@ expr
   | Assert { _ASSERT expr ';' expr }
   | With { _WITH expr ';' expr }
   | Let { _LET bindings _IN expr } // syntax sugar: let a=1; in a -> (rec {a=1;}).a
+  | LetOld { _LET '{' bindings '}' } // old let: let { x = 1; body = x; }
   | expr_if
   }
+
+
 
 expr_if
   { If { _IF expr _THEN expr _ELSE expr }
