@@ -1,5 +1,7 @@
 // called from nix-eval-js/demo/src/treeview.jsx
 
+/** @param {Tree | TreeNode} tree */
+
 export function stringifyTree(tree, options) {
 
   if (!options) options = {};
@@ -59,6 +61,12 @@ export function stringifyTree(tree, options) {
     while (cursor.parent()) {
       // moved up
       depth--;
+      //console.log(`stringifyTree: moved up to depth=${depth}. result: ${result}`)
+      if (depth < 0) {
+        // when tree is a node, stop at the end of node
+        // == dont visit sibling or parent nodes
+        return result;
+      }
       if (compact) result += ')'
       if (pretty && firstUp) result += `\n`
       if (pretty) result += `${indent()})`
@@ -76,6 +84,8 @@ export function stringifyTree(tree, options) {
 
     break;
   }
+
+  //console.log(`stringifyTree: final depth: ${depth}`)
 
   return result;
 }
