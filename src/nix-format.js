@@ -2,6 +2,10 @@
 
 export function stringifyTree(tree, options) {
 
+  if (tree._tree) {
+    throw new Error('type error: stringifyTree expects tree, found node')
+  }
+
   if (!options) options = {};
   const pretty = options.pretty || false;
   const human = options.human || false; // human readable, like python or yaml
