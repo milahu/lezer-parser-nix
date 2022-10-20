@@ -86,10 +86,10 @@ expr_simple
 @precedence {
   prec_select @left,
   prec_list @left,
-  prec_callSub @left, // workaround for Sub/Negative conflict
   prec_path @right, // path over call
   prec_apply @left,
   prec_neg @left,
+  prec_callSub @left,
   prec_hasAttr @left,
   prec_concat @right,
   prec_mul_div @left,
