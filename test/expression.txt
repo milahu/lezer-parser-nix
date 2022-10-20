@@ -100,6 +100,18 @@ Nix (
   )
 )
 
+# sub neg
+-1-2
+==>
+Nix (
+  Sub (
+    Neg (
+      Int
+    ),
+    Int
+  )
+)
+
 # Identifier not sub
 a-b
 ==>
