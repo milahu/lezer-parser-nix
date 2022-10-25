@@ -310,6 +310,17 @@ Nix (
   IndentedString
 )
 
+# string block starting with 2 empty lines
+''
+
+a''
+==>
+Nix (
+  IndentedString (
+    IndentedStringContent
+  )
+)
+
 # list empty
 []
 ==>
