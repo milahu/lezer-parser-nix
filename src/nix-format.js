@@ -62,14 +62,14 @@ export function stringifyTree(tree, options) {
       // moved up
       depth--;
       //console.log(`stringifyTree: moved up to depth=${depth}. result: ${result}`)
-      if (depth < 0) {
+      if (compact) result += ')'
+      if (pretty && firstUp) result += `\n`
+      if (pretty) result += `${indent()})`
+      if (depth <= 0) {
         // when tree is a node, stop at the end of node
         // == dont visit sibling or parent nodes
         return result;
       }
-      if (compact) result += ')'
-      if (pretty && firstUp) result += `\n`
-      if (pretty) result += `${indent()})`
       if (cursor.nextSibling()) {
         // moved up + right
         continueMainLoop = true;
