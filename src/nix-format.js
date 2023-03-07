@@ -50,7 +50,7 @@ export function stringifyTree(tree, options) {
       continue;
     }
     // Right
-    if (cursor.nextSibling()) {
+    if (depth > 0 && cursor.nextSibling()) {
       // moved right
       if (compact) result += ','
       if (pretty) result += ',\n'
