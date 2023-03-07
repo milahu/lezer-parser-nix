@@ -21,7 +21,8 @@ export function stringifyTree(tree, options) {
   let result = '';
 
   const indent = () => indentStep.repeat(depth);
-  const cursorType = () => positions ? `${cursor.name}:${cursor.from}` : cursor.name;
+  const cursorName = () => (cursor.name == cursorText()) ? JSON.stringify(cursor.name) : cursor.name;
+  const cursorType = () => positions ? `${cursorName()}:${cursor.from}` : cursorName();
   const cursorText = () => {
     let src = source.slice(cursor.from, cursor.to);
     if (firstLine) {
