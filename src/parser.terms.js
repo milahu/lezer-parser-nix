@@ -8,7 +8,7 @@ export const
   indentedStringEnd = 79,
   Comment = 3,
   CommentBlock = 4,
-  Nix = 5,
+  Expr = 5,
   Identifier = 7,
   FormalsRest = 12,
   StringInterpolation = 20,
