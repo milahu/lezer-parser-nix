@@ -1,6 +1,6 @@
 // Nix grammar for lezer-parser. MIT License (c) 2022 Milan Hauth
 
-@top Nix { expr? }
+@top Expr { expr? }
 
 expr
   { Lambda { Identifier ':' expr }
