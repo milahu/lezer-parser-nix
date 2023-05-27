@@ -1,42 +1,42 @@
 # int
 1
 ==>
-Nix (
+Expr (
   Int
 )
 
 # float
 1.2
 ==>
-Nix (
+Expr (
   Float
 )
 
 # float only right of comma
 .1
 ==>
-Nix (
+Expr (
   Float
 )
 
 # float exponent
 1.2e3
 ==>
-Nix (
+Expr (
   Float
 )
 
 # float Exponent
 1.2E3
 ==>
-Nix (
+Expr (
   Float
 )
 
 # add
 1+2
 ==>
-Nix (
+Expr (
   Add (
     Int,
     Int
@@ -46,7 +46,7 @@ Nix (
 # add with whitespace
 1 + 2
 ==>
-Nix (
+Expr (
   Add (
     Int,
     Int
@@ -57,7 +57,7 @@ Nix (
 # hello
 1
 ==>
-Nix (
+Expr (
   Comment,
   Int
 )
@@ -67,7 +67,7 @@ Nix (
 1
 #*/
 ==>
-Nix (
+Expr (
   Comment,
   Int,
   Comment
@@ -76,7 +76,7 @@ Nix (
 # block comment
 /* hello */1
 ==>
-Nix (
+Expr (
   CommentBlock,
   Int
 )
@@ -86,14 +86,14 @@ Nix (
 # hello
 */
 ==>
-Nix (
+Expr (
   CommentBlock
 )
 
 # sub
 1-2
 ==>
-Nix (
+Expr (
   Sub (
     Int,
     Int
@@ -103,7 +103,7 @@ Nix (
 # sub neg
 -1-2
 ==>
-Nix (
+Expr (
   Sub (
     Neg (
       Int
@@ -115,7 +115,7 @@ Nix (
 # Identifier not sub
 a-b
 ==>
-Nix (
+Expr (
   Var (
     Identifier
   )
@@ -124,7 +124,7 @@ Nix (
 # Identifier with single quote
 f'
 ==>
-Nix (
+Expr (
   Var (
     Identifier
   )
@@ -133,7 +133,7 @@ Nix (
 # mul
 1*2
 ==>
-Nix (
+Expr (
   Mul (
     Int,
     Int
@@ -143,7 +143,7 @@ Nix (
 # div space around slash
 1.0 / 2
 ==>
-Nix (
+Expr (
   Div (
     Float,
     Int
@@ -153,7 +153,7 @@ Nix (
 # div space after slash
 1.0/ 2
 ==>
-Nix (
+Expr (
   Div (
     Float,
     Int
@@ -163,7 +163,7 @@ Nix (
 # call not div space before slash
 1.0 /2
 ==>
-Nix (
+Expr (
   Call (
     Float,
     PathAbsolute
@@ -173,70 +173,70 @@ Nix (
 # path not div float int
 1.0/2
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div int int
 1/2
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div add add
 +/+
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div dot add
 ./+
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div add dot
 +/.
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div concat dot
 ++/.
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div dot concat
 ./++
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div dot underscore
 ./_
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path not div neg concat
 -/++
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # error path with single quote
 ./f'
 ==>
-Nix (
+Expr (
   PathRelative,
   ⚠
 )
@@ -244,7 +244,7 @@ Nix (
 # precedence mul add
 1*2+3
 ==>
-Nix (
+Expr (
   Add (
     Mul (
       Int,
@@ -257,7 +257,7 @@ Nix (
 # string line
 "a"
 ==>
-Nix (
+Expr (
   String (
     StringContent
   )
@@ -266,14 +266,14 @@ Nix (
 # string line empty
 ""
 ==>
-Nix (
+Expr (
   String
 )
 
 # string line with interpolation
 "a${x}b"
 ==>
-Nix (
+Expr (
   String (
     StringContent,
     StringInterpolation (
@@ -288,7 +288,7 @@ Nix (
 # string line with escaped interpolation
 "a\${x}b"
 ==>
-Nix (
+Expr (
   String (
     StringContent
   )
@@ -297,7 +297,7 @@ Nix (
 # string block single line
 ''a''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent
   )
@@ -306,7 +306,7 @@ Nix (
 # string block empty
 ''''
 ==>
-Nix (
+Expr (
   IndentedString
 )
 
@@ -315,7 +315,7 @@ Nix (
 
 a''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent
   )
@@ -324,14 +324,14 @@ Nix (
 # list empty
 []
 ==>
-Nix (
+Expr (
   List
 )
 
 # list int
 [1]
 ==>
-Nix (
+Expr (
   List (
     Int
   )
@@ -340,7 +340,7 @@ Nix (
 # list int 2
 [1 1]
 ==>
-Nix (
+Expr (
   List (
     Int,
     Int
@@ -350,7 +350,7 @@ Nix (
 # list int 3
 [1 1]
 ==>
-Nix (
+Expr (
   List (
     Int,
     Int
@@ -360,7 +360,7 @@ Nix (
 # list int string
 [1 "a"]
 ==>
-Nix (
+Expr (
   List (
     Int,
     String (
@@ -372,7 +372,7 @@ Nix (
 # list concat 2
 [] ++ []
 ==>
-Nix (
+Expr (
   Concat (
     List,
     List
@@ -382,7 +382,7 @@ Nix (
 # list concat 3
 [] ++ [] ++ []
 ==>
-Nix (
+Expr (
   Concat (
     List,
     Concat (
@@ -395,7 +395,7 @@ Nix (
 # string concat 2
 "a" + "b"
 ==>
-Nix (
+Expr (
   Add (
     String (
       StringContent
@@ -409,7 +409,7 @@ Nix (
 # string concat 3 # TODO left or right associative?
 "a" + "b" + "c"
 ==>
-Nix (
+Expr (
   Add (
     Add (
       String (
@@ -428,21 +428,21 @@ Nix (
 # attrset 0
 {}
 ==>
-Nix (
+Expr (
   Set
 )
 
 # attrset rec 0
 rec {}
 ==>
-Nix (
+Expr (
   RecSet
 )
 
 # attrset 1
 {a=1;}
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       Identifier,
@@ -454,7 +454,7 @@ Nix (
 # attrset missing semicolon
 {a=1}
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       Identifier,
@@ -467,7 +467,7 @@ Nix (
 # attrset 1 underscore in identifier
 {a_a=1;}
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       Identifier,
@@ -479,7 +479,7 @@ Nix (
 # attrset rec 1
 rec {a=1;}
 ==>
-Nix (
+Expr (
   RecSet (
     Attr (
       Identifier,
@@ -491,7 +491,7 @@ Nix (
 # attrset 2
 { "a" = 1; "b" = "2"; }
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       String (
@@ -513,7 +513,7 @@ Nix (
 # attrset empty key
 { "" = 1; }
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       String,
@@ -525,7 +525,7 @@ Nix (
 # attrset string key
 { "inherit" = 1; }
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       String (
@@ -539,7 +539,7 @@ Nix (
 # attrset inherit
 { inherit a b; }
 ==>
-Nix (
+Expr (
   Set (
     AttrInherit (
       Identifier,
@@ -551,7 +551,7 @@ Nix (
 # attrset inherit empty
 { inherit; }
 ==>
-Nix (
+Expr (
   Set (
     AttrInherit
   )
@@ -560,7 +560,7 @@ Nix (
 # attrset inherit from
 { inherit (f) a b; }
 ==>
-Nix (
+Expr (
   Set (
     AttrInheritFrom (
       Var (
@@ -575,7 +575,7 @@ Nix (
 # select string 2
 "a"."b"
 ==>
-Nix (
+Expr (
   Select (
     String (
       StringContent
@@ -589,7 +589,7 @@ Nix (
 # select string 3
 "a"."b"."c"
 ==>
-Nix (
+Expr (
   Select (
     String (
       StringContent
@@ -606,7 +606,7 @@ Nix (
 # select identifier 3
 a.b.c
 ==>
-Nix (
+Expr (
   Select (
     Var (
       Identifier
@@ -619,7 +619,7 @@ Nix (
 # select interpolation 1
 a.${b}
 ==>
-Nix (
+Expr (
   Select (
     Var (
       Identifier
@@ -635,7 +635,7 @@ Nix (
 # select a.b
 a.b
 ==>
-Nix (
+Expr (
   Select (
     Var (
       Identifier
@@ -647,7 +647,7 @@ Nix (
 # select a.b in list
 [ a.b ]
 ==>
-Nix (
+Expr (
   List (
     Select (
       Var (
@@ -661,7 +661,7 @@ Nix (
 # call or
 a or 2
 ==>
-Nix (
+Expr (
   Call (
     Var (
       Identifier,
@@ -674,7 +674,7 @@ Nix (
 # select or
 a.b or 3
 ==>
-Nix (
+Expr (
   SelectOr (
     Var (
       Identifier
@@ -687,7 +687,7 @@ Nix (
 # select or error
 a.b or 3 or 4
 ==>
-Nix (
+Expr (
   Call (
     SelectOr (
       Var (
@@ -704,7 +704,7 @@ Nix (
 # select interpolation 2
 a.${b}.${c}
 ==>
-Nix (
+Expr (
   Select (
     Var (
       Identifier
@@ -725,7 +725,7 @@ Nix (
 # attrset with identifier
 { a = 1; }
 ==>
-Nix (
+Expr (
   Set (
     Attr (
       Identifier,
@@ -739,7 +739,7 @@ Nix (
   a${x}b
 ''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
@@ -754,7 +754,7 @@ Nix (
 # string block with interpolation single line
 ''a${x}b''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
@@ -769,7 +769,7 @@ Nix (
 # string block with empty interpolation single line
 ''a${}b''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
@@ -782,7 +782,7 @@ Nix (
 # string block with comment in interpolation single line
 ''a${/* hello */}b''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
@@ -796,7 +796,7 @@ Nix (
 # string block with escaped interpolation single line
 ''a''${x}b''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent
   )
@@ -805,7 +805,7 @@ Nix (
 # indented string with escaped interpolation after interpolation
 ''a${x}''${x}b''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent,
     IndentedStringInterpolation (
@@ -822,7 +822,7 @@ Nix (
   a''${x}b
 ''
 ==>
-Nix (
+Expr (
   IndentedString (
     IndentedStringContent
   )
@@ -837,7 +837,7 @@ Nix (
   a''${x}b
 ''
 ==>
-Nix (
+Expr (
   Add (
     Add (
       IndentedString (
@@ -860,7 +860,7 @@ Nix (
   a${x}b
 ''
 ==>
-Nix (
+Expr (
   Add (
     IndentedString (
       IndentedStringContent,
@@ -886,7 +886,7 @@ Nix (
 # if
 if true then true else false
 ==>
-Nix (
+Expr (
   If (
     TRUE,
     TRUE,
@@ -897,7 +897,7 @@ Nix (
 # parens
 (1)
 ==>
-Nix (
+Expr (
   Parens (
     Int
   )
@@ -906,7 +906,7 @@ Nix (
 # function TODO test error in "a:a" -> missing space after colon
 a: x
 ==>
-Nix (
+Expr (
   Lambda (
     Identifier,
     Var (
@@ -918,7 +918,7 @@ Nix (
 # function with syntax error. missing space after colon
 a:x
 ==>
-Nix (
+Expr (
   String (
     URI
   )
@@ -927,7 +927,7 @@ Nix (
 # function 2
 a: b: x
 ==>
-Nix (
+Expr (
   Lambda (
     Identifier,
     Lambda (
@@ -942,7 +942,7 @@ Nix (
 # function 3
 a: b: c: x
 ==>
-Nix (
+Expr (
   Lambda (
     Identifier,
     Lambda (
@@ -960,7 +960,7 @@ Nix (
 # function formals with space after colon
 { a }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -976,7 +976,7 @@ Nix (
 # function formals no space after colon
 { a }:x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -992,7 +992,7 @@ Nix (
 # function 2 formals
 { a }: { b }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1015,7 +1015,7 @@ Nix (
 # function 3 formals
 { a }: { b }: { c }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1045,7 +1045,7 @@ Nix (
 # function formals 2
 { a, b }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1064,7 +1064,7 @@ Nix (
 # function formals 3
 { a, b, c }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1086,7 +1086,7 @@ Nix (
 # function formals default
 { a ? 1 }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1103,7 +1103,7 @@ Nix (
 # function formals default 2
 { a ? 1, b ? 2 }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1124,7 +1124,7 @@ Nix (
 # function formals all
 { a } @ z: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1141,7 +1141,7 @@ Nix (
 # function formals all 2
 { a, b } @ z: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1161,7 +1161,7 @@ Nix (
 # function formals all before
 z @ { a }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Identifier,
     Formals (
@@ -1178,7 +1178,7 @@ Nix (
 # function formals rest
 { a, ... }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1195,7 +1195,7 @@ Nix (
 # function formals rest 2
 { a, b, ... }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       Formal (
@@ -1215,7 +1215,7 @@ Nix (
 # function formals rest only
 { ... }: x
 ==>
-Nix (
+Expr (
   Lambda (
     Formals (
       FormalsRest
@@ -1229,7 +1229,7 @@ Nix (
 # update 2
 a // b
 ==>
-Nix (
+Expr (
   Update (
     Var (
       Identifier
@@ -1243,7 +1243,7 @@ Nix (
 # update 3
 a // b // c
 ==>
-Nix (
+Expr (
   Update (
     Var (
       Identifier
@@ -1262,112 +1262,112 @@ Nix (
 # path absolute
 /etc
 ==>
-Nix (
+Expr (
   PathAbsolute
 )
 
 # path absolute 2
 /etc/nixos
 ==>
-Nix (
+Expr (
   PathAbsolute
 )
 
 # path relative workdir ./.
 ./.
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative parent ../. # TODO is this "spath"?
 ../.
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative parent ./..
 ./..
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative parent 2 ../..
 ../..
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative dots ./...
 ./...
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative dots .../.
 .../.
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative
 ./a
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path relative 2
 ./a/b
 ==>
-Nix (
+Expr (
   PathRelative
 )
 
 # path library
 <nixpkgs>
 ==>
-Nix (
+Expr (
   PathLibrary
 )
 
 # path library 2
 <nixpkgs/nixos>
 ==>
-Nix (
+Expr (
   PathLibrary
 )
 
 # boolean true
 true
 ==>
-Nix (
+Expr (
   TRUE
 )
 
 # boolean false
 false
 ==>
-Nix (
+Expr (
   FALSE
 )
 
 # null
 null
 ==>
-Nix (
+Expr (
   NULL
 )
 
 # apply
 a b
 ==>
-Nix (
+Expr (
   Call (
     Var (
       Identifier
@@ -1381,7 +1381,7 @@ Nix (
 # apply 2
 a b 1
 ==>
-Nix (
+Expr (
   Call (
     Call (
       Var (
@@ -1398,7 +1398,7 @@ Nix (
 # apply 2 braces
 a (b 1)
 ==>
-Nix (
+Expr (
   Call (
     Var (
       Identifier
@@ -1417,7 +1417,7 @@ Nix (
 # HasAttr
 a ? b
 ==>
-Nix (
+Expr (
   HasAttr (
     Var (
       Identifier
@@ -1429,7 +1429,7 @@ Nix (
 # HasAttr 2
 a ? b.c
 ==>
-Nix (
+Expr (
   HasAttr (
     Var (
       Identifier
@@ -1442,7 +1442,7 @@ Nix (
 # Select + HasAttr
 a.b ? c.d
 ==>
-Nix (
+Expr (
   HasAttr (
     Select (
       Var (
@@ -1458,7 +1458,7 @@ Nix (
 # negative Int
 -1
 ==>
-Nix (
+Expr (
   Neg (
     Int
   )
@@ -1467,7 +1467,7 @@ Nix (
 # negative Identifier
 -x
 ==>
-Nix (
+Expr (
   Neg (
     Var (
       Identifier
@@ -1478,7 +1478,7 @@ Nix (
 # not
 !x
 ==>
-Nix (
+Expr (
   Not (
     Var (
       Identifier
@@ -1489,7 +1489,7 @@ Nix (
 # compare <
 a < b
 ==>
-Nix (
+Expr (
   LT (
     Var (
       Identifier
@@ -1503,7 +1503,7 @@ Nix (
 # compare >
 a > b
 ==>
-Nix (
+Expr (
   GT (
     Var (
       Identifier
@@ -1517,7 +1517,7 @@ Nix (
 # compare <=
 a <= b
 ==>
-Nix (
+Expr (
   LE (
     Var (
       Identifier
@@ -1531,7 +1531,7 @@ Nix (
 # compare >=
 a >= b
 ==>
-Nix (
+Expr (
   GE (
     Var (
       Identifier
@@ -1545,7 +1545,7 @@ Nix (
 # equal
 a == b
 ==>
-Nix (
+Expr (
   Eq (
     Var (
       Identifier
@@ -1559,7 +1559,7 @@ Nix (
 # not equal
 a != b
 ==>
-Nix (
+Expr (
   NEq (
     Var (
       Identifier
@@ -1573,7 +1573,7 @@ Nix (
 # and
 a && b
 ==>
-Nix (
+Expr (
   And (
     Var (
       Identifier
@@ -1587,7 +1587,7 @@ Nix (
 # or
 a || b
 ==>
-Nix (
+Expr (
   Or (
     Var (
       Identifier
@@ -1601,7 +1601,7 @@ Nix (
 # imply
 a -> b
 ==>
-Nix (
+Expr (
   Imply (
     Var (
       Identifier
@@ -1615,7 +1615,7 @@ Nix (
 # uri TODO test more
 a://b:3?d=e&f=g
 ==>
-Nix (
+Expr (
   String (
     URI
   )
@@ -1624,7 +1624,7 @@ Nix (
 # assert
 assert a; x
 ==>
-Nix (
+Expr (
   Assert (
     Var (
       Identifier
@@ -1638,7 +1638,7 @@ Nix (
 # with
 with a; x
 ==>
-Nix (
+Expr (
   With (
     Var (
       Identifier
@@ -1652,7 +1652,7 @@ Nix (
 # let
 let a = b; in x
 ==>
-Nix (
+Expr (
   Let (
     Attr (
       Identifier,
@@ -1669,7 +1669,7 @@ Nix (
 # let inherit
 let inherit a b; in x
 ==>
-Nix (
+Expr (
   Let (
     AttrInherit (
       Identifier,
@@ -1684,7 +1684,7 @@ Nix (
 # let inherit from
 let inherit (f) a b; in x
 ==>
-Nix (
+Expr (
   Let (
     AttrInheritFrom (
       Var (
@@ -1702,7 +1702,7 @@ Nix (
 # let old https://nixos.wiki/wiki/Nix_Language_Quirks
 let { x = 1; body = x; }
 ==>
-Nix (
+Expr (
   LetOld (
     Attr (
       Identifier,
@@ -1720,6 +1720,6 @@ Nix (
 # Primop
 __add
 ==>
-Nix (
+Expr (
   Primop
 )
