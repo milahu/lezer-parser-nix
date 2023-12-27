@@ -13,14 +13,14 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
-    "@lezer/common": "^1.0.1",
-    "@lezer/generator": "^1.1.1",
-    "@rollup/plugin-node-resolve": "^14.1.0",
-    "mocha": "^10.0.0",
-    "rollup": "^2.79.0"
+    "@lezer/common": "^1.1.2",
+    "@lezer/generator": "^1.5.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "mocha": "^10.2.0",
+    "rollup": "^4.9.1"
   },
   "dependencies": {
-    "@lezer/lr": "^1.2.3"
+    "@lezer/lr": "^1.3.14"
   },
   "scripts": {
     "build": "lezer-generator src/nix.grammar -o src/parser && rollup -c",
