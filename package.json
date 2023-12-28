@@ -25,7 +25,6 @@
   "scripts": {
     "build": "lezer-generator src/nix.grammar -o src/parser && rollup -c",
     "build-debug": "lezer-generator src/nix.grammar --names -o src/parser && rollup -c",
-    "prepare": "npm run build",
     "test": "mocha --experimental-modules test/test-*.js",
     "on-change": "npm run build && npm run test",
     "watch": "git ls-files | entr npm run on-change"
