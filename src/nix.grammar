@@ -393,3 +393,7 @@ primop
   | keyword<"__splitVersion">
   | keyword<"__traceVerbose">
   }
+
+
+
+@external propSource nixHighlighting from "./highlight"
